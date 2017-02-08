@@ -1,11 +1,13 @@
 package utilities;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileSystemView;
 
@@ -39,6 +41,8 @@ public class Starter {
 			da.setValue("maxIter", 1);
 		if (!da.exists("multiThreading"))
 			da.setValue("multiThreading", 1);
+		if (!da.exists("lastFolderLoaded"))
+			da.setValue("lastFolderLoaded", System.getProperty("user.dir"));
 
 		da.save();
 
@@ -57,6 +61,29 @@ public class Starter {
 	public static int getSavedMultiThreading() {
 		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
 		return da.getValueInt("multiThreading");
+	}
+
+	public static void selectFileAndAct(Component parent, FileActionListener actionListener) {
+		File repertoireCourant = new File(Starter.getSavedLastFolderLoaded());
+		JFileChooser dialogue = new JFileChooser(repertoireCourant);
+		int approval = dialogue.showOpenDialog(parent);
+		File file = dialogue.getSelectedFile();
+		if (approval == JFileChooser.APPROVE_OPTION && file != null) {
+			
+			actionListener.actionPerformed(file);
+			
+			DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
+			da.setValue("lastFolderLoaded", file.getPath());
+			da.save();
+		}
+	}
+	public interface FileActionListener {
+		public void actionPerformed(File file);
+	}
+	
+	public static String getSavedLastFolderLoaded() {
+		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
+		return da.getValueString("lastFolderLoaded");
 	}
 
 	public static JTextPane getCenteredTextZone(String text) {

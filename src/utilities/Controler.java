@@ -15,7 +15,6 @@ import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
 import gClasses.DataAssociator;
 import gClasses.GRessourcesCollector;
-import gClasses.gInterfaces.GChoixFichier;
 import gClasses.gInterfaces.GDialog;
 import interfaces.DataPan;
 import interfaces.ErrorInFilePopup;
@@ -139,48 +138,41 @@ public class Controler implements WindowListener, LearningStateListener {
 	}
 
 	public void loadPer() {
-		File fil = GChoixFichier.openDialogFile();
-		if (fil != null) {
+
+		Starter.selectFileAndAct(frame, (file) -> {
 			try {
-				per = new Perceptron(new DataAssociator(fil));
+				per = new Perceptron(new DataAssociator(file));
 				perceptronModified();
 				updateMode();
 			} catch (Exception e2) {
 				e2.printStackTrace();
 				new ErrorInFilePopup();
 			}
-		}
+		});
 	}
 
 	public void savePer() {
-		File fil = GChoixFichier.openDialogFile();
-		if (fil != null) {
-			per.toDataAssociator().save(fil);
-		}
+		Starter.selectFileAndAct(frame, (file) -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
-		File fil = GChoixFichier.openDialogFile();
-		if (fil != null) {
+		Starter.selectFileAndAct(frame, (file) -> {
 			try {
-				data = getData(fil);
+				data = getData(file);
 				results = null;
 				updateMode();
 			} catch (IOException e) {
 				e.printStackTrace();
 				new ErrorInFilePopup();
 			}
-		}
+		});
 	}
 
 	public void saveCsv() {
-		File fil = GChoixFichier.openDialogFile();
-		if (fil != null) {
+		Starter.selectFileAndAct(frame, (file) -> {
 			try {
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fil));
-
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 				for (int i = 0; i < data.length; i++) {
-
 					for (int j = 0; j < data[i].length; j++) {
 						bos.write(Double.toString(data[i][j]).getBytes());
 						if (j != data[i].length - 1) {
@@ -202,7 +194,7 @@ public class Controler implements WindowListener, LearningStateListener {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}
+		});
 	}
 
 	public void resetPerceptron() {
