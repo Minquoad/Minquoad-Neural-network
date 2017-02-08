@@ -223,7 +223,7 @@ public class DataPan extends JPanel {
 
 	private void setDataTableHeaderToNone() {
 		for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setHeaderValue("?");
+			table.getColumnModel().getColumn(i).setHeaderValue(i);
 		}
 	}
 
