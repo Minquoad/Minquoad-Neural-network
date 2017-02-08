@@ -17,12 +17,14 @@ public class Perceptron {
 	}
 
 	public Perceptron(DataAssociator da) {
-		inputCount = da.getValueInt("inputCount");
-		valid = Boolean.parseBoolean(da.getValueString("valid"));
+		if (da.exists("inputCount") && da.exists("valid") && da.exists("layerCount")) {
+			inputCount = da.getValueInt("inputCount");
+			valid = Boolean.parseBoolean(da.getValueString("valid"));
 
-		int layerCount = da.getValueInt("layerCount");
-		for (int i = 0; i < layerCount; i++) {
-			layers.add(new Layer(da.getValueDataAssociator(i), this));
+			int layerCount = da.getValueInt("layerCount");
+			for (int i = 0; i < layerCount; i++) {
+				layers.add(new Layer(da.getValueDataAssociator(i), this));
+			}
 		}
 	}
 
