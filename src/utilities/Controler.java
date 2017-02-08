@@ -139,7 +139,7 @@ public class Controler implements WindowListener, LearningStateListener {
 
 	public void loadPer() {
 
-		Starter.selectFileAndAct(frame, (file) -> {
+		Starter.selectFileAndPerforme(frame, (file) -> {
 			try {
 				per = new Perceptron(new DataAssociator(file));
 				perceptronModified();
@@ -152,11 +152,11 @@ public class Controler implements WindowListener, LearningStateListener {
 	}
 
 	public void savePer() {
-		Starter.selectFileAndAct(frame, (file) -> per.toDataAssociator().save(file));
+		Starter.selectFileAndPerforme(frame, (file) -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
-		Starter.selectFileAndAct(frame, (file) -> {
+		Starter.selectFileAndPerforme(frame, (file) -> {
 			try {
 				data = getData(file);
 				results = null;
@@ -169,7 +169,7 @@ public class Controler implements WindowListener, LearningStateListener {
 	}
 
 	public void saveCsv() {
-		Starter.selectFileAndAct(frame, (file) -> {
+		Starter.selectFileAndPerforme(frame, (file) -> {
 			try {
 				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 				for (int i = 0; i < data.length; i++) {
