@@ -177,34 +177,37 @@ public class PerceptronDisplayer extends GPanel {
 
 			}
 
-			g2.setPaint(new GradientPaint(0, 0,
-					new Color(LINES_COLOR.getRed(), LINES_COLOR.getGreen(), LINES_COLOR.getBlue(), 0),
-					this.getWidth() / (nerveWeb.length * 2), 0, LINES_COLOR, true));
+			if (nerveWeb.length != 0) {
+				g2.setPaint(new GradientPaint(0, 0,
+						new Color(LINES_COLOR.getRed(), LINES_COLOR.getGreen(), LINES_COLOR.getBlue(), 0),
+						this.getWidth() / (nerveWeb.length * 2), 0, LINES_COLOR, true));
 
-			for (int j = 0; j < nerveWeb[0] && j < this.inputCount; j++) {
+				for (int j = 0; j < nerveWeb[0] && j < this.inputCount; j++) {
 
-				float w1 = (float) this.getWidth() / (float) nerveWeb.length;
-				float h1 = (float) this.getHeight() / (float) nerveWeb[0];
+					float w1 = (float) this.getWidth() / (float) nerveWeb.length;
+					float h1 = (float) this.getHeight() / (float) nerveWeb[0];
 
-				Point firstPoint = new Point((int) ((w1 * 0 + w1 * (0 + 1)) / 2), (int) ((h1 * j + h1 * (j + 1)) / 2));
+					Point firstPoint = new Point((int) ((w1 * 0 + w1 * (0 + 1)) / 2),
+							(int) ((h1 * j + h1 * (j + 1)) / 2));
 
-				Point secondPoint = new Point(2, firstPoint.y);
+					Point secondPoint = new Point(2, firstPoint.y);
 
-				g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
-			}
+					g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
+				}
 
-			for (int j = 0; j < nerveWeb[nerveWeb.length - 1]; j++) {
+				for (int j = 0; j < nerveWeb[nerveWeb.length - 1]; j++) {
 
-				float w1 = (float) this.getWidth() / (float) nerveWeb.length;
-				float h1 = (float) this.getHeight() / (float) nerveWeb[(nerveWeb.length - 1)];
+					float w1 = (float) this.getWidth() / (float) nerveWeb.length;
+					float h1 = (float) this.getHeight() / (float) nerveWeb[(nerveWeb.length - 1)];
 
-				Point firstPoint = new Point(
-						(int) ((w1 * (nerveWeb.length - 1) + w1 * ((nerveWeb.length - 1) + 1)) / 2),
-						(int) ((h1 * j + h1 * (j + 1)) / 2));
+					Point firstPoint = new Point(
+							(int) ((w1 * (nerveWeb.length - 1) + w1 * ((nerveWeb.length - 1) + 1)) / 2),
+							(int) ((h1 * j + h1 * (j + 1)) / 2));
 
-				Point secondPoint = new Point(this.getWidth() - 4, firstPoint.y);
+					Point secondPoint = new Point(this.getWidth() - 4, firstPoint.y);
 
-				g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
+					g2.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y);
+				}
 			}
 
 			g2.setPaint(LINES_COLOR);

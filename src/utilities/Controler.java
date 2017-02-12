@@ -4,12 +4,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
@@ -144,8 +141,10 @@ public class Controler implements WindowListener, LearningStateListener {
 				per = new Perceptron(new DataAssociator(file));
 				perceptronModified();
 				updateMode();
-			} catch (Exception e2) {
-				e2.printStackTrace();
+			} catch (Exception e) {
+				if(Starter.printStackTraces) {
+					e.printStackTrace();
+				}
 				new ErrorInFilePopup();
 			}
 		});
@@ -158,11 +157,13 @@ public class Controler implements WindowListener, LearningStateListener {
 	public void loadCsv() {
 		Starter.selectFileAndPerforme(frame, (file) -> {
 			try {
-				data = getData(file);
+				data = Starter.getData(file);
 				results = null;
 				updateMode();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				if(Starter.printStackTraces) {
+					e.printStackTrace();
+				}
 				new ErrorInFilePopup();
 			}
 		});
@@ -221,55 +222,6 @@ public class Controler implements WindowListener, LearningStateListener {
 		new GDialog("About",
 				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Starter.version, 300,
 				200, true).setVisible(true);
-	}
-
-	private double[][] getData(File fil) throws IOException {
-
-		ArrayList<String> lineList = new ArrayList<String>();
-
-		BufferedReader br = new BufferedReader(new FileReader(fil));
-
-		String line = br.readLine();
-		while (line != null) {
-			lineList.add(line);
-			line = br.readLine();
-		}
-
-		br.close();
-
-		double[][] data = new double[lineList.size()][getDoubleTable(lineList.get(0)).length];
-
-		for (int i = 0; i < lineList.size(); i++) {
-
-			double[] lineData = getDoubleTable(lineList.get(i));
-
-			if (lineData.length == data[0].length) {
-				data[i] = lineData;
-			}
-		}
-
-		return data;
-	}
-
-	private double[] getDoubleTable(String str) {
-
-		int valuesCount = 1;
-		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == ';') {
-				valuesCount++;
-			}
-		}
-
-		double[] values = new double[valuesCount];
-
-		for (int i = 0; i < values.length - 1; i++) {
-			values[i] = Double.valueOf(str.substring(0, str.indexOf(';')));
-			str = str.substring(str.indexOf(';') + 1, str.length());
-		}
-
-		values[values.length - 1] = Double.valueOf(str);
-
-		return values;
 	}
 
 	public void incrementInputCount() {

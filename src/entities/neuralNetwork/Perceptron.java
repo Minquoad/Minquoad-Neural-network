@@ -16,8 +16,8 @@ public class Perceptron {
 	public Perceptron() {
 	}
 
-	public Perceptron(DataAssociator da) {
-		if (da.exists("inputCount") && da.exists("valid") && da.exists("layerCount")) {
+	public Perceptron(DataAssociator da) throws Exception {
+		if (da != null && da.exists("inputCount") && da.exists("valid") && da.exists("layerCount")) {
 			inputCount = da.getValueInt("inputCount");
 			valid = Boolean.parseBoolean(da.getValueString("valid"));
 
@@ -25,6 +25,8 @@ public class Perceptron {
 			for (int i = 0; i < layerCount; i++) {
 				layers.add(new Layer(da.getValueDataAssociator(i), this));
 			}
+		} else {
+			throw new Exception("DataAssociator does not contains the required feilds");
 		}
 	}
 
@@ -231,7 +233,11 @@ public class Perceptron {
 	}
 
 	public Perceptron duplicate() {
-		return new Perceptron(this.toDataAssociator());
+		try {
+			return new Perceptron(this.toDataAssociator());
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }
