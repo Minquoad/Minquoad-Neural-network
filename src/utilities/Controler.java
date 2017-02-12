@@ -76,7 +76,7 @@ public class Controler implements WindowListener, LearningStateListener {
 		if (mode == Mode.HAS_PROCEED) {
 			results = null;
 		}
-		
+
 		if (learner != null) {
 			mode = Mode.LEARNING;
 		} else if (data == null || !per.isValid()) {
