@@ -20,10 +20,10 @@ public class Frame extends GFrame {
 		this.addMenu("File");
 		this.addMenu("?");
 
-		JMenuItem loadPerMI = new JMenuItem("Load Perceptron");
-		JMenuItem savePerMI = new JMenuItem("Save Perceptron");
-		JMenuItem loadCsvMI = new JMenuItem("Load CSV");
-		saveCsvMI = new JMenuItem("Save CSV");
+		JMenuItem loadPerMI = new JMenuItem("Load a Perceptron");
+		JMenuItem savePerMI = new JMenuItem("Save this Perceptron");
+		JMenuItem loadCsvMI = new JMenuItem("Load a Table (CSV File)");
+		saveCsvMI = new JMenuItem("Export this Table (as CSV File)");
 		JMenuItem helpMI = new JMenuItem("Help");
 		JMenuItem aboutMI = new JMenuItem("About");
 

@@ -19,8 +19,8 @@ import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
 public class Starter {
 
-	public static final String version = "1.3.4";
-	public static final boolean printStackTraces = true;
+	public static final String version = "1.3.6";
+	public static final boolean printStackTraces = false;
 
 	public static final String def_dir = FileSystemView.getFileSystemView().getDefaultDirectory().toString()
 			+ "/Minquoad's Perceptron";
@@ -68,7 +68,8 @@ public class Starter {
 		}
 	}
 
-	public static void selectFileAndPerforme(Component parent, FileActionListener fileActionListener) {
+	public static void selectFileAndPerforme(Component parent, GChoixFichier.Mode mode,
+			FileActionListener fileActionListener) {
 		FileActionListener fileActionListenerThatSaveLastUsedPath = (file) -> {
 
 			fileActionListener.actionPerformed(file);
@@ -78,17 +79,13 @@ public class Starter {
 			da.save();
 		};
 
-		GChoixFichier.selectFileAndPerforme(parent, Starter.getSavedLastFolderLoaded(),
+		GChoixFichier.selectFileAndPerforme(parent, Starter.getSavedLastFolderLoaded(), mode,
 				fileActionListenerThatSaveLastUsedPath);
 	}
 
 	public static String getSavedLastFolderLoaded() {
 		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-		if (da.exists("lastFolderLoaded")) {
-			return da.getValueString("lastFolderLoaded");
-		} else {
-			return System.getProperty("user.dir");
-		}
+		return da.getValueString("lastFolderLoaded");
 	}
 
 	public static JTextPane getCenteredTextZone(String text) {
@@ -160,11 +157,10 @@ public class Starter {
 		} catch (Exception e) {
 			throw e;
 		}
-		
 
 		return values;
 	}
-	
+
 	public static double[][] getData(File fil) throws Exception {
 
 		ArrayList<String> lineList = new ArrayList<String>();
@@ -192,5 +188,5 @@ public class Starter {
 
 		return data;
 	}
-	
+
 }
