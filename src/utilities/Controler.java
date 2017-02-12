@@ -73,6 +73,10 @@ public class Controler implements WindowListener, LearningStateListener {
 
 	public synchronized void updateMode() {
 
+		if (mode == Mode.HAS_PROCEED) {
+			results = null;
+		}
+		
 		if (learner != null) {
 			mode = Mode.LEARNING;
 		} else if (data == null || !per.isValid()) {
@@ -91,10 +95,6 @@ public class Controler implements WindowListener, LearningStateListener {
 			else {
 				mode = Mode.NONE;
 			}
-		}
-
-		if (mode != Mode.HAS_PROCEED) {
-			results = null;
 		}
 
 		frame.enableCsvSaving(mode == Mode.HAS_PROCEED);
@@ -159,7 +159,6 @@ public class Controler implements WindowListener, LearningStateListener {
 		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
 			try {
 				data = Starter.getData(file);
-				results = null;
 				updateMode();
 			} catch (Exception e) {
 				if (Starter.printStackTraces) {
