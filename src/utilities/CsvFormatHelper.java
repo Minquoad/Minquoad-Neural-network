@@ -65,18 +65,23 @@ public abstract class CsvFormatHelper {
 
 		br.close();
 
-		double[][] data = new double[lineList.size()][CsvFormatHelper.getDoubleTable(lineList.get(0)).length];
+		if (lineList.isEmpty()) {
+			throw new Exception();
+		} else {
+			
+			double[][] data = new double[lineList.size()][CsvFormatHelper.getDoubleTable(lineList.get(0)).length];
 
-		for (int i = 0; i < lineList.size(); i++) {
+			for (int i = 0; i < lineList.size(); i++) {
 
-			double[] lineData = CsvFormatHelper.getDoubleTable(lineList.get(i));
+				double[] lineData = CsvFormatHelper.getDoubleTable(lineList.get(i));
 
-			if (lineData.length == data[0].length) {
-				data[i] = lineData;
+				if (lineData.length == data[0].length) {
+					data[i] = lineData;
+				}
 			}
-		}
 
-		return data;
+			return data;
+		}
 	}
 
 }

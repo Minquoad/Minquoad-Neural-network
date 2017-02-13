@@ -6,6 +6,9 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileSystemView;
@@ -16,7 +19,7 @@ import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
 public class Starter {
 
-	public static final String version = "1.3.7";
+	public static final String version = "1.4.0";
 	public static final boolean printCaughtExceptionStackTraces = false;
 
 	public static final String def_dir = FileSystemView.getFileSystemView().getDefaultDirectory().toString()
@@ -130,6 +133,23 @@ public class Starter {
 			}
 		}
 		return newTab;
+	}
+
+	public static double[][] randomizeSampleOrder(double[][] samples) {
+		double[][] randomizedSamples = new double[samples.length][samples[0].length];
+
+		List<double[]> sampleList = new LinkedList<double[]>();
+		for (double[] sample : samples) {
+			sampleList.add(sample);
+		}
+		Random rand = new Random();
+		for (int i = 0; i < randomizedSamples.length; i++) {
+			int j = rand.nextInt(sampleList.size());
+			randomizedSamples[i] = sampleList.get(j);
+			sampleList.remove(j);
+		}
+
+		return randomizedSamples;
 	}
 
 }
