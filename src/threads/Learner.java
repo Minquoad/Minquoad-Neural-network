@@ -35,46 +35,59 @@ public class Learner extends Thread {
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningStarted(this);
 		}
+
 		if (multiThreading == 1) {
 			leaningMonoThread();
 		} else {
-			leaningMultiThread(multiThreading);
+			leaningMultiThread();
 		}
+
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningEnded(this);
 		}
 	}
 
-	private void leaningMonoThread() {
+	private abstract class IterationPerformer {
 
-		ArrayList<Nerve> nerves = per.getAllNerve();
-
-		continueLearning &= iterations < maxIterations;
-		while (continueLearning) {
-
-			for (Nerve nerve : nerves) {
-
-				nerve.evolve();
-
-				double newMse = per.getMse(samples);
-
-				if (newMse < mse && Double.isFinite(newMse)) {
-					nerve.reactToProgression();
-					mse = newMse;
-				} else {
-					nerve.reactToRegression();
-				}
-
-			}
-
-			iterations++;
-
+		public IterationPerformer() {
 			continueLearning &= iterations < maxIterations;
+			while (continueLearning) {
+
+				performeIteration();
+
+				iterations++;
+				continueLearning &= iterations < maxIterations;
+			}
 		}
+
+		public abstract void performeIteration();
 	}
 
-	private void leaningMultiThread(int multiThreading) {
+	private void leaningMonoThread() {
+		ArrayList<Nerve> nerves = per.getAllNerve();
 
+		new IterationPerformer() {
+			@Override
+			public void performeIteration() {
+
+				for (Nerve nerve : nerves) {
+
+					nerve.evolve();
+
+					double newMse = per.getMse(samples);
+
+					if (newMse < mse && Double.isFinite(newMse)) {
+						nerve.reactToProgression();
+						mse = newMse;
+					} else {
+						nerve.reactToRegression();
+					}
+				}
+			}
+		};
+	}
+
+	private void leaningMultiThread() {
 		ArrayList<double[][]> samplesList = separatSamples(samples, multiThreading);
 
 		ArrayList<Perceptron> perceptronList = new ArrayList<Perceptron>();
@@ -88,54 +101,52 @@ public class Learner extends Thread {
 			nervesList.add(perceptronList.get(i).getAllNerve());
 		}
 
-		try {
+		new IterationPerformer() {
+			@Override
+			public void performeIteration() {
+				try {
 
-			continueLearning &= iterations < maxIterations;
-			while (continueLearning) {
+					for (int i = 0; i < nervesList.get(0).size(); i++) {
 
-				for (int i = 0; i < nervesList.get(0).size(); i++) {
-
-					for (int j = 0; j < multiThreading; j++) {
-						nervesList.get(j).get(i).evolve();
-					}
-					Thread[] treads = new Thread[multiThreading];
-					double[] treadMses = new double[multiThreading];
-
-					for (int j = 0; j < multiThreading; j++) {
-						final int k = j;
-						treads[j] = new Thread(() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
-						treads[j].start();
-					}
-
-					for (Thread thread : treads) {
-						thread.join();
-					}
-
-					double newMse = 0;
-					for (double treadMse : treadMses) {
-						newMse += treadMse;
-					}
-
-					if (newMse < mse && Double.isFinite(newMse)) {
 						for (int j = 0; j < multiThreading; j++) {
-							nervesList.get(j).get(i).reactToProgression();
+							nervesList.get(j).get(i).evolve();
 						}
-						mse = newMse;
-					} else {
+						Thread[] treads = new Thread[multiThreading];
+						double[] treadMses = new double[multiThreading];
+
 						for (int j = 0; j < multiThreading; j++) {
-							nervesList.get(j).get(i).reactToRegression();
+							final int k = j;
+							treads[j] = new Thread(
+									() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
+							treads[j].start();
+						}
+
+						for (Thread thread : treads) {
+							thread.join();
+						}
+
+						double newMse = 0;
+						for (double treadMse : treadMses) {
+							newMse += treadMse;
+						}
+
+						if (newMse < mse && Double.isFinite(newMse)) {
+							for (int j = 0; j < multiThreading; j++) {
+								nervesList.get(j).get(i).reactToProgression();
+							}
+							mse = newMse;
+						} else {
+							for (int j = 0; j < multiThreading; j++) {
+								nervesList.get(j).get(i).reactToRegression();
+							}
 						}
 					}
+
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-
-				iterations++;
-
-				continueLearning &= iterations < maxIterations;
 			}
-
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		};
 	}
 
 	private static ArrayList<double[][]> separatSamples(double[][] samples, int tableCount) {
@@ -198,6 +209,7 @@ public class Learner extends Thread {
 
 	public interface LearningStateListener {
 		public void learningStarted(Learner source);
+
 		public void learningEnded(Learner source);
 	}
 
