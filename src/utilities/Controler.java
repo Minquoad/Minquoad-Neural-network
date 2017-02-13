@@ -53,10 +53,8 @@ public class Controler {
 	private ProcessingPanel processingPan = new ProcessingPanel(this);
 
 	public Controler() {
-		per = new Perceptron();
-		per.setInputCount(0);
-		per.addLayer(new Layer(per));
-		per.addLayer(new Layer(per));
+		this.addLayer(0);
+		this.addLayer(0);
 
 		frame.setContentPane(mainPan);
 		mainPan.setPerceptronEditingPan(perceptronEditingPan);
@@ -67,13 +65,6 @@ public class Controler {
 		perceptronEditingPan.regen(per);
 
 		frame.setVisible(true);
-	}
-
-	public void perceptronModified() {
-		perceptronEditingPan.regen(per);
-		perceptronDisplayer.setPerceptron(per);
-
-		mainPan.repaint();
 	}
 
 	public synchronized void updateMode() {
@@ -140,6 +131,13 @@ public class Controler {
 		mainPan.repaint();
 	}
 
+	public void perceptronModified() {
+		perceptronEditingPan.regen(per);
+		perceptronDisplayer.setPerceptron(per);
+
+		mainPan.repaint();
+	}
+
 	public void loadPer() {
 
 		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
@@ -188,7 +186,7 @@ public class Controler {
 		perceptronModified();
 	}
 
-	public void validatePerceptron() {
+	public void togglePerceptronValidation() {
 		if (per.isValid()) {
 			per.invalidate();
 		} else {
@@ -345,7 +343,7 @@ public class Controler {
 	}
 
 	public void addLayer(int layer) {
-		per.addLayer(layer + 1, new Layer(per));
+		per.addLayer(layer, new Layer(per));
 
 		this.perceptronModified();
 	}

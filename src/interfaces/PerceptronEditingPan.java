@@ -50,7 +50,7 @@ public class PerceptronEditingPan extends GPanel {
 
 		addInputButton.addActionListener((e) -> controler.incrementInputCount());
 		removeInputButton.addActionListener((e) -> controler.decrementInputCount());
-		validateButton.addActionListener((e) -> controler.validatePerceptron());
+		validateButton.addActionListener((e) -> controler.togglePerceptronValidation());
 		resetButton.addActionListener((e) -> controler.resetPerceptron());
 	}
 
@@ -132,7 +132,7 @@ public class PerceptronEditingPan extends GPanel {
 											+ addLayerButtonWidth / layerCount / 2,
 									0, addLayerButtonWidth / layerCount, 1000);
 
-					addLayer.addActionListener(e -> controler.addLayer(j));
+					addLayer.addActionListener(e -> controler.addLayer(j+1));
 				}
 
 				JButton removeLayer = new JButton("L--");
