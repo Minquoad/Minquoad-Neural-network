@@ -1,5 +1,7 @@
 package interfaces;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 
 import javax.swing.JMenuItem;
@@ -8,7 +10,9 @@ import gClasses.gInterfaces.GFrame;
 import utilities.Controler;
 import utilities.Starter;
 
-public class Frame extends GFrame {
+public class Frame extends GFrame implements WindowListener {
+
+	private Controler controler;
 
 	private JMenuItem saveCsvMI;
 	private boolean learning = false;
@@ -16,6 +20,8 @@ public class Frame extends GFrame {
 	public Frame(Controler controler) {
 		super("Minquoad's Neurons", 930, 670, "resources/pictures/icon.png",
 				new File(Starter.def_dir + "/Frame Preferences"));
+
+		this.controler = controler;
 
 		this.addMenu("File");
 		this.addMenu("?");
@@ -44,6 +50,12 @@ public class Frame extends GFrame {
 		this.getMenu("?").add(helpMI);
 		this.getMenu("?").add(aboutMI);
 
+		this.addWindowListener(this);
+	}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) {
+		controler.savePreferences();
 	}
 
 	public void enableCsvSaving(boolean b) {
@@ -55,6 +67,30 @@ public class Frame extends GFrame {
 			this.learning = learning;
 			this.getMenu("File").setEnabled(!learning);
 		}
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {
+	}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
 	}
 
 }

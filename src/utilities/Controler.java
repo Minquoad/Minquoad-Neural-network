@@ -1,11 +1,6 @@
 package utilities;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import entities.neuralNetwork.Layer;
@@ -26,7 +21,7 @@ import threads.Learner;
 import threads.Learner.LearningStateListener;
 import threads.LearnerObserver;
 
-public class Controler implements WindowListener, LearningStateListener {
+public class Controler {
 
 	// repository
 	private Perceptron per = new Perceptron();
@@ -36,6 +31,10 @@ public class Controler implements WindowListener, LearningStateListener {
 
 	// meta
 	private Mode mode = Mode.NONE;
+
+	public enum Mode {
+		NONE, WILL_LEARN, LEARNING, WILL_PROCEED, HAS_PROCEED;
+	}
 
 	// grapicals
 	private Frame frame = new Frame(this);
@@ -60,7 +59,6 @@ public class Controler implements WindowListener, LearningStateListener {
 		perceptronDisplayer.setPerceptron(per);
 		perceptronEditingPan.regen(per);
 
-		frame.addWindowListener(this);
 		frame.setVisible(true);
 	}
 
@@ -143,7 +141,7 @@ public class Controler implements WindowListener, LearningStateListener {
 				perceptronModified();
 				updateMode();
 			} catch (Exception e) {
-				if (Starter.printStackTraces) {
+				if (Starter.printCaughtExceptionStackTraces) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -158,10 +156,10 @@ public class Controler implements WindowListener, LearningStateListener {
 	public void loadCsv() {
 		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
 			try {
-				data = Starter.getData(file);
+				data = CsvFormatHelper.getData(file);
 				updateMode();
 			} catch (Exception e) {
-				if (Starter.printStackTraces) {
+				if (Starter.printCaughtExceptionStackTraces) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -170,32 +168,8 @@ public class Controler implements WindowListener, LearningStateListener {
 	}
 
 	public void saveCsv() {
-		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING, (file) -> {
-			try {
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-				for (int i = 0; i < data.length; i++) {
-					for (int j = 0; j < data[i].length; j++) {
-						bos.write(Double.toString(data[i][j]).getBytes());
-						if (j != data[i].length - 1) {
-							bos.write(";".getBytes());
-						}
-					}
-					bos.write(";".getBytes());
-					for (int j = 0; j < results[i].length; j++) {
-						bos.write(Double.toString(results[i][j]).getBytes());
-						if (j != results[i].length - 1) {
-							bos.write(";".getBytes());
-						}
-					}
-					if (i != data.length - 1) {
-						bos.write("\n".getBytes());
-					}
-				}
-				bos.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		});
+		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
+				(file) -> CsvFormatHelper.save(file, Starter.concatLineByLine(data, results)));
 	}
 
 	public void resetPerceptron() {
@@ -257,7 +231,16 @@ public class Controler implements WindowListener, LearningStateListener {
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 
-		learner.addLearningStateListener(this);
+		learner.addLearningStateListener(new LearningStateListener() {
+			@Override
+			public void learningStarted(Learner source) {
+			}
+
+			@Override
+			public void learningEnded(Learner source) {
+				Controler.this.learningEnded();
+			}
+		});
 
 		new LearnerObserver(this, learner);
 
@@ -266,8 +249,7 @@ public class Controler implements WindowListener, LearningStateListener {
 		updateMode();
 	}
 
-	@Override
-	public void learningEnded(Learner source) {
+	public void learningEnded() {
 		this.learner = null;
 		updateMode();
 	}
@@ -287,6 +269,10 @@ public class Controler implements WindowListener, LearningStateListener {
 		this.learningPan.appendText(str);
 	}
 
+	public void savePreferences() {
+		PreferencesHelper.savePreferences(learningPan.getMaxIter(), learningPan.getMultiThreading());
+	}
+
 	public void help() {
 		try {
 
@@ -300,48 +286,6 @@ public class Controler implements WindowListener, LearningStateListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void windowClosing(WindowEvent arg0) {
-		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-
-		da.setValue("maxIter", learningPan.getMaxIter());
-		da.setValue("multiThreading", learningPan.getMultiThreading());
-
-		da.save();
-	}
-
-	public enum Mode {
-		NONE, WILL_LEARN, LEARNING, WILL_PROCEED, HAS_PROCEED;
-	}
-
-	@Override
-	public void learningStarted(Learner source) {
-	}
-
-	@Override
-	public void windowActivated(WindowEvent arg0) {
-	}
-
-	@Override
-	public void windowClosed(WindowEvent arg0) {
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent arg0) {
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent arg0) {
-	}
-
-	@Override
-	public void windowIconified(WindowEvent arg0) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent arg0) {
 	}
 
 }

@@ -13,6 +13,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import utilities.Controler;
+import utilities.PreferencesHelper;
 import utilities.Starter;
 
 public class LearningPanel extends ModPanel {
@@ -33,8 +34,8 @@ public class LearningPanel extends ModPanel {
 
 		int cores = Runtime.getRuntime().availableProcessors();
 
-		maxIter = Starter.getSavedIter();
-		multiThreading = Math.min(Starter.getSavedMultiThreading(), cores);
+		maxIter = PreferencesHelper.getSavedIter();
+		multiThreading = Math.min(PreferencesHelper.getSavedMultiThreading(), cores);
 
 		JTextPane maxIterLabel = Starter.getCenteredTextZone("Max iterations : " + maxIter);
 		maxIterSlider = new JSlider(0, 1000, (int) (10d * Math.pow(maxIter, 1d / 2)));

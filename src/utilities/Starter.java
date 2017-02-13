@@ -5,10 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
 
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileSystemView;
@@ -19,8 +16,8 @@ import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
 public class Starter {
 
-	public static final String version = "1.3.6";
-	public static final boolean printStackTraces = false;
+	public static final String version = "1.3.7";
+	public static final boolean printCaughtExceptionStackTraces = false;
 
 	public static final String def_dir = FileSystemView.getFileSystemView().getDefaultDirectory().toString()
 			+ "/Minquoad's Perceptron";
@@ -32,15 +29,19 @@ public class Starter {
 			file.mkdir();
 		}
 
-		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-
 		boolean firstRunning = false;
 
-		if (!da.exists("version") || (da.exists("version") && !da.getValueString("version").equals(version))) {
-			da.resetData();
-			firstRunning = true;
-			da.setValue("version", version);
-			da.save();
+		try {
+			DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
+
+			if (!da.exists("version") || (da.exists("version") && !da.getValueString("version").equals(version))) {
+				da.resetData();
+				firstRunning = true;
+				da.setValue("version", version);
+				da.save();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		Controler controler = new Controler();
@@ -50,42 +51,23 @@ public class Starter {
 		}
 	}
 
-	public static int getSavedIter() {
-		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-		if (da.exists("maxIter")) {
-			return da.getValueInt("maxIter");
-		} else {
-			return 1;
-		}
-	}
-
-	public static int getSavedMultiThreading() {
-		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-		if (da.exists("multiThreading")) {
-			return da.getValueInt("multiThreading");
-		} else {
-			return 1;
-		}
-	}
-
 	public static void selectFileAndPerforme(Component parent, GChoixFichier.Mode mode,
 			FileActionListener fileActionListener) {
 		FileActionListener fileActionListenerThatSaveLastUsedPath = (file) -> {
 
 			fileActionListener.actionPerformed(file);
 
-			DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-			da.setValue("lastFolderLoaded", file.getPath());
-			da.save();
+			try {
+				DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
+				da.setValue("lastFolderLoaded", file.getPath());
+				da.save();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		};
 
-		GChoixFichier.selectFileAndPerforme(parent, Starter.getSavedLastFolderLoaded(), mode,
+		GChoixFichier.selectFileAndPerforme(parent, PreferencesHelper.getSavedLastFolderLoaded(), mode,
 				fileActionListenerThatSaveLastUsedPath);
-	}
-
-	public static String getSavedLastFolderLoaded() {
-		DataAssociator da = new DataAssociator(new File(Starter.def_dir + "/preferences"));
-		return da.getValueString("lastFolderLoaded");
 	}
 
 	public static JTextPane getCenteredTextZone(String text) {
@@ -137,56 +119,17 @@ public class Starter {
 		return ret;
 	}
 
-	public static double[] getDoubleTable(String str) throws Exception {
-
-		int valuesCount = 1;
-		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == ';') {
-				valuesCount++;
+	public static double[][] concatLineByLine(double[][] table0, double[][] table1) {
+		double[][] newTab = new double[table0.length][table0[0].length + table1[0].length];
+		for (int i = 0; i < newTab.length; i++) {
+			for (int j = 0; j < table0[0].length; j++) {
+				newTab[i][j] = table0[i][j];
+			}
+			for (int j = 0; j < table1.length; j++) {
+				newTab[i][j + table0[0].length] = table1[i][j];
 			}
 		}
-
-		double[] values = new double[valuesCount];
-
-		for (int i = 0; i < values.length - 1; i++) {
-			values[i] = Double.valueOf(str.substring(0, str.indexOf(';')));
-			str = str.substring(str.indexOf(';') + 1, str.length());
-		}
-		try {
-			values[values.length - 1] = Double.valueOf(str);
-		} catch (Exception e) {
-			throw e;
-		}
-
-		return values;
-	}
-
-	public static double[][] getData(File fil) throws Exception {
-
-		ArrayList<String> lineList = new ArrayList<String>();
-
-		BufferedReader br = new BufferedReader(new FileReader(fil));
-
-		String line = br.readLine();
-		while (line != null) {
-			lineList.add(line);
-			line = br.readLine();
-		}
-
-		br.close();
-
-		double[][] data = new double[lineList.size()][Starter.getDoubleTable(lineList.get(0)).length];
-
-		for (int i = 0; i < lineList.size(); i++) {
-
-			double[] lineData = Starter.getDoubleTable(lineList.get(i));
-
-			if (lineData.length == data[0].length) {
-				data[i] = lineData;
-			}
-		}
-
-		return data;
+		return newTab;
 	}
 
 }
