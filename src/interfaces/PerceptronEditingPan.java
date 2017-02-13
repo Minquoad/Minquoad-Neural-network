@@ -6,14 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 
-import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
-import entities.neuralNetwork.neurons.BlankNeuron;
-import entities.neuralNetwork.neurons.ExpNeuron;
-import entities.neuralNetwork.neurons.LnNeuron;
-import entities.neuralNetwork.neurons.Neuron;
-import entities.neuralNetwork.neurons.PeriodicNeuron;
-import entities.neuralNetwork.neurons.SigNeuron;
 import gClasses.gInterfaces.GPanel;
 import utilities.Controler;
 import utilities.Starter;
@@ -109,29 +102,7 @@ public class PerceptronEditingPan extends GPanel {
 				}
 				final int j = i;
 
-				addNeuron.addActionListener((e) -> {
-					if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.CONSANT || j == 0)
-						per.getLayer(j).addNeuron(new BlankNeuron(per));
-					else if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.LINEARE)
-						per.getLayer(j).addNeuron(new Neuron(per));
-					else if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.SIGMOID)
-						per.getLayer(j).addNeuron(new SigNeuron(per));
-					else if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.LOGARITHMIC)
-						per.getLayer(j).addNeuron(new LnNeuron(per));
-					else if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.EXPONENTIAL)
-						per.getLayer(j).addNeuron(new ExpNeuron(per));
-					else if (neuTypSel.getSelectedType() == NeuronTypeSelecter.Type.SINUSOIDAL) {
-						per.getLayer(j).addNeuron(new PeriodicNeuron(per));
-					}
-
-					if (j == 0) {
-						per.setInputCount(per.getInputCount() + 1);
-					}
-
-					removeNeuron.setEnabled(true);
-
-					controler.perceptronModified();
-				});
+				addNeuron.addActionListener(e -> controler.addNeuron(neuTypSel.getSelectedType(), j));
 
 				if (j == 0) {
 					perceptronAdaptablePan.add(removeNeuron, 1000 * j / layerCount, 333,
@@ -147,23 +118,7 @@ public class PerceptronEditingPan extends GPanel {
 							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 333,
 							1000 / layerCount - addLayerButtonWidth / layerCount, 333);
 				}
-				removeNeuron.addActionListener((e) -> {
-					int neuronCountInLayer = per.getLayer(j).getNeuroneCount();
-					if (neuronCountInLayer != 0) {
-						per.getLayer(j).removeNeuron(neuronCountInLayer - 1);
-
-						if (j == 0) {
-							per.setInputCount(Math.max(per.getInputCount(), 1));
-							per.setInputCount(Math.min(per.getInputCount(), per.getLayer(0).getNeuroneCount()));
-						}
-						if ((j == 0 && per.getLayer(0).getNeuroneCount() == 1)
-								|| per.getLayer(j).getNeuroneCount() == 0) {
-							removeNeuron.setEnabled(false);
-						}
-					}
-
-					controler.perceptronModified();
-				});
+				removeNeuron.addActionListener(e -> controler.removeNeuron(j));
 
 				if (per.getLayer(j).getNeuroneCount() == 0) {
 					removeNeuron.setEnabled(false);
@@ -177,10 +132,7 @@ public class PerceptronEditingPan extends GPanel {
 											+ addLayerButtonWidth / layerCount / 2,
 									0, addLayerButtonWidth / layerCount, 1000);
 
-					addLayer.addActionListener((e) -> {
-						per.addLayer(j + 1, new Layer(per));
-						controler.perceptronModified();
-					});
+					addLayer.addActionListener(e -> controler.addLayer(j));
 				}
 
 				JButton removeLayer = new JButton("L--");
@@ -199,10 +151,7 @@ public class PerceptronEditingPan extends GPanel {
 							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 666,
 							1000 / layerCount - addLayerButtonWidth / layerCount, 333);
 				}
-				removeLayer.addActionListener((e) -> {
-					per.removeLayer(j);
-					controler.perceptronModified();
-				});
+				removeLayer.addActionListener(e -> controler.removeLayer(j));
 				if (j == 0 || j == layerCount - 1) {
 					removeLayer.setEnabled(false);
 				}

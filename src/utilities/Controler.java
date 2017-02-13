@@ -5,6 +5,12 @@ import java.io.IOException;
 
 import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
+import entities.neuralNetwork.neurons.BlankNeuron;
+import entities.neuralNetwork.neurons.ExpNeuron;
+import entities.neuralNetwork.neurons.LnNeuron;
+import entities.neuralNetwork.neurons.Neuron;
+import entities.neuralNetwork.neurons.PeriodicNeuron;
+import entities.neuralNetwork.neurons.SigNeuron;
 import gClasses.DataAssociator;
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GChoixFichier;
@@ -13,6 +19,7 @@ import interfaces.DataPan;
 import interfaces.ErrorInFilePopup;
 import interfaces.Frame;
 import interfaces.MainPan;
+import interfaces.NeuronTypeSelecter;
 import interfaces.PerceptronDisplayer;
 import interfaces.PerceptronEditingPan;
 import interfaces.modPanel.LearningPanel;
@@ -286,6 +293,67 @@ public class Controler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void addNeuron(NeuronTypeSelecter.Type type, int layer) {
+
+		if (layer == 0) {
+			per.getLayer(layer).addNeuron(new BlankNeuron(per));
+			this.incrementInputCount();
+		} else {
+			Neuron newNeuron = null;
+			switch (type) {
+			case CONSANT:
+				newNeuron = new BlankNeuron(per);
+				break;
+			case LINEARE:
+				newNeuron = new Neuron(per);
+				break;
+			case SIGMOID:
+				newNeuron = new SigNeuron(per);
+				break;
+			case LOGARITHMIC:
+				newNeuron = new LnNeuron(per);
+				break;
+			case EXPONENTIAL:
+				newNeuron = new ExpNeuron(per);
+				break;
+			case SINUSOIDAL:
+				newNeuron = new PeriodicNeuron(per);
+				break;
+			default:
+				break;
+			}
+			per.getLayer(layer).addNeuron(newNeuron);
+		}
+
+		this.perceptronModified();
+	}
+
+	public void removeNeuron(int layer) {
+		int neuronCountInLayer = per.getLayer(layer).getNeuroneCount();
+		if (neuronCountInLayer != 0) {
+			per.getLayer(layer).removeNeuron(neuronCountInLayer - 1);
+
+			if (layer == 0) {
+				per.setInputCount(Math.max(per.getInputCount(), 1));
+				per.setInputCount(Math.min(per.getInputCount(), per.getLayer(0).getNeuroneCount()));
+			}
+		}
+
+		this.perceptronModified();
+	}
+
+	public void addLayer(int layer) {
+		per.addLayer(layer + 1, new Layer(per));
+
+		this.perceptronModified();
+	}
+
+	public void removeLayer(int layer) {
+		per.removeLayer(layer);
+
+		this.perceptronModified();
 	}
 
 }
