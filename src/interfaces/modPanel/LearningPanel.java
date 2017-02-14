@@ -18,6 +18,9 @@ import utilities.Starter;
 
 public class LearningPanel extends ModPanel {
 
+	private final int maxMaxIter = 10_000;
+	private final double sliderprecision = 20;
+
 	private int maxIter;
 	private int multiThreading;
 
@@ -34,22 +37,30 @@ public class LearningPanel extends ModPanel {
 
 		int cores = Runtime.getRuntime().availableProcessors();
 
-		maxIter = PreferencesHelper.getSavedIter();
+		maxIter = Math.min(PreferencesHelper.getSavedIter(), maxMaxIter);
 		multiThreading = Math.min(PreferencesHelper.getSavedMultiThreading(), cores);
 
 		JTextPane maxIterLabel = Starter.getCenteredTextZone("Max iterations : " + maxIter);
-		int sliderprecision = 8;
-		double sliderPower = Math.pow(100d, 1d/(6d*(double)sliderprecision));
-		int maxMaxIter = 10000;
-		int sliderValue = -1;
+
+		double sliderPower = Math.pow(10d, 1d / sliderprecision);
+
+		double sliderValue = -1;
 		if (maxIter != 0) {
-			sliderValue = (int) (Math.log(maxIter) / Math.log(sliderPower));
+			sliderValue = Math.log(maxIter) / Math.log(sliderPower);
 		}
-		maxIterSlider = new JSlider(-1, (int)(Math.log(maxMaxIter)/Math.log(sliderPower)), sliderValue);
+		double sliderMaxValue = Math.log(maxMaxIter) / Math.log(sliderPower);
+
+		maxIterSlider = new JSlider(-1, (int) (0.5d + sliderMaxValue), (int) (0.5d + sliderValue));
 		maxIterSlider.setOpaque(false);
 		maxIterSlider.addChangeListener((e) -> {
-			System.out.println(maxIterSlider.getValue());
-			maxIter = (int) Math.pow(sliderPower, (double) (maxIterSlider.getValue()));
+
+			int value = maxIterSlider.getValue();
+			if (value == -1) {
+				maxIter = 0;
+			} else {
+				maxIter = (int) (0.5d + Math.pow(sliderPower, (double) value));
+			}
+
 			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
 					+ "Max iterations : " + maxIter + "</body>");
 		});
@@ -82,7 +93,7 @@ public class LearningPanel extends ModPanel {
 
 		maxIterLabel.setPreferredSize(new Dimension(160, 26));
 		this.add(maxIterLabel, 0, 0);
-		maxIterSlider.setPreferredSize(new Dimension(160, 26));
+		maxIterSlider.setPreferredSize(new Dimension(280, 26));
 		this.addToRight(maxIterSlider, maxIterLabel, 8);
 		multiThreadingLabel.setPreferredSize(new Dimension(160, 26));
 		this.addToBottom(multiThreadingLabel, maxIterLabel, 8);
