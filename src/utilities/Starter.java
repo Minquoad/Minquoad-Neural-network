@@ -19,7 +19,7 @@ import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
 public class Starter {
 
-	public static final String version = "1.4.0";
+	public static final String version = "1.4.3";
 	public static final boolean printCaughtExceptionStackTraces = false;
 
 	public static final String def_dir = FileSystemView.getFileSystemView().getDefaultDirectory().toString()

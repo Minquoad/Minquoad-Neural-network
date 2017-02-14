@@ -38,10 +38,18 @@ public class LearningPanel extends ModPanel {
 		multiThreading = Math.min(PreferencesHelper.getSavedMultiThreading(), cores);
 
 		JTextPane maxIterLabel = Starter.getCenteredTextZone("Max iterations : " + maxIter);
-		maxIterSlider = new JSlider(0, 1000, (int) (10d * Math.pow(maxIter, 1d / 2)));
+		int sliderprecision = 8;
+		double sliderPower = Math.pow(100d, 1d/(6d*(double)sliderprecision));
+		int maxMaxIter = 10000;
+		int sliderValue = -1;
+		if (maxIter != 0) {
+			sliderValue = (int) (Math.log(maxIter) / Math.log(sliderPower));
+		}
+		maxIterSlider = new JSlider(-1, (int)(Math.log(maxMaxIter)/Math.log(sliderPower)), sliderValue);
 		maxIterSlider.setOpaque(false);
 		maxIterSlider.addChangeListener((e) -> {
-			maxIter = (int) Math.pow((double) (maxIterSlider.getValue()) / 10d, 2);
+			System.out.println(maxIterSlider.getValue());
+			maxIter = (int) Math.pow(sliderPower, (double) (maxIterSlider.getValue()));
 			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
 					+ "Max iterations : " + maxIter + "</body>");
 		});

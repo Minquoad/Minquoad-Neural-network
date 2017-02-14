@@ -47,44 +47,42 @@ public class Learner extends Thread {
 		}
 	}
 
-	private abstract class IterationPerformer {
-
-		public IterationPerformer() {
-			continueLearning &= iterations < maxIterations;
-			while (continueLearning) {
-
-				performeIteration();
-
-				iterations++;
-				continueLearning &= iterations < maxIterations;
-			}
-		}
-
+	private interface IterationPerformer {
 		public abstract void performeIteration();
 	}
 
+	private void iterate(IterationPerformer iterationPerformer) {
+		continueLearning &= iterations < maxIterations;
+		while (continueLearning) {
+
+			iterationPerformer.performeIteration();
+
+			iterations++;
+			continueLearning &= iterations < maxIterations;
+		}
+	}
+	
 	private void leaningMonoThread() {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
-		new IterationPerformer() {
-			@Override
-			public void performeIteration() {
+		this.iterate(() -> {
+			
+			for (Nerve nerve : nerves) {
 
-				for (Nerve nerve : nerves) {
+				nerve.evolve();
 
-					nerve.evolve();
+				double newMse = per.getMse(samples);
 
-					double newMse = per.getMse(samples);
-
-					if (newMse < mse && Double.isFinite(newMse)) {
-						nerve.reactToProgression();
-						mse = newMse;
-					} else {
-						nerve.reactToRegression();
-					}
+				if (newMse < mse && Double.isFinite(newMse)) {
+					nerve.reactToProgression();
+					mse = newMse;
+				} else {
+					nerve.reactToRegression();
 				}
 			}
-		};
+			
+		});
+		
 	}
 
 	private void leaningMultiThread() {
@@ -101,52 +99,49 @@ public class Learner extends Thread {
 			nervesList.add(perceptronList.get(i).getAllNerve());
 		}
 
-		new IterationPerformer() {
-			@Override
-			public void performeIteration() {
-				try {
+		this.iterate(() -> {
+			
+			try {
+				for (int i = 0; i < nervesList.get(0).size(); i++) {
 
-					for (int i = 0; i < nervesList.get(0).size(); i++) {
+					for (int j = 0; j < multiThreading; j++) {
+						nervesList.get(j).get(i).evolve();
+					}
+					Thread[] treads = new Thread[multiThreading];
+					double[] treadMses = new double[multiThreading];
 
-						for (int j = 0; j < multiThreading; j++) {
-							nervesList.get(j).get(i).evolve();
-						}
-						Thread[] treads = new Thread[multiThreading];
-						double[] treadMses = new double[multiThreading];
-
-						for (int j = 0; j < multiThreading; j++) {
-							final int k = j;
-							treads[j] = new Thread(
-									() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
-							treads[j].start();
-						}
-
-						for (Thread thread : treads) {
-							thread.join();
-						}
-
-						double newMse = 0;
-						for (double treadMse : treadMses) {
-							newMse += treadMse;
-						}
-
-						if (newMse < mse && Double.isFinite(newMse)) {
-							for (int j = 0; j < multiThreading; j++) {
-								nervesList.get(j).get(i).reactToProgression();
-							}
-							mse = newMse;
-						} else {
-							for (int j = 0; j < multiThreading; j++) {
-								nervesList.get(j).get(i).reactToRegression();
-							}
-						}
+					for (int j = 0; j < multiThreading; j++) {
+						final int k = j;
+						treads[j] = new Thread(
+								() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
+						treads[j].start();
 					}
 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					for (Thread thread : treads) {
+						thread.join();
+					}
+
+					double newMse = 0;
+					for (double treadMse : treadMses) {
+						newMse += treadMse;
+					}
+
+					if (newMse < mse && Double.isFinite(newMse)) {
+						for (int j = 0; j < multiThreading; j++) {
+							nervesList.get(j).get(i).reactToProgression();
+						}
+						mse = newMse;
+					} else {
+						for (int j = 0; j < multiThreading; j++) {
+							nervesList.get(j).get(i).reactToRegression();
+						}
+					}
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		};
+			
+		});
 	}
 
 	private static ArrayList<double[][]> separatSamples(double[][] samples, int tableCount) {
