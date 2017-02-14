@@ -53,17 +53,13 @@ public class Controler {
 	private ProcessingPanel processingPan = new ProcessingPanel(this);
 
 	public Controler() {
-		this.addLayer(0);
-		this.addLayer(0);
-
 		frame.setContentPane(mainPan);
 		mainPan.setPerceptronEditingPan(perceptronEditingPan);
 		mainPan.setDataPan(dataPan);
 		mainPan.setPerceptronDisplayer(perceptronDisplayer);
 
-		perceptronDisplayer.setPerceptron(per);
-		perceptronEditingPan.regen(per);
-
+		this.resetPerceptron();
+		
 		frame.setVisible(true);
 	}
 

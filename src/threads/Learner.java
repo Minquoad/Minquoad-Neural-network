@@ -20,7 +20,6 @@ public class Learner extends Thread {
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
 	public Learner(Perceptron per, double[][] samples) {
-
 		this.per = per;
 		this.samples = samples;
 
@@ -52,6 +51,7 @@ public class Learner extends Thread {
 	}
 
 	private void iterate(IterationPerformer iterationPerformer) {
+
 		continueLearning &= iterations < maxIterations;
 		while (continueLearning) {
 
@@ -60,6 +60,7 @@ public class Learner extends Thread {
 			iterations++;
 			continueLearning &= iterations < maxIterations;
 		}
+		
 	}
 	
 	private void leaningMonoThread() {
