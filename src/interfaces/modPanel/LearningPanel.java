@@ -24,6 +24,7 @@ public class LearningPanel extends ModPanel {
 
 	private final int MAX_MAX_ITER = 10_000;
 	private final double SLIDER_PRECISION = 20;
+	private final long SLIDER_BUTTON_SPEED = 32;
 
 	private int maxIter;
 	private int multiThreading;
@@ -121,6 +122,49 @@ public class LearningPanel extends ModPanel {
 
 			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
 					+ "Max iterations : " + maxIter + "</body>");
+
+		});
+		increaseMaxIter.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new Thread(() -> {
+					try {
+						Thread.sleep(750);
+						while (increaseMaxIter.getModel().isPressed() && maxIter != MAX_MAX_ITER) {
+							maxIter++;
+							double newSliderValue = Math.log(maxIter) / Math.log(sliderPower);
+							maxIterSlider.setValue((int) (0.5d + newSliderValue));
+							increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
+							decreaseMaxIter.setEnabled(maxIter != 0);
+
+							maxIterLabel.setText(
+									"<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
+											+ "Max iterations : " + maxIter + "</body>");
+
+							Thread.sleep(1000 / SLIDER_BUTTON_SPEED);
+						}
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}).start();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
 		});
 		if (maxIter == MAX_MAX_ITER) {
 			increaseMaxIter.setEnabled(false);
@@ -138,6 +182,51 @@ public class LearningPanel extends ModPanel {
 
 			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
 					+ "Max iterations : " + maxIter + "</body>");
+		});
+		decreaseMaxIter.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new Thread(() -> {
+					try {
+						Thread.sleep(750);
+						while (decreaseMaxIter.getModel().isPressed() && maxIter != 0) {
+							maxIter--;
+							double newSliderValue = -1;
+							if (maxIter != 0) {
+								newSliderValue = Math.log(maxIter) / Math.log(sliderPower);
+							}
+							maxIterSlider.setValue((int) (0.5d + newSliderValue));
+							increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
+							decreaseMaxIter.setEnabled(maxIter != 0);
+
+							maxIterLabel.setText(
+									"<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
+											+ "Max iterations : " + maxIter + "</body>");
+
+							Thread.sleep(1000 / SLIDER_BUTTON_SPEED);
+						}
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}).start();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
 		});
 		if (maxIter == 0) {
 			decreaseMaxIter.setEnabled(false);
@@ -171,7 +260,7 @@ public class LearningPanel extends ModPanel {
 
 		maxIterLabel.setPreferredSize(new Dimension(160, 26));
 		this.add(maxIterLabel, 0, 0);
-		maxIterSlider.setPreferredSize(new Dimension(280, 26));
+		maxIterSlider.setPreferredSize(new Dimension(160, 26));
 		this.addToRight(maxIterSlider, maxIterLabel, 8);
 		this.addToRight(decreaseMaxIter, maxIterSlider, 8);
 		this.addToRight(increaseMaxIter, decreaseMaxIter, 3);
