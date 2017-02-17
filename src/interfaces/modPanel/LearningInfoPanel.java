@@ -56,7 +56,7 @@ public class LearningInfoPanel extends TablePanel {
 
 			model.addRow(new Object[] { iter, mseString, mseProgression, duration });
 
-			scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight()));
+			scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight() - 1));
 		}
 	}
 

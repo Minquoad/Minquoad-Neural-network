@@ -32,6 +32,7 @@ public class LearningPanel extends ModPanel {
 	private JSlider maxIterSlider;
 	private JSlider multiThreadingSlider;
 	private JButton unlearnButton;
+	private JButton clearButton;
 	private JButton increaseMaxIter;
 	private JButton decreaseMaxIter;
 
@@ -227,7 +228,7 @@ public class LearningPanel extends ModPanel {
 
 		learningInfoPanel = new LearningInfoPanel();
 
-		JButton clearButton = new JButton("Clear");
+		clearButton = new JButton("Clear");
 
 		runButton = new MainButton("resources/pictures/computing.jpg");
 
@@ -250,7 +251,7 @@ public class LearningPanel extends ModPanel {
 		this.add(stopButton, 0, 500, 200, 500);
 		stopButton.setVisible(false);
 		this.add(learningInfoPanel, 200, 500, 800, 500);
-		this.add(clearButton, 880, 450, 120, 50);
+		this.add(clearButton);
 		this.add(unlearnButton);
 
 		runButton.addActionListener((e) -> controler.startLearning());
@@ -293,6 +294,7 @@ public class LearningPanel extends ModPanel {
 		super.paintComponent(g);
 
 		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
+		clearButton.setBounds(this.getWidth()-(200 * this.getWidth() / 1000), this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
 	}
 
 	public void startNewLearning() {
