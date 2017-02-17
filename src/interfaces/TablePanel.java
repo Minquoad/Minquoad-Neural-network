@@ -1,6 +1,7 @@
 package interfaces;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
@@ -11,15 +12,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class TablePanel extends JPanel {
 
-	private Color headerForeground = new Color(28, 106, 126);
-	private Color headerBackground = new Color(11, 11, 11);
+	private Color headerForeground = new Color(255 ,255, 255);
+	private Color headerBackground = new Color(0, 0, 0);
 	private Color foreground = new Color(0, 0, 0);
-	private Color background = new Color(28, 106, 126);
+	private Color background = new Color(255, 255, 255);
+	private Color headerCellBorderColor = new Color(127, 127, 127);
+	private Color cellBorderColor = new Color(127, 127, 127);
+	private Color selectedBackground = new Color(184, 207, 229);
+	private Color selectedForeground = new Color(255 - 184, 255 - 207, 255 - 229);
 
 	protected JTable table;
 	protected JScrollPane scrollPane;
@@ -55,33 +59,73 @@ public class TablePanel extends JPanel {
 			this.remove(this.scrollPane);
 		}
 		this.scrollPane = new JScrollPane(table);
-		this.scrollPane.getViewport().setBackground(new Color(23, 23, 20));
+		scrollPane.setOpaque(false);
+		this.scrollPane.getViewport().setOpaque(false);
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		this.scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		this.add(this.scrollPane);
 		this.revalidate();
 	}
 
 	private void setTheme(JTable table) {
 
-		table.setOpaque(false);
+		table.getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
 
-		DefaultTableCellRenderer stringRenderer = (DefaultTableCellRenderer) table.getDefaultRenderer(String.class);
-		stringRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+				Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+						column);
+				if (component instanceof DefaultTableCellRenderer) {
+					DefaultTableCellRenderer defaultRenderer = (DefaultTableCellRenderer) component;
+
+					defaultRenderer.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 1, headerCellBorderColor));
+					defaultRenderer.setBackground(headerBackground);
+					defaultRenderer.setForeground(headerForeground);
+					defaultRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+				}
+
+				return component;
+			}
+		});
+		table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+					boolean hasFocus, int row, int column) {
+
+				Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+						column);
+				if (component instanceof DefaultTableCellRenderer) {
+					DefaultTableCellRenderer defaultRenderer = (DefaultTableCellRenderer) component;
+
+					if (isSelected) {
+						defaultRenderer.setBackground(selectedBackground);
+						defaultRenderer.setForeground(selectedForeground);
+					} else {
+						defaultRenderer.setBackground(background);
+						defaultRenderer.setForeground(foreground);
+					}
+					defaultRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+				}
+
+				return component;
+			}
+		});
+
+		table.setGridColor(cellBorderColor);
+		table.setOpaque(false);
 
 		table.setDefaultEditor(Object.class, null);
 		table.getTableHeader().setReorderingAllowed(false);
 
-		table.setBackground(background);
-		table.setForeground(foreground);
-		table.getTableHeader().setBackground(headerBackground);
-		table.getTableHeader().setForeground(headerForeground);
-
-		table.setFont(new Font("Dialog", Font.BOLD, 12));
 		table.getTableHeader().setFont(new Font("Dialog", Font.BOLD, 12));
+	}
 
-		UIManager.getDefaults().put("TableHeader.cellBorder",
-				BorderFactory.createLineBorder(new Color(background.getRed() + foreground.getRed(),
-						background.getGreen() + foreground.getGreen(), background.getBlue() + foreground.getBlue())));
+	public void generateGridColor() {
+		cellBorderColor = new Color(
+				(foreground.getRed() + background.getRed() * 4) / 5,
+				(foreground.getGreen() + background.getGreen() * 4) / 5,
+				(foreground.getBlue() + background.getBlue() * 4) / 5);
 	}
 
 	public Color getHeaderForeground() {
@@ -114,6 +158,38 @@ public class TablePanel extends JPanel {
 
 	public void setBackground(Color background) {
 		this.background = background;
+	}
+
+	public Color getHeaderCellBorderColor() {
+		return headerCellBorderColor;
+	}
+
+	public void setHeaderCellBorderColor(Color headerCellBorderColor) {
+		this.headerCellBorderColor = headerCellBorderColor;
+	}
+
+	public Color getCellBorderColor() {
+		return cellBorderColor;
+	}
+
+	public void setCellBorderColor(Color cellBorderColor) {
+		this.cellBorderColor = cellBorderColor;
+	}
+
+	public Color getSelectedBackground() {
+		return selectedBackground;
+	}
+
+	public void setSelectedBackground(Color selectedBackground) {
+		this.selectedBackground = selectedBackground;
+	}
+
+	public Color getSelectedForeground() {
+		return selectedForeground;
+	}
+
+	public void setSelectedForeground(Color selectedForeground) {
+		this.selectedForeground = selectedForeground;
 	}
 
 }

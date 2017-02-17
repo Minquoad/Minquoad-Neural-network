@@ -23,7 +23,7 @@ import entities.neuralNetwork.neurons.PeriodicNeuron;
 import entities.neuralNetwork.neurons.SigNeuron;
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GPanel;
-import utilities.Starter;
+import utilities.Preferences;
 
 public class PerceptronDisplayer extends GPanel {
 
@@ -32,14 +32,12 @@ public class PerceptronDisplayer extends GPanel {
 	private int inputCount;
 
 	// grapicals
-	private static Color BACKGROUND = new Color(39, 40, 34);
-	private static Color LINES_COLOR = new Color(204, 204, 204);
 	private int[] nerveWeb;
 	private ArrayList<Point> blankNeuronePosition;
 	private ArrayList<NeuronDisplayer> neuronDisplayers = new ArrayList<NeuronDisplayer>();
 
 	public PerceptronDisplayer() {
-		this.setBackground(BACKGROUND);
+		this.setBackground(Preferences.CONTENT_BACKGROUND);
 	}
 
 	public void setPerceptron(Perceptron per) {
@@ -137,50 +135,57 @@ public class PerceptronDisplayer extends GPanel {
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(2));
-			g2.setColor(LINES_COLOR);
+			g2.setColor(Preferences.FOREGROUND);
 
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			if (valide) {
 
 				int blueContourThickness = this.getWidth() / 25;
-				g2.setPaint(new GradientPaint(0, 0, new Color(19, 71, 84), blueContourThickness, 0, BACKGROUND, true));
+				g2.setPaint(new GradientPaint(0, 0, Preferences.BLUE, blueContourThickness, 0,
+						Preferences.CONTENT_BACKGROUND, true));
 				Polygon polygon = new Polygon();
 				polygon.addPoint(0, 0);
 				polygon.addPoint(blueContourThickness, blueContourThickness);
 				polygon.addPoint(blueContourThickness, this.getHeight() - blueContourThickness);
 				polygon.addPoint(0, this.getHeight());
 				g2.fillPolygon(polygon);
-				g2.setPaint(new GradientPaint(this.getWidth(), 0, new Color(19, 71, 84),
-						this.getWidth() - blueContourThickness, 0, BACKGROUND, true));
+				g2.drawPolygon(polygon);
+				g2.setPaint(new GradientPaint(this.getWidth(), 0, Preferences.BLUE,
+						this.getWidth() - blueContourThickness, 0, Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth(), 0);
 				polygon.addPoint(this.getWidth(), this.getHeight());
 				polygon.addPoint(this.getWidth() - blueContourThickness, this.getHeight() - blueContourThickness);
 				polygon.addPoint(this.getWidth() - blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, 0, new Color(19, 71, 84), 0, blueContourThickness, BACKGROUND, true));
+				g2.drawPolygon(polygon);
+				g2.setPaint(new GradientPaint(0, 0, Preferences.BLUE, 0, blueContourThickness,
+						Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(0, 0);
 				polygon.addPoint(this.getWidth(), 0);
 				polygon.addPoint(this.getWidth() - blueContourThickness, blueContourThickness);
 				polygon.addPoint(blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, this.getHeight(), new Color(19, 71, 84), 0,
-						this.getHeight() + blueContourThickness, BACKGROUND, true));
+				g2.drawPolygon(polygon);
+				g2.setPaint(new GradientPaint(0, this.getHeight(), Preferences.BLUE, 0,
+						this.getHeight() + blueContourThickness, Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth() - blueContourThickness, this.getHeight() - blueContourThickness);
 				polygon.addPoint(this.getWidth(), this.getHeight());
 				polygon.addPoint(0, this.getHeight());
 				polygon.addPoint(blueContourThickness, this.getHeight() - blueContourThickness);
 				g2.fillPolygon(polygon);
-
+				g2.drawPolygon(polygon);
 			}
 
 			if (nerveWeb.length != 0) {
 				g2.setPaint(new GradientPaint(0, 0,
-						new Color(LINES_COLOR.getRed(), LINES_COLOR.getGreen(), LINES_COLOR.getBlue(), 0),
-						this.getWidth() / (nerveWeb.length * 2), 0, LINES_COLOR, true));
+						new Color(Preferences.FOREGROUND.getRed(),
+								Preferences.FOREGROUND.getGreen(),
+								Preferences.FOREGROUND.getBlue(), 0),
+						this.getWidth() / (nerveWeb.length * 2), 0, Preferences.FOREGROUND, true));
 
 				for (int j = 0; j < nerveWeb[0] && j < this.inputCount; j++) {
 
@@ -210,7 +215,7 @@ public class PerceptronDisplayer extends GPanel {
 				}
 			}
 
-			g2.setPaint(LINES_COLOR);
+			g2.setPaint(Preferences.FOREGROUND);
 
 			for (int i = 0; i < nerveWeb.length - 1; i++) {
 
@@ -272,12 +277,12 @@ public class PerceptronDisplayer extends GPanel {
 			if (rate == 1)
 				g.drawImage(fond, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
 			else if (rate < 1) {
-				BufferedImage scaled = Starter.getScaledInstance(fond, imW, imH,
+				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
 						RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
 
 				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
 			} else {
-				BufferedImage scaled = Starter.getScaledInstance(fond, imW, imH,
+				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
 						RenderingHints.VALUE_INTERPOLATION_BILINEAR, false);
 
 				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);

@@ -3,8 +3,15 @@ package interfaces;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JTextPane;
 
 import gClasses.gInterfaces.GPanel;
+import utilities.Preferences;
 
 public class MainPan extends GPanel {
 
@@ -14,7 +21,7 @@ public class MainPan extends GPanel {
 	private GPanel modePan = null;
 
 	public MainPan() {
-		this.setBackground(new Color(23, 23, 20));
+		this.setBackground(Preferences.BACKGROUND);
 	}
 
 	public void setModePan(GPanel modePan) {
@@ -61,6 +68,53 @@ public class MainPan extends GPanel {
 		i++;
 		g.setColor(new Color(44, 44, 43));
 		g.drawLine(i, 0, i, this.getHeight());
+	}
+
+	public static JTextPane creadStandartJTextPane() {
+		JTextPane taxtPane = new JTextPane();
+		taxtPane.setEditable(false);
+		taxtPane.setOpaque(false);
+		taxtPane.setForeground(Preferences.FOREGROUND);
+		return taxtPane;
+	}
+
+	public static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint,
+			boolean higherQuality) {
+		int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
+				: BufferedImage.TYPE_INT_ARGB;
+		BufferedImage ret = (BufferedImage) img;
+		int w, h;
+		if (higherQuality) {
+			w = img.getWidth();
+			h = img.getHeight();
+		} else {
+			w = targetWidth;
+			h = targetHeight;
+		}
+
+		do {
+			if (higherQuality && w > targetWidth) {
+				w /= 2;
+				if (w < targetWidth) {
+					w = targetWidth;
+				}
+			}
+			if (higherQuality && h > targetHeight) {
+				h /= 2;
+				if (h < targetHeight) {
+					h = targetHeight;
+				}
+			}
+			BufferedImage tmp = new BufferedImage(w, h, type);
+			Graphics2D g2 = tmp.createGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+			g2.drawImage(ret, 0, 0, w, h, null);
+			g2.dispose();
+
+			ret = tmp;
+		} while (w != targetWidth || h != targetHeight);
+
+		return ret;
 	}
 
 }

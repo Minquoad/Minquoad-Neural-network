@@ -136,7 +136,7 @@ public class Controler implements LearningStateListener {
 
 	public void loadPer() {
 
-		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
 			try {
 				per = new Perceptron(new DataAssociator(file));
 				perceptronModified();
@@ -151,11 +151,11 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void savePer() {
-		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING, (file) -> per.toDataAssociator().save(file));
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING, (file) -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
-		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
 			try {
 				data = CsvFormatHelper.getData(file);
 				updateMode();
@@ -169,8 +169,8 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void saveCsv() {
-		Starter.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
-				(file) -> CsvFormatHelper.save(file, Starter.concatLineByLine(data, results)));
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
+				(file) -> CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results)));
 	}
 
 	public void resetPerceptron() {
@@ -265,7 +265,10 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void savePreferences() {
-		PreferencesHelper.savePreferences(learningPan.getMaxIter(), learningPan.getMultiThreading());
+		Preferences.setMaxIter(this.learningPan.getMaxIter());
+		Preferences.setMultiThreading(this.learningPan.getMultiThreading());
+		
+		Preferences.save();
 	}
 
 	public void help() {

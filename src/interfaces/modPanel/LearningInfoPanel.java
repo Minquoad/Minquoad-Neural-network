@@ -9,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import interfaces.TablePanel;
+import utilities.Preferences;
 
 public class LearningInfoPanel extends TablePanel {
 
@@ -16,11 +17,13 @@ public class LearningInfoPanel extends TablePanel {
 	private int lastDescibedIteration = -1;
 
 	public LearningInfoPanel() {
-		this.setBackground(new Color(39, 40, 34));
-		this.setForeground(new Color(204, 204, 204));
+		this.setBackground(Preferences.BLUE);
+		this.setForeground(Preferences.FOREGROUND);
 		this.setHeaderBackground(new Color(11, 11, 11));
-		this.setHeaderForeground(new Color(28, 106, 126));
-
+		this.setHeaderForeground(Preferences.BLUE);
+		this.setHeaderCellBorderColor(Preferences.BLUE);
+		this.generateGridColor();
+		
 		this.clear();
 	}
 

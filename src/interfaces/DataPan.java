@@ -1,5 +1,6 @@
 package interfaces;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
@@ -7,6 +8,7 @@ import javax.swing.JTable;
 
 import utilities.Controler;
 import utilities.Controler.Mode;
+import utilities.Preferences;
 
 public class DataPan extends TablePanel {
 
@@ -16,6 +18,15 @@ public class DataPan extends TablePanel {
 	private int showedInputCount = 0;
 	private int showedOutputCount = 0;
 
+	public DataPan() {
+		this.setBackground(Preferences.CONTENT_BACKGROUND);
+		this.setForeground(Preferences.FOREGROUND);
+		this.setHeaderBackground(new Color(11, 11, 11));
+		this.setHeaderForeground(Preferences.BLUE);
+		this.setHeaderCellBorderColor(Preferences.BLUE);
+		this.generateGridColor();
+	}
+	
 	public void setNoneMode(double[][] data) {
 		if (data != null) {
 

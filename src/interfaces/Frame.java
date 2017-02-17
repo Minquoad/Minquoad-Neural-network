@@ -2,13 +2,12 @@ package interfaces;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 
 import javax.swing.JMenuItem;
 
 import gClasses.gInterfaces.GFrame;
 import utilities.Controler;
-import utilities.Starter;
+import utilities.Preferences;
 
 public class Frame extends GFrame implements WindowListener {
 
@@ -19,7 +18,7 @@ public class Frame extends GFrame implements WindowListener {
 
 	public Frame(Controler controler) {
 		super("Minquoad's Neurons", 930, 670, "resources/pictures/icon.png",
-				new File(Starter.def_dir + "/Frame Preferences"));
+				Preferences.preferencesFile);
 
 		this.controler = controler;
 

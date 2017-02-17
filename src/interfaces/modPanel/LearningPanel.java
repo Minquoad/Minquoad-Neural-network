@@ -11,9 +11,9 @@ import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.JTextPane;
 
+import interfaces.MainPan;
 import utilities.Controler;
-import utilities.PreferencesHelper;
-import utilities.Starter;
+import utilities.Preferences;
 
 public class LearningPanel extends ModPanel {
 
@@ -40,10 +40,11 @@ public class LearningPanel extends ModPanel {
 
 		int cores = Runtime.getRuntime().availableProcessors();
 
-		maxIter = Math.min(PreferencesHelper.getSavedIter(), MAX_MAX_ITER);
-		multiThreading = Math.min(PreferencesHelper.getSavedMultiThreading(), cores);
+		maxIter = Math.min(Preferences.getMaxIter(), MAX_MAX_ITER);
+		multiThreading = Math.min(Preferences.getMultiThreading(), cores);
 
-		JTextPane maxIterLabel = Starter.getCenteredTextZone("Max iterations : " + maxIter);
+		JTextPane maxIterLabel = MainPan.creadStandartJTextPane();
+		maxIterLabel.setText("Max iterations : " + maxIter);
 
 		double sliderPower = Math.pow(10d, 1d / SLIDER_PRECISION);
 
@@ -63,8 +64,7 @@ public class LearningPanel extends ModPanel {
 				maxIter = (int) (0.5d + Math.pow(sliderPower, (double) value));
 			}
 
-			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-					+ "Max iterations : " + maxIter + "</body>");
+			maxIterLabel.setText("Max iterations : " + maxIter);
 
 			increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
 			decreaseMaxIter.setEnabled(maxIter != 0);
@@ -112,8 +112,7 @@ public class LearningPanel extends ModPanel {
 			increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
 			decreaseMaxIter.setEnabled(maxIter != 0);
 
-			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-					+ "Max iterations : " + maxIter + "</body>");
+			maxIterLabel.setText("Max iterations : " + maxIter);
 
 		});
 		increaseMaxIter.addMouseListener(new MouseListener() {
@@ -133,9 +132,7 @@ public class LearningPanel extends ModPanel {
 							increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
 							decreaseMaxIter.setEnabled(maxIter != 0);
 
-							maxIterLabel.setText(
-									"<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-											+ "Max iterations : " + maxIter + "</body>");
+							maxIterLabel.setText("Max iterations : " + maxIter);
 
 							Thread.sleep(1000 / SLIDER_BUTTON_SPEED);
 						}
@@ -168,8 +165,7 @@ public class LearningPanel extends ModPanel {
 			increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
 			decreaseMaxIter.setEnabled(maxIter != 0);
 
-			maxIterLabel.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-					+ "Max iterations : " + maxIter + "</body>");
+			maxIterLabel.setText("Max iterations : " + maxIter);
 		});
 		decreaseMaxIter.addMouseListener(new MouseListener() {
 
@@ -191,9 +187,7 @@ public class LearningPanel extends ModPanel {
 							increaseMaxIter.setEnabled(maxIter != MAX_MAX_ITER);
 							decreaseMaxIter.setEnabled(maxIter != 0);
 
-							maxIterLabel.setText(
-									"<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-											+ "Max iterations : " + maxIter + "</body>");
+							maxIterLabel.setText("Max iterations : " + maxIter);
 
 							Thread.sleep(1000 / SLIDER_BUTTON_SPEED);
 						}
@@ -216,24 +210,24 @@ public class LearningPanel extends ModPanel {
 			decreaseMaxIter.setEnabled(false);
 		}
 
-		JTextPane multiThreadingLabel = Starter.getCenteredTextZone("Thread used : " + multiThreading);
+		JTextPane multiThreadingLabel = MainPan.creadStandartJTextPane();
+		multiThreadingLabel.setText("Thread used : " + multiThreading);
 		multiThreadingSlider = new JSlider(1, cores, multiThreading);
 		multiThreadingSlider.setOpaque(false);
 		multiThreadingSlider.addChangeListener((e) -> {
 			multiThreading = multiThreadingSlider.getValue();
-			multiThreadingLabel
-					.setText("<body style='text-align: center;font-family: arial;color: rgb(204, 204, 204);'>"
-							+ "Thread used : " + multiThreading + "</body>");
+			multiThreadingLabel.setText("Thread used : " + multiThreading);
 		});
 
+		JTextPane minProgressionLabel = MainPan.creadStandartJTextPane();
+		minProgressionLabel.setText("Minimum progression per iterations");
+		
+		
 		learningInfoPanel = new LearningInfoPanel();
-
+		
 		clearButton = new JButton("Clear");
-
 		runButton = new MainButton("resources/pictures/computing.jpg");
-
 		stopButton = new MainButton("resources/pictures/stopLearning.jpg");
-
 		unlearnButton = new JButton("UNLEARN");
 
 		maxIterLabel.setPreferredSize(new Dimension(160, 26));
@@ -246,6 +240,7 @@ public class LearningPanel extends ModPanel {
 		this.addToBottom(multiThreadingLabel, maxIterLabel, 8);
 		multiThreadingSlider.setPreferredSize(new Dimension(160, 26));
 		this.addToRight(multiThreadingSlider, multiThreadingLabel, 8);
+		this.addToBottom(minProgressionLabel, multiThreadingLabel, 8);
 
 		this.add(runButton, 0, 500, 200, 500);
 		this.add(stopButton, 0, 500, 200, 500);
@@ -294,7 +289,8 @@ public class LearningPanel extends ModPanel {
 		super.paintComponent(g);
 
 		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
-		clearButton.setBounds(this.getWidth()-(200 * this.getWidth() / 1000), this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
+		clearButton.setBounds(this.getWidth() - (200 * this.getWidth() / 1000), this.getHeight() / 2 - 26,
+				200 * this.getWidth() / 1000, 26);
 	}
 
 	public void startNewLearning() {

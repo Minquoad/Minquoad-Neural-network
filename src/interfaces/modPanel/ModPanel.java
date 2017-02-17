@@ -8,7 +8,7 @@ import javax.swing.JButton;
 
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GPanel;
-import utilities.Starter;
+import interfaces.MainPan;
 
 public class ModPanel extends GPanel {
 
@@ -37,7 +37,7 @@ public class ModPanel extends GPanel {
 			int imW = (int) ((float) fond.getWidth() * rate);
 			int imH = (int) ((float) fond.getHeight() * rate);
 
-			BufferedImage scaled = Starter.getScaledInstance(fond, imW, imH,
+			BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
 					RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
 
 			g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);

@@ -16,13 +16,11 @@ import javax.swing.JTextPane;
 
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GPanel;
-import utilities.Starter;
+import utilities.Preferences;
 
 public class NeuronTypeSelecter extends JPanel {
 
 	private Type selectedType;
-	private static Color selectColor = new Color(19, 71, 84);
-
 	private GPanel buttonPan = new GPanel();
 	private GPanel labelPan = new GPanel();
 	private ArrayList<JButton> buttonList = new ArrayList<JButton>();
@@ -57,7 +55,7 @@ public class NeuronTypeSelecter extends JPanel {
 					buttonList.get(j).setBackground(null);
 				}
 				neuTypeButton.setEnabled(false);
-				neuTypeButton.setBackground(selectColor);
+				neuTypeButton.setBackground(Preferences.BLUE);
 			});
 
 			JTextPane textPane = new JTextPane();
@@ -128,12 +126,12 @@ public class NeuronTypeSelecter extends JPanel {
 			if (rate == 1) {
 				g.drawImage(fond, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
 			} else if (rate < 1) {
-				BufferedImage scaled = Starter.getScaledInstance(fond, imW, imH,
+				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
 						RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
 
 				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
 			} else {
-				BufferedImage scaled = Starter.getScaledInstance(fond, imW, imH,
+				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
 						RenderingHints.VALUE_INTERPOLATION_BILINEAR, false);
 
 				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);

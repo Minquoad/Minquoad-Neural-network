@@ -9,7 +9,6 @@ import javax.swing.JTextPane;
 import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.GPanel;
 import utilities.Controler;
-import utilities.Starter;
 
 public class PerceptronEditingPan extends GPanel {
 
@@ -31,7 +30,8 @@ public class PerceptronEditingPan extends GPanel {
 
 		this.setOpaque(false);
 
-		inputCountLabel = Starter.getCenteredTextZone("Input Neurones :");
+		inputCountLabel = MainPan.creadStandartJTextPane();
+		inputCountLabel.setText("Input Neurones :");
 		addInputButton = new JButton("+");
 		removeInputButton = new JButton("-");
 		validateButton = new JButton("Validate");
@@ -41,7 +41,7 @@ public class PerceptronEditingPan extends GPanel {
 		validateButton.setFocusPainted(false);
 
 		this.add(neuTypSel, 0, 0, 1000, 333);
-		inputCountLabel.setPreferredSize(new Dimension(120, 26));
+		inputCountLabel.setPreferredSize(new Dimension(100, 26));
 		this.add(inputCountLabel, 25, 400);
 		this.addToRight(addInputButton, inputCountLabel, 3);
 		this.addToRight(removeInputButton, addInputButton, 3);
