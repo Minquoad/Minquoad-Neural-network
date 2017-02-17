@@ -28,7 +28,7 @@ import threads.Learner;
 import threads.Learner.LearningStateListener;
 import threads.LearnerObserver;
 
-public class Controler {
+public class Controler implements LearningStateListener {
 
 	// repository
 	private Perceptron per = new Perceptron();
@@ -59,7 +59,7 @@ public class Controler {
 		mainPan.setPerceptronDisplayer(perceptronDisplayer);
 
 		this.resetPerceptron();
-		
+
 		frame.setVisible(true);
 	}
 
@@ -232,16 +232,9 @@ public class Controler {
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 
-		learner.addLearningStateListener(new LearningStateListener() {
-			@Override
-			public void learningStarted(Learner source) {
-			}
+		learner.addLearningStateListener(this);
 
-			@Override
-			public void learningEnded(Learner source) {
-				Controler.this.learningEnded();
-			}
-		});
+		learningPan.startNewLearning();
 
 		new LearnerObserver(this, learner);
 
@@ -250,7 +243,8 @@ public class Controler {
 		updateMode();
 	}
 
-	public void learningEnded() {
+	@Override
+	public void learningEnded(Learner source) {
 		this.learner = null;
 		updateMode();
 	}
@@ -266,8 +260,8 @@ public class Controler {
 		this.updateMode();
 	}
 
-	public void appendLearningInfo(String str) {
-		this.learningPan.appendText(str);
+	public void appendLearningInfo(int iter, double mse, double lastEvolution, long duration) {
+		this.learningPan.appendInfoLine(iter, mse, lastEvolution, duration);
 	}
 
 	public void savePreferences() {
@@ -349,5 +343,8 @@ public class Controler {
 
 		this.perceptronModified();
 	}
+
+	@Override
+	public void learningStarted(Learner source) {}
 
 }

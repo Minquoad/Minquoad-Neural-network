@@ -69,21 +69,17 @@ public class NeuronTypeSelecter extends JPanel {
 			labelPan.add(textPane, 1000 * i / types.length, 0, 1000 / types.length, 1000);
 
 			textPane.addMouseListener(new MouseListener() {
-				public void mouseReleased(MouseEvent arg0) {
-				}
+				public void mouseReleased(MouseEvent arg0) {}
 
 				public void mousePressed(MouseEvent arg0) {
 					neuTypeButton.doClick();
 				}
 
-				public void mouseExited(MouseEvent arg0) {
-				}
+				public void mouseExited(MouseEvent arg0) {}
 
-				public void mouseEntered(MouseEvent arg0) {
-				}
+				public void mouseEntered(MouseEvent arg0) {}
 
-				public void mouseClicked(MouseEvent arg0) {
-				}
+				public void mouseClicked(MouseEvent arg0) {}
 			});
 
 			if (i == 0) {

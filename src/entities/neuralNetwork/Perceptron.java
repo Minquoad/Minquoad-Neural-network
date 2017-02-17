@@ -13,8 +13,7 @@ public class Perceptron {
 
 	private int inputCount = 0;
 
-	public Perceptron() {
-	}
+	public Perceptron() {}
 
 	public Perceptron(DataAssociator da) throws Exception {
 		if (da != null && da.exists("inputCount") && da.exists("valid") && da.exists("layerCount")) {

@@ -13,10 +13,8 @@ public class BlankNeuron extends Neuron {
 		super(da, per);
 	}
 
-	public void proceed() {
-	}
+	public void proceed() {}
 
-	public void linkTo(Neuron predecessorNeuron) {
-	}
+	public void linkTo(Neuron predecessorNeuron) {}
 
 }

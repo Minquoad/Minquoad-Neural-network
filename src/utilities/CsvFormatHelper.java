@@ -68,7 +68,7 @@ public abstract class CsvFormatHelper {
 		if (lineList.isEmpty()) {
 			throw new Exception();
 		} else {
-			
+
 			double[][] data = new double[lineList.size()][CsvFormatHelper.getDoubleTable(lineList.get(0)).length];
 
 			for (int i = 0; i < lineList.size(); i++) {

@@ -1,19 +1,14 @@
 package interfaces.modPanel;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import utilities.Controler;
@@ -29,7 +24,7 @@ public class LearningPanel extends ModPanel {
 	private int maxIter;
 	private int multiThreading;
 
-	private JTextArea learningInfoArea;
+	private LearningInfoPanel learningInfoPanel;
 	private boolean learning = false;
 
 	private MainButton runButton;
@@ -81,16 +76,13 @@ public class LearningPanel extends ModPanel {
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
-			}
+			public void mousePressed(MouseEvent e) {}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
-			}
+			public void mouseExited(MouseEvent e) {}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
+			public void mouseEntered(MouseEvent e) {}
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -101,8 +93,7 @@ public class LearningPanel extends ModPanel {
 		maxIterSlider.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
-			public void mouseMoved(MouseEvent e) {
-			}
+			public void mouseMoved(MouseEvent e) {}
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -127,8 +118,7 @@ public class LearningPanel extends ModPanel {
 		increaseMaxIter.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
+			public void mouseReleased(MouseEvent e) {}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -155,16 +145,13 @@ public class LearningPanel extends ModPanel {
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
-			}
+			public void mouseExited(MouseEvent e) {}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
+			public void mouseEntered(MouseEvent e) {}
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
+			public void mouseClicked(MouseEvent e) {}
 		});
 		if (maxIter == MAX_MAX_ITER) {
 			increaseMaxIter.setEnabled(false);
@@ -186,8 +173,7 @@ public class LearningPanel extends ModPanel {
 		decreaseMaxIter.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
+			public void mouseReleased(MouseEvent e) {}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -217,16 +203,13 @@ public class LearningPanel extends ModPanel {
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
-			}
+			public void mouseExited(MouseEvent e) {}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
+			public void mouseEntered(MouseEvent e) {}
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
+			public void mouseClicked(MouseEvent e) {}
 		});
 		if (maxIter == 0) {
 			decreaseMaxIter.setEnabled(false);
@@ -242,13 +225,7 @@ public class LearningPanel extends ModPanel {
 							+ "Thread used : " + multiThreading + "</body>");
 		});
 
-		learningInfoArea = new JTextArea();
-		learningInfoArea.setEditable(false);
-		learningInfoArea.setMargin(new Insets(0, 3, 0, 3));
-		learningInfoArea.setFont(new Font("monospaced", Font.PLAIN, 12));
-		learningInfoArea.setBackground(new Color(39, 40, 34));
-		learningInfoArea.setForeground(new Color(204, 204, 204));
-		JScrollPane scrPan = new JScrollPane(learningInfoArea);
+		learningInfoPanel = new LearningInfoPanel();
 
 		JButton clearButton = new JButton("Clear");
 
@@ -272,13 +249,13 @@ public class LearningPanel extends ModPanel {
 		this.add(runButton, 0, 500, 200, 500);
 		this.add(stopButton, 0, 500, 200, 500);
 		stopButton.setVisible(false);
-		this.add(scrPan, 200, 500, 800, 500);
+		this.add(learningInfoPanel, 200, 500, 800, 500);
 		this.add(clearButton, 880, 450, 120, 50);
 		this.add(unlearnButton);
 
 		runButton.addActionListener((e) -> controler.startLearning());
 		stopButton.addActionListener((e) -> controler.endLearning());
-		clearButton.addActionListener((e) -> learningInfoArea.setText(""));
+		clearButton.addActionListener((e) -> learningInfoPanel.clear());
 		unlearnButton.addActionListener((e) -> controler.unlearn());
 
 	}
@@ -291,9 +268,8 @@ public class LearningPanel extends ModPanel {
 		return multiThreading;
 	}
 
-	public void appendText(String str) {
-		learningInfoArea.append(str);
-		learningInfoArea.setCaretPosition(learningInfoArea.getDocument().getLength());
+	public void appendInfoLine(int iter, double mse, double lastEvolution, long duration) {
+		learningInfoPanel.appendInfoLine(iter, mse, lastEvolution, duration);
 	}
 
 	public void setLearning(boolean learning) {
@@ -317,6 +293,10 @@ public class LearningPanel extends ModPanel {
 		super.paintComponent(g);
 
 		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
+	}
+
+	public void startNewLearning() {
+		learningInfoPanel.startNewLearning();
 	}
 
 }

@@ -11,10 +11,12 @@ public class Learner extends Thread {
 	private Perceptron per;
 	private double[][] samples;
 
-	private boolean continueLearning = true;
+	private boolean learningNotEnded = true;
 	private int maxIterations = 1;
 	private int iterations = 0;
 	private int multiThreading = 1;
+	private double minimumEvolutionPerIteration = 0.01d;
+	private double evolutionInLastIteration = 0d;
 	private double mse;
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
@@ -52,22 +54,26 @@ public class Learner extends Thread {
 
 	private void iterate(IterationPerformer iterationPerformer) {
 
-		continueLearning &= iterations < maxIterations;
-		while (continueLearning) {
+		learningNotEnded &= iterations < maxIterations;
+		while (learningNotEnded) {
+
+			double oldMse = mse;
 
 			iterationPerformer.performeIteration();
 
-			iterations++;
-			continueLearning &= iterations < maxIterations;
+			evolutionInLastIteration = 1 - mse / oldMse;
+
+			learningNotEnded &= ++iterations < maxIterations;
+			learningNotEnded &= minimumEvolutionPerIteration < evolutionInLastIteration;
 		}
-		
+
 	}
-	
+
 	private void leaningMonoThread() {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
 		this.iterate(() -> {
-			
+
 			for (Nerve nerve : nerves) {
 
 				nerve.evolve();
@@ -81,9 +87,9 @@ public class Learner extends Thread {
 					nerve.reactToRegression();
 				}
 			}
-			
+
 		});
-		
+
 	}
 
 	private void leaningMultiThread() {
@@ -101,7 +107,7 @@ public class Learner extends Thread {
 		}
 
 		this.iterate(() -> {
-			
+
 			try {
 				for (int i = 0; i < nervesList.get(0).size(); i++) {
 
@@ -113,8 +119,7 @@ public class Learner extends Thread {
 
 					for (int j = 0; j < multiThreading; j++) {
 						final int k = j;
-						treads[j] = new Thread(
-								() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
+						treads[j] = new Thread(() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
 						treads[j].start();
 					}
 
@@ -141,7 +146,7 @@ public class Learner extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 		});
 	}
 
@@ -176,7 +181,11 @@ public class Learner extends Thread {
 	}
 
 	public void endLearning() {
-		continueLearning = false;
+		learningNotEnded = false;
+	}
+
+	public boolean isLearningNotEnded() {
+		return learningNotEnded;
 	}
 
 	public int getIterations() {
@@ -187,20 +196,40 @@ public class Learner extends Thread {
 		return mse;
 	}
 
-	public void setMaxIterations(int i) {
-		this.maxIterations = i;
+	public double getEvolutionInLastIteration() {
+		return evolutionInLastIteration;
 	}
 
 	public int getMaxIterations() {
 		return maxIterations;
 	}
 
-	public void setMultiThreading(int i) {
-		this.multiThreading = i;
+	public void setMaxIterations(int maxIterations) {
+		this.maxIterations = maxIterations;
+	}
+
+	public int getMultiThreading() {
+		return multiThreading;
+	}
+
+	public void setMultiThreading(int multiThreading) {
+		this.multiThreading = multiThreading;
+	}
+
+	public double getMinimumEvolutionPerIteration() {
+		return minimumEvolutionPerIteration;
+	}
+
+	public void setMinimumEvolutionPerIteration(double minimumEvolutionPerIteration) {
+		this.minimumEvolutionPerIteration = minimumEvolutionPerIteration;
 	}
 
 	public void addLearningStateListener(LearningStateListener lsl) {
 		learningStateListeners.add(lsl);
+	}
+
+	public void removeLearningStateListener(LearningStateListener lsl) {
+		learningStateListeners.remove(lsl);
 	}
 
 	public interface LearningStateListener {

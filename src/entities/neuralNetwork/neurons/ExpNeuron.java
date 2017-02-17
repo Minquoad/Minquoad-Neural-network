@@ -59,7 +59,7 @@ public class ExpNeuron extends Neuron {
 			}
 			this.proceed();
 		}
-		
+
 	}
 
 }

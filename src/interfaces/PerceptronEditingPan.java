@@ -132,7 +132,7 @@ public class PerceptronEditingPan extends GPanel {
 											+ addLayerButtonWidth / layerCount / 2,
 									0, addLayerButtonWidth / layerCount, 1000);
 
-					addLayer.addActionListener(e -> controler.addLayer(j+1));
+					addLayer.addActionListener(e -> controler.addLayer(j + 1));
 				}
 
 				JButton removeLayer = new JButton("L--");
