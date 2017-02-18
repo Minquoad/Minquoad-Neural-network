@@ -284,6 +284,9 @@ public class Controler implements LearningStateListener {
 			bis.read(ba);
 			String helpText = new String(ba);
 
+			helpText = helpText.replaceAll("insufficientProgressionsNeededToStop",
+					Integer.toString(Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
+
 			new GDialog("Help", helpText, 800, 600, false).setVisible(true);
 
 		} catch (IOException e) {
