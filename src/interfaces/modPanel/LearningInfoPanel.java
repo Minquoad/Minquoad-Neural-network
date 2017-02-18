@@ -29,7 +29,7 @@ public class LearningInfoPanel extends TablePanel {
 
 	public void clear() {
 
-		String[] colHeadings = { "Iteration", "MSE", "LIE (%)", "time (ms)" };
+		String[] colHeadings = { "Iteration", "MSE", "LIP (%)", "time (ms)" };
 		model = new DefaultTableModel(0, colHeadings.length);
 		model.setColumnIdentifiers(colHeadings);
 		table = new JTable(model);
@@ -66,6 +66,7 @@ public class LearningInfoPanel extends TablePanel {
 	public void startNewLearning() {
 		if (table.getRowCount() != 0) {
 			model.addRow(new Object[] { "", "", "", "" });
+			lastDescibedIteration = -1;
 		}
 	}
 

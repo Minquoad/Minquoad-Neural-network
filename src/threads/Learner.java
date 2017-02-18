@@ -5,6 +5,7 @@ import java.util.List;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
+import utilities.Preferences;
 
 public class Learner extends Thread {
 
@@ -13,9 +14,11 @@ public class Learner extends Thread {
 
 	private boolean learningNotEnded = true;
 	private int maxIterations = 1;
+	private boolean unlimitedIterations = false;
 	private int iterations = 0;
 	private int multiThreading = 1;
-	private double minimumEvolutionPerIteration = 0.01d;
+	private double minimumProgressionPerIteration = 0.01d;
+	private int insufficientProgressions = 0;
 	private double evolutionInLastIteration = 0d;
 	private double mse;
 
@@ -54,17 +57,24 @@ public class Learner extends Thread {
 
 	private void iterate(IterationPerformer iterationPerformer) {
 
-		learningNotEnded &= iterations < maxIterations;
+		learningNotEnded &= unlimitedIterations || iterations < maxIterations;
 		while (learningNotEnded) {
 
 			double oldMse = mse;
 
 			iterationPerformer.performeIteration();
 
+			iterations++;
 			evolutionInLastIteration = 1 - mse / oldMse;
-
-			learningNotEnded &= ++iterations < maxIterations;
-			learningNotEnded &= minimumEvolutionPerIteration < evolutionInLastIteration;
+			
+			if (evolutionInLastIteration < minimumProgressionPerIteration) {
+				insufficientProgressions++;
+			} else {
+				insufficientProgressions = 0;
+			}
+			learningNotEnded &= insufficientProgressions < Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+			
+			learningNotEnded &= unlimitedIterations ||iterations < maxIterations;
 		}
 
 	}
@@ -216,12 +226,12 @@ public class Learner extends Thread {
 		this.multiThreading = multiThreading;
 	}
 
-	public double getMinimumEvolutionPerIteration() {
-		return minimumEvolutionPerIteration;
+	public double getMinimumProgressionPerIteration() {
+		return minimumProgressionPerIteration;
 	}
 
-	public void setMinimumEvolutionPerIteration(double minimumEvolutionPerIteration) {
-		this.minimumEvolutionPerIteration = minimumEvolutionPerIteration;
+	public void setMinimumProgressionPerIteration(double minimumProgressionPerIteration) {
+		this.minimumProgressionPerIteration = minimumProgressionPerIteration;
 	}
 
 	public void addLearningStateListener(LearningStateListener lsl) {
@@ -230,6 +240,14 @@ public class Learner extends Thread {
 
 	public void removeLearningStateListener(LearningStateListener lsl) {
 		learningStateListeners.remove(lsl);
+	}
+
+	public boolean isUnlimitedIterations() {
+		return unlimitedIterations;
+	}
+
+	public void setUnlimitedIterations(boolean unlimitedIterations) {
+		this.unlimitedIterations = unlimitedIterations;
 	}
 
 	public interface LearningStateListener {

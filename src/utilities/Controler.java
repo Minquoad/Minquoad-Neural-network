@@ -231,6 +231,8 @@ public class Controler implements LearningStateListener {
 
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
+		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
+		learner.setUnlimitedIterations(learningPan.isUnlimitedIterations());
 
 		learner.addLearningStateListener(this);
 
@@ -267,6 +269,8 @@ public class Controler implements LearningStateListener {
 	public void savePreferences() {
 		Preferences.setMaxIter(this.learningPan.getMaxIter());
 		Preferences.setMultiThreading(this.learningPan.getMultiThreading());
+		Preferences.setMinimumProgressionPerIteration(this.learningPan.getMinimumProgressionPerIteration());
+		Preferences.setInterationsUnlimited(this.learningPan.isUnlimitedIterations());
 		
 		Preferences.save();
 	}

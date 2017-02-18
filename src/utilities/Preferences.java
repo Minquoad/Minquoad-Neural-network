@@ -10,7 +10,7 @@ import gClasses.DataAssociator;
 import gClasses.gInterfaces.GChoixFichier;
 import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
-public class Preferences {
+public abstract class Preferences {
 
 	public static final Color BLUE = new Color(19, 71, 84);
 	public static final Color BACKGROUND = new Color(23, 23, 20);
@@ -21,9 +21,13 @@ public class Preferences {
 			FileSystemView.getFileSystemView().getDefaultDirectory().toString()
 					+ "/Minquoad's Perceptron/preferences");
 
+	public static final int INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP = 8;
+	
 	private static String lastFolderLoaded = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 	private static int multiThreading = 1;
 	private static int maxIter = 1;
+	private static boolean interationsUnlimited = false;
+	private static double minimumProgressionPerIteration = 0.01;
 	private static boolean firstRunning = false;
 
 	static {
@@ -40,7 +44,7 @@ public class Preferences {
 			if (!da.exists("version") || !da.getValueString("version").equals(Starter.version)) {
 				firstRunning = true;
 			}
-			
+
 			if (da.exists("lastFolderLoaded")) {
 				lastFolderLoaded = da.getValueString("lastFolderLoaded");
 			}
@@ -49,6 +53,13 @@ public class Preferences {
 			}
 			if (da.exists("maxIter")) {
 				maxIter = da.getValueInt("maxIter");
+			}
+			if (da.exists("interationsUnlimited")) {
+				interationsUnlimited = Boolean.parseBoolean(da.getValueString("interationsUnlimited"));
+			}
+			if (da.exists("minimumProgressionPerIteration")) {
+				minimumProgressionPerIteration = Double
+						.parseDouble(da.getValueString("minimumProgressionPerIteration"));
 			}
 
 		} catch (Exception e) {
@@ -74,8 +85,10 @@ public class Preferences {
 			DataAssociator da = new DataAssociator(preferencesFile);
 
 			da.setValue("maxIter", maxIter);
+			da.setValue("interationsUnlimited", Boolean.toString(interationsUnlimited));
 			da.setValue("multiThreading", multiThreading);
 			da.setValue("lastFolderLoaded", lastFolderLoaded);
+			da.setValue("minimumProgressionPerIteration", Double.toString(minimumProgressionPerIteration));
 			da.setValue("version", Starter.version);
 
 			da.save();
@@ -106,6 +119,22 @@ public class Preferences {
 
 	public static void setMaxIter(int maxIter) {
 		Preferences.maxIter = maxIter;
+	}
+
+	public static boolean isInterationsUnlimited() {
+		return interationsUnlimited;
+	}
+
+	public static void setInterationsUnlimited(boolean interationsUnlimited) {
+		Preferences.interationsUnlimited = interationsUnlimited;
+	}
+
+	public static double getMinimumProgressionPerIteration() {
+		return minimumProgressionPerIteration;
+	}
+
+	public static void setMinimumProgressionPerIteration(double minimumProgressionPerIteration) {
+		Preferences.minimumProgressionPerIteration = minimumProgressionPerIteration;
 	}
 
 	public static boolean isFirstRunning() {

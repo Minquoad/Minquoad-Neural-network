@@ -6,8 +6,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 import gClasses.gInterfaces.GPanel;
@@ -115,6 +118,107 @@ public class MainPan extends GPanel {
 		} while (w != targetWidth || h != targetHeight);
 
 		return ret;
+	}
+
+	public static JTextField getDoubleField() {
+		JTextField dtf = new JTextField();
+		dtf.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String text = dtf.getText();
+
+				String newText = formatDoubleString(text);
+
+				newText = newText.substring(0, Math.min(newText.length(), 10));
+
+				if (text != newText) {
+					dtf.setText(newText);
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+		});
+
+		return dtf;
+	}
+
+	public static String formatDoubleString(String str) {
+		int firstDot = str.indexOf('.');
+		int lastDot = str.lastIndexOf('.');
+		while (lastDot != firstDot) {
+
+			str = str.substring(0, lastDot) + str.substring(lastDot + 1, str.length());
+
+			firstDot = str.indexOf('.');
+			lastDot = str.lastIndexOf('.');
+		}
+
+		int i = 0;
+		while (i < str.length()) {
+			char c = str.charAt(i);
+			boolean charValid = false;
+			charValid |= c == '.';
+			for (int j = 0; j <= 9; j++) {
+				charValid |= c == Integer.toString(j).charAt(0);
+			}
+			if (!charValid) {
+				str = str.substring(0, i) + str.substring(i + 1, str.length());
+			} else {
+				i++;
+			}
+		}
+
+		return str;
+	}
+
+	public static JTextField getIntegerField() {
+		JTextField dtf = new JTextField();
+		dtf.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String text = dtf.getText();
+
+				String newText = formatIntegerString(text);
+
+				newText = newText.substring(0, Math.min(newText.length(), 10));
+
+				if (text != newText) {
+					dtf.setText(newText);
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+		});
+
+		return dtf;
+	}
+
+	public static String formatIntegerString(String str) {
+		int i = 0;
+		while (i < str.length()) {
+			char c = str.charAt(i);
+			boolean charValid = false;
+			for (int j = 0; j <= 9; j++) {
+				charValid |= c == Integer.toString(j).charAt(0);
+			}
+			if (!charValid) {
+				str = str.substring(0, i) + str.substring(i + 1, str.length());
+			} else {
+				i++;
+			}
+		}
+
+		return str;
 	}
 
 }
