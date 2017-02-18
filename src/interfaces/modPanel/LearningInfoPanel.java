@@ -17,11 +17,11 @@ public class LearningInfoPanel extends TablePanel {
 	private int lastDescibedIteration = -1;
 
 	public LearningInfoPanel() {
-		this.setBackground(Preferences.BLUE);
+		this.setBackground(Preferences.HIGHLIGHTING);
 		this.setForeground(Preferences.FOREGROUND);
 		this.setHeaderBackground(new Color(11, 11, 11));
-		this.setHeaderForeground(Preferences.BLUE);
-		this.setHeaderCellBorderColor(Preferences.BLUE);
+		this.setHeaderForeground(Preferences.HIGHLIGHTING);
+		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
 		this.generateGridColor();
 		
 		this.clear();

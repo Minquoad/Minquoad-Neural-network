@@ -77,7 +77,7 @@ public class LearningPanel extends ModPanel {
 		maxIterField.setOpaque(false);
 		maxIterField.setForeground(Preferences.FOREGROUND);
 		maxIterField.setBorder(BorderFactory.createEmptyBorder());
-		maxIterPanel.setBorder(BorderFactory.createLineBorder(Preferences.BLUE));
+		maxIterPanel.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
 
 		infinitModButton = new JButton("\u221E");
 		infinitModButton.addActionListener((e) -> {
@@ -98,7 +98,7 @@ public class LearningPanel extends ModPanel {
 		minProgressionField.setOpaque(false);
 		minProgressionField.setForeground(Preferences.FOREGROUND);
 		minProgressionField.setBorder(BorderFactory.createEmptyBorder());
-		minProgressionPanel.setBorder(BorderFactory.createLineBorder(Preferences.BLUE));
+		minProgressionPanel.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
 
 		learningInfoPanel = new LearningInfoPanel();
 

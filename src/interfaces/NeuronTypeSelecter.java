@@ -55,7 +55,7 @@ public class NeuronTypeSelecter extends JPanel {
 					buttonList.get(j).setBackground(null);
 				}
 				neuTypeButton.setEnabled(false);
-				neuTypeButton.setBackground(Preferences.BLUE);
+				neuTypeButton.setBackground(Preferences.HIGHLIGHTING);
 			});
 
 			JTextPane textPane = new JTextPane();

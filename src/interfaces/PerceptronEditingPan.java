@@ -1,6 +1,5 @@
 package interfaces;
 
-import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
@@ -9,6 +8,7 @@ import javax.swing.JTextPane;
 import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.GPanel;
 import utilities.Controler;
+import utilities.Preferences;
 
 public class PerceptronEditingPan extends GPanel {
 
@@ -65,8 +65,8 @@ public class PerceptronEditingPan extends GPanel {
 		perceptronAdaptablePan.setVisible(!perValide);
 
 		if (perValide) {
-			validateButton.setBackground(new Color(19, 71, 84));
-			validateButton.setForeground(new Color(167, 236, 33));
+			validateButton.setBackground(Preferences.HIGHLIGHTING);
+			validateButton.setForeground(Preferences.FOREGROUND);
 			validateButton.setText("Is valide");
 
 			validateButton.setEnabled(true);

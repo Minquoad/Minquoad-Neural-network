@@ -12,7 +12,7 @@ import gClasses.gInterfaces.GChoixFichier.FileActionListener;
 
 public abstract class Preferences {
 
-	public static final Color BLUE = new Color(19, 71, 84);
+	public static final Color HIGHLIGHTING = new Color(19, 71, 84);
 	public static final Color BACKGROUND = new Color(23, 23, 20);
 	public static final Color CONTENT_BACKGROUND = new Color(39, 40, 34);
 	public static final Color FOREGROUND = new Color(204, 204, 204);

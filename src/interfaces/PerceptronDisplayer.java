@@ -142,7 +142,7 @@ public class PerceptronDisplayer extends GPanel {
 			if (valide) {
 
 				int blueContourThickness = this.getWidth() / 25;
-				g2.setPaint(new GradientPaint(0, 0, Preferences.BLUE, blueContourThickness, 0,
+				g2.setPaint(new GradientPaint(0, 0, Preferences.HIGHLIGHTING, blueContourThickness, 0,
 						Preferences.CONTENT_BACKGROUND, true));
 				Polygon polygon = new Polygon();
 				polygon.addPoint(0, 0);
@@ -151,7 +151,7 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(0, this.getHeight());
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(this.getWidth(), 0, Preferences.BLUE,
+				g2.setPaint(new GradientPaint(this.getWidth(), 0, Preferences.HIGHLIGHTING,
 						this.getWidth() - blueContourThickness, 0, Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth(), 0);
@@ -160,7 +160,7 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(this.getWidth() - blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, 0, Preferences.BLUE, 0, blueContourThickness,
+				g2.setPaint(new GradientPaint(0, 0, Preferences.HIGHLIGHTING, 0, blueContourThickness,
 						Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(0, 0);
@@ -169,7 +169,7 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, this.getHeight(), Preferences.BLUE, 0,
+				g2.setPaint(new GradientPaint(0, this.getHeight(), Preferences.HIGHLIGHTING, 0,
 						this.getHeight() + blueContourThickness, Preferences.CONTENT_BACKGROUND, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth() - blueContourThickness, this.getHeight() - blueContourThickness);

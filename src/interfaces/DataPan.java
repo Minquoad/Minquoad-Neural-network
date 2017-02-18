@@ -22,8 +22,8 @@ public class DataPan extends TablePanel {
 		this.setBackground(Preferences.CONTENT_BACKGROUND);
 		this.setForeground(Preferences.FOREGROUND);
 		this.setHeaderBackground(new Color(11, 11, 11));
-		this.setHeaderForeground(Preferences.BLUE);
-		this.setHeaderCellBorderColor(Preferences.BLUE);
+		this.setHeaderForeground(Preferences.HIGHLIGHTING);
+		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
 		this.generateGridColor();
 	}
 	

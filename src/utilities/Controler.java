@@ -151,7 +151,8 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void savePer() {
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING, (file) -> per.toDataAssociator().save(file));
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
+				(file) -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
@@ -271,7 +272,7 @@ public class Controler implements LearningStateListener {
 		Preferences.setMultiThreading(this.learningPan.getMultiThreading());
 		Preferences.setMinimumProgressionPerIteration(this.learningPan.getMinimumProgressionPerIteration());
 		Preferences.setInterationsUnlimited(this.learningPan.isUnlimitedIterations());
-		
+
 		Preferences.save();
 	}
 
