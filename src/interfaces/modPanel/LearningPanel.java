@@ -1,5 +1,6 @@
 package interfaces.modPanel;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -12,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+
+import com.sun.javafx.geom.Rectangle;
 
 import interfaces.MainPan;
 import utilities.Controler;
@@ -35,7 +38,7 @@ public class LearningPanel extends ModPanel {
 	public LearningPanel(Controler controler) {
 
 		unlimitedIterations = Preferences.isInterationsUnlimited();
-		
+
 		int cores = Runtime.getRuntime().availableProcessors();
 		int multiThreading = Math.min(Preferences.getMultiThreading(), cores);
 
@@ -126,10 +129,19 @@ public class LearningPanel extends ModPanel {
 		this.addToBottom(minProgressionLabel, maxIterLabel, 8);
 		this.addToRight(minProgressionPanel, minProgressionLabel, 3);
 
-		this.add(runButton, 0, 500, 200, 500);
-		this.add(stopButton, 0, 500, 200, 500);
+		Rectangle threadButtonsRectangle = new Rectangle(0, 500, 200, 500);
+		this.add(runButton,
+				threadButtonsRectangle.x,
+				threadButtonsRectangle.y,
+				threadButtonsRectangle.width,
+				threadButtonsRectangle.height);
+		this.add(stopButton,
+				threadButtonsRectangle.x,
+				threadButtonsRectangle.y,
+				threadButtonsRectangle.width,
+				threadButtonsRectangle.height);
 		stopButton.setVisible(false);
-		this.add(learningInfoPanel, 200, 500, 800, 500);
+		this.add(learningInfoPanel, 200, 500, 800, 300);
 		this.add(clearButton);
 		this.add(unlearnButton);
 
@@ -196,6 +208,17 @@ public class LearningPanel extends ModPanel {
 		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
 		clearButton.setBounds(this.getWidth() - (200 * this.getWidth() / 1000), this.getHeight() / 2 - 26,
 				200 * this.getWidth() / 1000, 26);
+
+		int i = this.getHeight() * 800 / 1000;
+		int x = this.getWidth() * 200 / 1000;
+		g.setColor(new Color(44, 44, 43));
+		g.drawLine(x, i, this.getWidth(), i);
+		i++;
+		g.setColor(new Color(55, 56, 51));
+		g.drawLine(x, i, this.getWidth(), i);
+		i++;
+		g.setColor(new Color(44, 44, 43));
+		g.drawLine(x, i, this.getWidth(), i);
 	}
 
 	public void startNewLearning() {

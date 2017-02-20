@@ -28,7 +28,7 @@ public class MainPan extends GPanel {
 	}
 
 	public void setModePan(GPanel modePan) {
-		this.setComponentIfChanged(modePan, this.modePan, 0, 0, 500, 500);
+		this.setComponentIfChanged(modePan, this.modePan, 0, 0, 500, 600);
 		this.modePan = modePan;
 	}
 
@@ -38,7 +38,7 @@ public class MainPan extends GPanel {
 	}
 
 	public void setDataPan(DataPan dataPan) {
-		this.setComponentIfChanged(dataPan, this.dataPan, 0, 500, 500, 500);
+		this.setComponentIfChanged(dataPan, this.dataPan, 0, 600, 500, 500);
 		this.dataPan = dataPan;
 	}
 
