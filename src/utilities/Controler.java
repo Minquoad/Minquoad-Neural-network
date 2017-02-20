@@ -228,7 +228,7 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void startLearning() {
-		learner = new Learner(per, data);
+		learner = new Learner(this, per, data);
 
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
@@ -264,7 +264,11 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void appendLearningInfo(int iter, double mse, double lastEvolution, long duration) {
-		this.learningPan.appendInfoLine(iter, mse, lastEvolution, duration);
+		this.learningPan.appendInfo(iter, mse, lastEvolution, duration);
+	}
+
+	public void appendLearningInfo(String str) {
+		this.learningPan.appendInfo(str);
 	}
 
 	public void savePreferences() {
@@ -284,10 +288,12 @@ public class Controler implements LearningStateListener {
 			bis.read(ba);
 			String helpText = new String(ba);
 
-			helpText = helpText.replaceAll("insufficientProgressionsNeededToStop",
+			helpText = helpText.replaceAll("_insufficientProgressionsNeededToStop",
 					Integer.toString(Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
 
-			new GDialog("Help", helpText, 800, 600, false).setVisible(true);
+			GDialog helpDialog = new GDialog("Help", helpText, 800, 600, false);
+			helpDialog.setAlwaysOnTop(false);
+			helpDialog.setVisible(true);
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,16 +1,19 @@
 package interfaces.modPanel;
 
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
@@ -34,6 +37,8 @@ public class LearningPanel extends ModPanel {
 	private JTextField minProgressionField;
 	private JButton infinitModButton;
 	private boolean unlimitedIterations;
+	private JTextArea learningInfoText;
+	private JScrollPane learningInfoTextScroll;
 
 	public LearningPanel(Controler controler) {
 
@@ -105,6 +110,18 @@ public class LearningPanel extends ModPanel {
 
 		learningInfoPanel = new LearningInfoPanel();
 
+		learningInfoText = new JTextArea();
+		learningInfoText.setEditable(false);
+		learningInfoText.setTabSize(4);
+		learningInfoText.setMargin(new Insets(0, 3, 0, 3));
+		learningInfoText.setFont(new Font("monospaced", Font.BOLD, 12));
+		learningInfoText.setBackground(Preferences.CONTENT_BACKGROUND);
+		learningInfoText.setForeground(Preferences.FOREGROUND);
+		learningInfoTextScroll = new JScrollPane(learningInfoText);
+		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+		learningInfoText.setText("");
+
 		clearButton = new JButton("Clear");
 		runButton = new MainButton("resources/pictures/computing.jpg");
 		stopButton = new MainButton("resources/pictures/stopLearning.jpg");
@@ -142,12 +159,16 @@ public class LearningPanel extends ModPanel {
 				threadButtonsRectangle.height);
 		stopButton.setVisible(false);
 		this.add(learningInfoPanel, 200, 500, 800, 300);
+		this.add(learningInfoTextScroll, 200, 800, 800, 200);
 		this.add(clearButton);
 		this.add(unlearnButton);
 
 		runButton.addActionListener((e) -> controler.startLearning());
 		stopButton.addActionListener((e) -> controler.endLearning());
-		clearButton.addActionListener((e) -> learningInfoPanel.clear());
+		clearButton.addActionListener((e) -> {
+			learningInfoPanel.clear();
+			learningInfoText.setText("");
+		});
 		unlearnButton.addActionListener((e) -> controler.unlearn());
 
 	}
@@ -182,8 +203,13 @@ public class LearningPanel extends ModPanel {
 		return mppi;
 	}
 
-	public void appendInfoLine(int iter, double mse, double lastEvolution, long duration) {
-		learningInfoPanel.appendInfoLine(iter, mse, lastEvolution, duration);
+	public void appendInfo(int iter, double mse, double lastEvolution, long duration) {
+		learningInfoPanel.appendInfo(iter, mse, lastEvolution, duration);
+	}
+
+	public void appendInfo(String str) {
+		learningInfoText.append(str);
+		learningInfoText.setCaretPosition(learningInfoText.getDocument().getLength());
 	}
 
 	public void setLearning(boolean learning) {
@@ -208,21 +234,13 @@ public class LearningPanel extends ModPanel {
 		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
 		clearButton.setBounds(this.getWidth() - (200 * this.getWidth() / 1000), this.getHeight() / 2 - 26,
 				200 * this.getWidth() / 1000, 26);
-
-		int i = this.getHeight() * 800 / 1000;
-		int x = this.getWidth() * 200 / 1000;
-		g.setColor(new Color(44, 44, 43));
-		g.drawLine(x, i, this.getWidth(), i);
-		i++;
-		g.setColor(new Color(55, 56, 51));
-		g.drawLine(x, i, this.getWidth(), i);
-		i++;
-		g.setColor(new Color(44, 44, 43));
-		g.drawLine(x, i, this.getWidth(), i);
 	}
 
 	public void startNewLearning() {
 		learningInfoPanel.startNewLearning();
+		if (learningInfoText.getText().length() != 0) {
+			learningInfoText.append("\n");
+		}
 	}
 
 }

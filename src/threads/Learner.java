@@ -7,10 +7,12 @@ import java.util.Random;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
+import utilities.Controler;
 import utilities.Preferences;
 
 public class Learner extends Thread {
 
+	private Controler controler;
 	private Perceptron per;
 	private double[][] samples;
 
@@ -22,18 +24,21 @@ public class Learner extends Thread {
 	private double minimumProgressionPerIteration = 0.01d;
 	private int insufficientProgressions = 0;
 	private double evolutionInLastIteration = 0d;
-	private double mse;
+	private double currentMse;
+	private double mseAfterLastIteration;
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
-	public Learner(Perceptron per, double[][] samples) {
+	public Learner(Controler controler, Perceptron per, double[][] samples) {
+		this.controler = controler;
 		this.per = per;
 		this.samples = samples;
 
 		if (per.isValid()) {
 			per.cleenInfinits(samples);
 		}
-		mse = per.getMse(samples);
+		currentMse = per.getMse(samples);
+		mseAfterLastIteration = currentMse;
 	}
 
 	public void run() {
@@ -59,24 +64,38 @@ public class Learner extends Thread {
 
 	private void iterate(IterationPerformer iterationPerformer) {
 
-		learningNotEnded &= unlimitedIterations || iterations < maxIterations;
+		if (!unlimitedIterations && maxIterations == 0) {
+			learningNotEnded = false;
+			controler.appendLearningInfo("Learning reached the maximum number of iterations\n");
+		}
 		while (learningNotEnded) {
-
-			double oldMse = mse;
 
 			iterationPerformer.performeIteration();
 
 			iterations++;
-			evolutionInLastIteration = 1 - mse / oldMse;
+			evolutionInLastIteration = 1 - currentMse / mseAfterLastIteration;
+			mseAfterLastIteration = currentMse;
 
 			if (evolutionInLastIteration < minimumProgressionPerIteration) {
 				insufficientProgressions++;
 			} else {
 				insufficientProgressions = 0;
 			}
-			learningNotEnded &= insufficientProgressions < Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
 
-			learningNotEnded &= unlimitedIterations || iterations < maxIterations;
+			boolean maxInsufficientProgressionsReached = insufficientProgressions == Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+			boolean maxIterationsReached = !unlimitedIterations && iterations == maxIterations;
+			if (maxInsufficientProgressionsReached || maxIterationsReached) {
+
+				learningNotEnded = false;
+
+				controler.appendLearningInfo("Learning stopped:\n");
+				if (maxInsufficientProgressionsReached) {
+					controler.appendLearningInfo("\tno longer progressing\n");
+				}
+				if (maxIterationsReached) {
+					controler.appendLearningInfo("\treached maximum number of iterations\n");
+				}
+			}
 		}
 
 	}
@@ -92,9 +111,9 @@ public class Learner extends Thread {
 
 				double newMse = per.getMse(samples);
 
-				if (newMse < mse && Double.isFinite(newMse)) {
+				if (newMse < currentMse && Double.isFinite(newMse)) {
 					nerve.reactToProgression();
-					mse = newMse;
+					currentMse = newMse;
 				} else {
 					nerve.reactToRegression();
 				}
@@ -144,11 +163,11 @@ public class Learner extends Thread {
 						newMse += treadMse;
 					}
 
-					if (newMse < mse && Double.isFinite(newMse)) {
+					if (newMse < currentMse && Double.isFinite(newMse)) {
 						for (int j = 0; j < multiThreading; j++) {
 							nervesList.get(j).get(i).reactToProgression();
 						}
-						mse = newMse;
+						currentMse = newMse;
 					} else {
 						for (int j = 0; j < multiThreading; j++) {
 							nervesList.get(j).get(i).reactToRegression();
@@ -211,6 +230,8 @@ public class Learner extends Thread {
 
 	public void endLearning() {
 		learningNotEnded = false;
+		controler.appendLearningInfo("Learning stopped:\n"
+				+ "\tstoped by user\n");
 	}
 
 	public boolean isLearningNotEnded() {
@@ -222,7 +243,7 @@ public class Learner extends Thread {
 	}
 
 	public double getMse() {
-		return mse;
+		return currentMse;
 	}
 
 	public double getEvolutionInLastIteration() {
@@ -267,6 +288,10 @@ public class Learner extends Thread {
 
 	public void setUnlimitedIterations(boolean unlimitedIterations) {
 		this.unlimitedIterations = unlimitedIterations;
+	}
+
+	public double getMseAfterLastIteration() {
+		return mseAfterLastIteration;
 	}
 
 	public interface LearningStateListener {

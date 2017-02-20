@@ -14,16 +14,15 @@ import utilities.Preferences;
 public class LearningInfoPanel extends TablePanel {
 
 	private DefaultTableModel model;
-	private int lastDescibedIteration = -1;
 
 	public LearningInfoPanel() {
 		this.setBackground(Preferences.HIGHLIGHTING);
 		this.setForeground(Preferences.FOREGROUND);
-		this.setHeaderBackground(new Color(11, 11, 11));
+		this.setHeaderBackground(new Color(8, 8, 8));
 		this.setHeaderForeground(Preferences.HIGHLIGHTING);
 		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
 		this.generateGridColor();
-		
+
 		this.clear();
 	}
 
@@ -37,36 +36,31 @@ public class LearningInfoPanel extends TablePanel {
 		this.setTable(table);
 	}
 
-	public void appendInfoLine(int iter, double mse, double lastEvolution, long duration) {
+	public void appendInfo(int iter, double mse, double lastEvolution, long duration) {
 
-		if (iter != lastDescibedIteration) {
-			lastDescibedIteration = iter;
-
-			String mseString;
-			if (Double.isFinite(mse)) {
-				mseString = Double.toString(new BigDecimal(mse).round(new MathContext(5)).doubleValue());
-			} else {
-				mseString = Double.toString(mse);
-			}
-
-			String mseProgression;
-			if (iter == 0) {
-				mseProgression = "/";
-			} else {
-				mseProgression = Double
-						.toString(new BigDecimal(lastEvolution * 100d).round(new MathContext(5)).doubleValue());
-			}
-
-			model.addRow(new Object[] { iter, mseString, mseProgression, duration });
-
-			scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight() - 1));
+		String mseString;
+		if (Double.isFinite(mse)) {
+			mseString = Double.toString(new BigDecimal(mse).round(new MathContext(5)).doubleValue());
+		} else {
+			mseString = Double.toString(mse);
 		}
+
+		String mseProgression;
+		if (iter == 0) {
+			mseProgression = "/";
+		} else {
+			mseProgression = Double
+					.toString(new BigDecimal(lastEvolution * 100d).round(new MathContext(5)).doubleValue());
+		}
+
+		model.addRow(new Object[] { iter, mseString, mseProgression, duration });
+
+		scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight() - 1));
 	}
 
 	public void startNewLearning() {
 		if (table.getRowCount() != 0) {
 			model.addRow(new Object[] { "", "", "", "" });
-			lastDescibedIteration = -1;
 		}
 	}
 

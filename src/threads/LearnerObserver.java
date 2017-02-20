@@ -10,6 +10,7 @@ public class LearnerObserver extends Thread implements LearningStateListener {
 	private boolean learning;
 	private static final long fps = 8;
 	private long startTime;
+	private int lastDescibedIteration = -1;
 
 	public LearnerObserver(Controler controler, Learner lea) {
 		this.controler = controler;
@@ -47,14 +48,20 @@ public class LearnerObserver extends Thread implements LearningStateListener {
 
 	public synchronized void printInfo() {
 
-		long time = System.currentTimeMillis();
-		
-		controler.appendLearningInfo(
-				lea.getIterations(),
-				lea.getMse(),
-				lea.getEvolutionInLastIteration(),
-				time-startTime);
+		int iter = lea.getIterations();
 
+		if (iter != lastDescibedIteration) {
+
+			long time = System.currentTimeMillis();
+
+			controler.appendLearningInfo(
+					iter,
+					lea.getMseAfterLastIteration(),
+					lea.getEvolutionInLastIteration(),
+					time - startTime);
+
+			lastDescibedIteration = iter;
+		}
 	}
 
 }

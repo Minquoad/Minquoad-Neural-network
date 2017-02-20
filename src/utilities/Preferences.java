@@ -26,7 +26,7 @@ public abstract class Preferences {
 	private static String lastFolderLoaded = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 	private static int multiThreading = 1;
 	private static int maxIter = 1;
-	private static boolean interationsUnlimited = false;
+	private static boolean interationsUnlimited = true;
 	private static double minimumProgressionPerIteration = 0.01;
 	private static boolean firstRunning = false;
 
