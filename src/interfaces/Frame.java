@@ -17,7 +17,7 @@ public class Frame extends GFrame implements WindowListener {
 	private boolean learning = false;
 
 	public Frame(Controler controler) {
-		super("Minquoad's Neurons", 930, 670, "resources/pictures/icon.png",
+		super("Minquoad's Neurons", 1366, 768-40, "resources/pictures/icon.png",
 				Preferences.preferencesFile);
 
 		this.controler = controler;

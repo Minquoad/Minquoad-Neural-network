@@ -7,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 public abstract class CsvFormatHelper {
 
@@ -24,23 +21,6 @@ public abstract class CsvFormatHelper {
 			}
 		}
 		return newTab;
-	}
-
-	public static double[][] randomizeSampleOrder(double[][] samples) {
-		double[][] randomizedSamples = new double[samples.length][samples[0].length];
-
-		List<double[]> sampleList = new LinkedList<double[]>();
-		for (double[] sample : samples) {
-			sampleList.add(sample);
-		}
-		Random rand = new Random();
-		for (int i = 0; i < randomizedSamples.length; i++) {
-			int j = rand.nextInt(sampleList.size());
-			randomizedSamples[i] = sampleList.get(j);
-			sampleList.remove(j);
-		}
-
-		return randomizedSamples;
 	}
 
 	public static void save(File file, double[][] data) {

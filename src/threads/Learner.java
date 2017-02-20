@@ -1,7 +1,9 @@
 package threads;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
@@ -66,15 +68,15 @@ public class Learner extends Thread {
 
 			iterations++;
 			evolutionInLastIteration = 1 - mse / oldMse;
-			
+
 			if (evolutionInLastIteration < minimumProgressionPerIteration) {
 				insufficientProgressions++;
 			} else {
 				insufficientProgressions = 0;
 			}
 			learningNotEnded &= insufficientProgressions < Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
-			
-			learningNotEnded &= unlimitedIterations ||iterations < maxIterations;
+
+			learningNotEnded &= unlimitedIterations || iterations < maxIterations;
 		}
 
 	}
@@ -158,6 +160,23 @@ public class Learner extends Thread {
 			}
 
 		});
+	}
+
+	public static double[][] randomizeSampleOrder(double[][] samples) {
+		double[][] randomizedSamples = new double[samples.length][samples[0].length];
+
+		List<double[]> sampleList = new LinkedList<double[]>();
+		for (double[] sample : samples) {
+			sampleList.add(sample);
+		}
+		Random rand = new Random();
+		for (int i = 0; i < randomizedSamples.length; i++) {
+			int j = rand.nextInt(sampleList.size());
+			randomizedSamples[i] = sampleList.get(j);
+			sampleList.remove(j);
+		}
+
+		return randomizedSamples;
 	}
 
 	private static ArrayList<double[][]> separatSamples(double[][] samples, int tableCount) {
