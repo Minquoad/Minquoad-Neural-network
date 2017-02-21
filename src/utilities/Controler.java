@@ -228,16 +228,17 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void startLearning() {
+		learningPan.startNewLearning();
+
 		learner = new Learner(this, per, data);
 
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
 		learner.setUnlimitedIterations(learningPan.isUnlimitedIterations());
+		learner.setLearningMode(Learner.LearningMode.SIMPLE);
 
 		learner.addLearningStateListener(this);
-
-		learningPan.startNewLearning();
 
 		new LearnerObserver(this, learner);
 

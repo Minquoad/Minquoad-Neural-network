@@ -12,6 +12,10 @@ import utilities.Preferences;
 
 public class Learner extends Thread {
 
+	public enum LearningMode {
+		SIMPLE, WITH_INDICE_COMPUTING
+	}
+
 	private Controler controler;
 	private Perceptron per;
 	private double[][] samples;
@@ -19,6 +23,7 @@ public class Learner extends Thread {
 	private boolean learningNotEnded = true;
 	private int maxIterations = 1;
 	private boolean unlimitedIterations = false;
+	private LearningMode learningMode = LearningMode.SIMPLE;
 	private int iterations = 0;
 	private int multiThreading = 1;
 	private double minimumProgressionPerIteration = 0.01d;
@@ -47,10 +52,37 @@ public class Learner extends Thread {
 			learningStateListener.learningStarted(this);
 		}
 
-		if (multiThreading == 1) {
-			leaningMonoThread();
-		} else {
-			leaningMultiThread();
+		switch (learningMode) {
+		case SIMPLE:
+
+			if (multiThreading == 1) {
+				leanMonoThread(samples);
+			} else {
+				leanMultiThread(samples);
+			}
+
+			break;
+		case WITH_INDICE_COMPUTING:
+
+			per.validate();
+			
+			double[][] samplesInRandomOrder = randomizeSampleOrder(samples);
+			
+			ArrayList<double[][]> samplesList = separatSamples(samplesInRandomOrder, 2);
+
+			double[][] samplesToLearn = samplesList.get(0);
+			if (multiThreading == 1) {
+				leanMonoThread(samplesToLearn);
+			} else {
+				leanMultiThread(samplesToLearn);
+			}
+
+			double mseOnUnlearnedData = per.getMse(samplesList.get(1));
+
+			controler.appendLearningInfo("-----currentMse : " + currentMse + "\n");
+			controler.appendLearningInfo("-----mseOnUnlearnedData : " + mseOnUnlearnedData + "\n");
+
+			break;
 		}
 
 		for (LearningStateListener learningStateListener : learningStateListeners) {
@@ -59,7 +91,7 @@ public class Learner extends Thread {
 	}
 
 	private interface IterationPerformer {
-		public abstract void performeIteration();
+		public void performeIteration();
 	}
 
 	private void iterate(IterationPerformer iterationPerformer) {
@@ -100,7 +132,7 @@ public class Learner extends Thread {
 
 	}
 
-	private void leaningMonoThread() {
+	private void leanMonoThread(double[][] samplesToLearn) {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
 		this.iterate(() -> {
@@ -109,7 +141,7 @@ public class Learner extends Thread {
 
 				nerve.evolve();
 
-				double newMse = per.getMse(samples);
+				double newMse = per.getMse(samplesToLearn);
 
 				if (newMse < currentMse && Double.isFinite(newMse)) {
 					nerve.reactToProgression();
@@ -123,8 +155,8 @@ public class Learner extends Thread {
 
 	}
 
-	private void leaningMultiThread() {
-		ArrayList<double[][]> samplesList = separatSamples(samples, multiThreading);
+	private void leanMultiThread(double[][] samplesToLearn) {
+		ArrayList<double[][]> samplesList = separatSamples(samplesToLearn, multiThreading);
 
 		ArrayList<Perceptron> perceptronList = new ArrayList<Perceptron>();
 
@@ -213,8 +245,8 @@ public class Learner extends Thread {
 		for (ArrayList<double[]> sampleList : sampleListList) {
 			samplesList.add(toTable(sampleList));
 		}
-		return samplesList;
 
+		return samplesList;
 	}
 
 	private static double[][] toTable(List<double[]> list) {
@@ -292,6 +324,14 @@ public class Learner extends Thread {
 
 	public double getMseAfterLastIteration() {
 		return mseAfterLastIteration;
+	}
+
+	public LearningMode getLearningMode() {
+		return learningMode;
+	}
+
+	public void setLearningMode(LearningMode learningMode) {
+		this.learningMode = learningMode;
 	}
 
 	public interface LearningStateListener {
