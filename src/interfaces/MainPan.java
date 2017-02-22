@@ -27,10 +27,6 @@ public class MainPan extends GPanel {
 		this.setBackground(Preferences.BACKGROUND);
 	}
 
-	public void validate() {
-		super.validate();
-	}
-
 	public void setModePan(GPanel modePan) {
 		this.setComponentIfChanged(modePan, this.modePan, 0f, 0f, 0.5f, 0.6f);
 		this.modePan = modePan;

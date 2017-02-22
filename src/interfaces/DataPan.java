@@ -6,11 +6,12 @@ import java.math.MathContext;
 
 import javax.swing.JTable;
 
+import gClasses.gInterfaces.GTablePanel;
 import utilities.Controler;
 import utilities.Controler.Mode;
 import utilities.Preferences;
 
-public class DataPan extends TablePanel {
+public class DataPan extends GTablePanel {
 
 	private Controler.Mode showedMod = null;
 	private double[][] showedData = null;

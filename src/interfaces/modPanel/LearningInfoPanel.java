@@ -8,10 +8,10 @@ import java.math.MathContext;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import interfaces.TablePanel;
+import gClasses.gInterfaces.GTablePanel;
 import utilities.Preferences;
 
-public class LearningInfoPanel extends TablePanel {
+public class LearningInfoPanel extends GTablePanel {
 
 	private DefaultTableModel model;
 

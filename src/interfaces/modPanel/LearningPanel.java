@@ -117,6 +117,7 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setForeground(Preferences.FOREGROUND);
 		learningInfoTextScroll = new JScrollPane(learningInfoText);
 		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		learningInfoTextScroll.setBorder(BorderFactory.createEmptyBorder());
 
 		learningInfoText.setText("");
 
@@ -169,6 +170,7 @@ public class LearningPanel extends ModPanel {
 		clearButton.addActionListener((e) -> {
 			learningInfoPanel.clear();
 			learningInfoText.setText("");
+			LearningPanel.this.validate();
 		});
 		unlearnButton.addActionListener((e) -> controler.unlearn());
 
