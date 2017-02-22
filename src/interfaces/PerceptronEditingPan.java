@@ -6,7 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 
 import entities.neuralNetwork.Perceptron;
-import gClasses.gInterfaces.GPanel;
+import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Controler;
 import utilities.Preferences;
 
@@ -40,13 +40,13 @@ public class PerceptronEditingPan extends GPanel {
 
 		validateButton.setFocusPainted(false);
 
-		this.add(neuTypSel, 0, 0, 1000, 333);
+		this.add(neuTypSel, 0, 0, 1, 1f / 3f);
 		inputCountLabel.setPreferredSize(new Dimension(100, 26));
-		this.add(inputCountLabel, 25, 400);
-		this.addToRight(addInputButton, inputCountLabel, 3);
-		this.addToRight(removeInputButton, addInputButton, 3);
-		this.add(resetButton, 750, 400, 200, 200);
-		this.add(validateButton, 500, 400, 200, 200);
+		this.add(inputCountLabel, 0.025f, 0.4f);
+		this.addToRight(addInputButton, inputCountLabel, 3, 0);
+		this.addToRight(removeInputButton, addInputButton, 3, 0);
+		this.add(resetButton, 0.75f, 0.4f, 0.2f, 0.2f);
+		this.add(validateButton, 0.5f, 0.4f, 0.2f, 0.2f);
 
 		addInputButton.addActionListener((e) -> controler.incrementInputCount());
 		removeInputButton.addActionListener((e) -> controler.decrementInputCount());
@@ -85,38 +85,46 @@ public class PerceptronEditingPan extends GPanel {
 				JButton addNeuron = new JButton("N++");
 				JButton removeNeuron = new JButton("N--");
 
-				int addLayerButtonWidth = 300;
+				float addLayerButtonWidth = 0.3f;
 
 				if (i == 0) {
-					perceptronAdaptablePan.add(addNeuron, 1000 * i / layerCount, 0,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+					perceptronAdaptablePan.add(addNeuron, (float) i / (float) layerCount, 0f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else if (i == layerCount - 1) {
-					perceptronAdaptablePan.add(addNeuron, 1000 * i / layerCount + addLayerButtonWidth / layerCount / 2,
-							0,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+					perceptronAdaptablePan.add(addNeuron,
+							(float) i / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							0f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else {
-					perceptronAdaptablePan.add(addNeuron, 1000 * i / layerCount + addLayerButtonWidth / layerCount / 2,
-							0, 1000 / layerCount - addLayerButtonWidth / layerCount, 333);
+					perceptronAdaptablePan.add(addNeuron,
+							(float) i / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							0f, 1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount, 1f / 3f);
 				}
 				final int j = i;
 
 				addNeuron.addActionListener(e -> controler.addNeuron(neuTypSel.getSelectedType(), j));
 
 				if (j == 0) {
-					perceptronAdaptablePan.add(removeNeuron, 1000 * j / layerCount, 333,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+					perceptronAdaptablePan.add(removeNeuron, (float) j / (float) layerCount, 1f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else if (j == layerCount - 1) {
 					perceptronAdaptablePan.add(removeNeuron,
-							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 333,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+							(float) j / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else {
 					perceptronAdaptablePan.add(removeNeuron,
-							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 333,
-							1000 / layerCount - addLayerButtonWidth / layerCount, 333);
+							(float) j / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount, 1f / 3f);
 				}
 				removeNeuron.addActionListener(e -> controler.removeNeuron(j));
 
@@ -128,9 +136,10 @@ public class PerceptronEditingPan extends GPanel {
 
 					perceptronAdaptablePan
 							.add(addLayer,
-									1000 * j / layerCount + 1000 / layerCount - addLayerButtonWidth / layerCount
-											+ addLayerButtonWidth / layerCount / 2,
-									0, addLayerButtonWidth / layerCount, 1000);
+									(float) j / (float) layerCount + 1f / (float) layerCount
+											- (float) addLayerButtonWidth / (float) layerCount
+											+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+									0f, (float) addLayerButtonWidth / (float) layerCount, 1f);
 
 					addLayer.addActionListener(e -> controler.addLayer(j + 1));
 				}
@@ -138,18 +147,22 @@ public class PerceptronEditingPan extends GPanel {
 				JButton removeLayer = new JButton("L--");
 
 				if (j == 0) {
-					perceptronAdaptablePan.add(removeLayer, 1000 * j / layerCount, 666,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+					perceptronAdaptablePan.add(removeLayer, (float) j / (float) layerCount, 2f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else if (j == layerCount - 1) {
 					perceptronAdaptablePan.add(removeLayer,
-							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 666,
-							1000 / layerCount - addLayerButtonWidth / layerCount + addLayerButtonWidth / layerCount / 2,
-							333);
+							(float) j / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							2f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount
+									+ (float) addLayerButtonWidth / (float) layerCount / 2f,
+							1f / 3f);
 				} else {
 					perceptronAdaptablePan.add(removeLayer,
-							1000 * j / layerCount + addLayerButtonWidth / layerCount / 2, 666,
-							1000 / layerCount - addLayerButtonWidth / layerCount, 333);
+							(float) j / (float) layerCount + (float) addLayerButtonWidth / (float) layerCount / 2f,
+							2f / 3f,
+							1f / (float) layerCount - (float) addLayerButtonWidth / (float) layerCount, 1f / 3f);
 				}
 				removeLayer.addActionListener(e -> controler.removeLayer(j));
 				if (j == 0 || j == layerCount - 1) {
@@ -157,7 +170,7 @@ public class PerceptronEditingPan extends GPanel {
 				}
 			}
 
-			this.add(perceptronAdaptablePan, 0, 666, 1000, 333);
+			this.add(perceptronAdaptablePan, 0, 2f / 3f, 1, 1f / 3f);
 
 		}
 	}

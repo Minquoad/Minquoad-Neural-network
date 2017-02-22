@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import gClasses.gInterfaces.GPanel;
+import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
 
 public class MainPan extends GPanel {
@@ -27,27 +27,31 @@ public class MainPan extends GPanel {
 		this.setBackground(Preferences.BACKGROUND);
 	}
 
+	public void validate() {
+		super.validate();
+	}
+
 	public void setModePan(GPanel modePan) {
-		this.setComponentIfChanged(modePan, this.modePan, 0, 0, 500, 600);
+		this.setComponentIfChanged(modePan, this.modePan, 0f, 0f, 0.5f, 0.6f);
 		this.modePan = modePan;
 	}
 
 	public void setPerceptronEditingPan(PerceptronEditingPan perceptronEditingPan) {
-		this.setComponentIfChanged(perceptronEditingPan, this.perceptronEditingPan, 500, 0, 500, 300);
+		this.setComponentIfChanged(perceptronEditingPan, this.perceptronEditingPan, 0.5f, 0f, 0.5f, 0.3f);
 		this.perceptronEditingPan = perceptronEditingPan;
 	}
 
 	public void setDataPan(DataPan dataPan) {
-		this.setComponentIfChanged(dataPan, this.dataPan, 0, 600, 500, 500);
+		this.setComponentIfChanged(dataPan, this.dataPan, 0f, 0.6f, 0.5f, 0.5f);
 		this.dataPan = dataPan;
 	}
 
 	public void setPerceptronDisplayer(PerceptronDisplayer perceptronDisplayer) {
-		this.setComponentIfChanged(perceptronDisplayer, this.perceptronDisplayer, 500, 300, 500, 700);
+		this.setComponentIfChanged(perceptronDisplayer, this.perceptronDisplayer, 0.5f, 0.3f, 0.5f, 0.7f);
 		this.perceptronDisplayer = perceptronDisplayer;
 	}
 
-	private void setComponentIfChanged(Component settedComp, Component memberComp, int x, int y, int w, int h) {
+	private void setComponentIfChanged(Component settedComp, Component memberComp, float x, float y, float w, float h) {
 		if (settedComp != memberComp) {
 			if (memberComp != null) {
 				this.remove(memberComp);
@@ -62,7 +66,7 @@ public class MainPan extends GPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		int i = this.getWidth() / 2;
+		int i = (int) ((float) this.getWidth() / 2f + 0.5f);
 		g.setColor(new Color(44, 44, 43));
 		g.drawLine(i, 0, i, this.getHeight());
 		i++;

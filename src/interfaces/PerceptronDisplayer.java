@@ -22,7 +22,7 @@ import entities.neuralNetwork.neurons.Neuron;
 import entities.neuralNetwork.neurons.PeriodicNeuron;
 import entities.neuralNetwork.neurons.SigNeuron;
 import gClasses.GRessourcesCollector;
-import gClasses.gInterfaces.GPanel;
+import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
 
 public class PerceptronDisplayer extends GPanel {
@@ -105,14 +105,15 @@ public class PerceptronDisplayer extends GPanel {
 
 				NeuronDisplayer neuDisp = new NeuronDisplayer(fond);
 
-				float w = (float) 1000 / (float) nerveWeb.length;
-				float h = (float) 1000 / (float) nerveWeb[i];
+				float w = 1f / (float) nerveWeb.length;
+				float h = 1f / (float) nerveWeb[i];
 
-				float fh = (float) 1000 / (float) maxNeuronsCountInALayer;
+				float fh = 1f / (float) maxNeuronsCountInALayer;
 
-				Point position = new Point((int) ((w * i + w * (i + 1)) / 2), (int) ((h * j + h * (j + 1)) / 2));
+				float x = (w * (float) i + w * ((float) i + 1f)) / 2f;
+				float y = (h * (float) j + h * ((float) j + 1f)) / 2f;
 
-				this.add(neuDisp, position.x - (int) (w / 2), position.y - (int) (fh / 2), (int) w, (int) fh);
+				this.add(neuDisp, x - (w / 2), y - (fh / 2), w, fh);
 
 				neuronDisplayers.add(neuDisp);
 

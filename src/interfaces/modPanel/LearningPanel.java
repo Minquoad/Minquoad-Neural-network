@@ -17,8 +17,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import com.sun.javafx.geom.Rectangle;
-
 import interfaces.MainPan;
 import utilities.Controler;
 import utilities.Preferences;
@@ -136,30 +134,33 @@ public class LearningPanel extends ModPanel {
 
 		this.add(multiThreadingLabel, 0, 0);
 		if (cores != 1) {
-			this.addToRight(multiThreadingSlider, multiThreadingLabel, 3);
+			this.addToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
 		}
 
-		this.addToBottom(maxIterLabel, multiThreadingLabel, 8);
-		this.addToRight(maxIterPanel, maxIterLabel, 3);
-		this.addToRight(infinitModButton, maxIterPanel, 3);
+		this.addToBottom(maxIterLabel, multiThreadingLabel, 0, 8);
+		this.addToRight(maxIterPanel, maxIterLabel, 3, 0);
+		this.addToRight(infinitModButton, maxIterPanel, 3, 0);
 
-		this.addToBottom(minProgressionLabel, maxIterLabel, 8);
-		this.addToRight(minProgressionPanel, minProgressionLabel, 3);
+		this.addToBottom(minProgressionLabel, maxIterLabel, 0, 8);
+		this.addToRight(minProgressionPanel, minProgressionLabel, 3, 0);
 
-		Rectangle threadButtonsRectangle = new Rectangle(0, 500, 200, 500);
+		float xThreadButtonsRectangle = 0f;
+		float yThreadButtonsRectangle = 0.5f;
+		float wThreadButtonsRectangle = 0.2f;
+		float hThreadButtonsRectangle = 0.5f;
 		this.add(runButton,
-				threadButtonsRectangle.x,
-				threadButtonsRectangle.y,
-				threadButtonsRectangle.width,
-				threadButtonsRectangle.height);
+				xThreadButtonsRectangle,
+				yThreadButtonsRectangle,
+				wThreadButtonsRectangle,
+				hThreadButtonsRectangle);
 		this.add(stopButton,
-				threadButtonsRectangle.x,
-				threadButtonsRectangle.y,
-				threadButtonsRectangle.width,
-				threadButtonsRectangle.height);
+				xThreadButtonsRectangle,
+				yThreadButtonsRectangle,
+				wThreadButtonsRectangle,
+				hThreadButtonsRectangle);
 		stopButton.setVisible(false);
-		this.add(learningInfoPanel, 200, 500, 800, 300);
-		this.add(learningInfoTextScroll, 200, 800, 800, 200);
+		this.add(learningInfoPanel, 0.2f, 0.5f, 0.8f, 0.3f);
+		this.add(learningInfoTextScroll, 0.2f, 0.8f, 0.8f, 0.2f);
 		this.add(clearButton);
 		this.add(unlearnButton);
 

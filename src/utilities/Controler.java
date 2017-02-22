@@ -124,6 +124,7 @@ public class Controler implements LearningStateListener {
 			break;
 		}
 
+		mainPan.validate();
 		mainPan.repaint();
 	}
 
@@ -131,6 +132,7 @@ public class Controler implements LearningStateListener {
 		perceptronEditingPan.regen(per);
 		perceptronDisplayer.setPerceptron(per);
 
+		mainPan.validate();
 		mainPan.repaint();
 	}
 

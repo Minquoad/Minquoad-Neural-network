@@ -7,16 +7,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 
 import gClasses.GRessourcesCollector;
-import gClasses.gInterfaces.GPanel;
+import gClasses.gInterfaces.gPanel.GPanel;
 import interfaces.MainPan;
 
 public class ModPanel extends GPanel {
-
-	public ModPanel() {
-
-		this.setOpaque(false);
-
-	}
 
 	protected class MainButton extends JButton {
 

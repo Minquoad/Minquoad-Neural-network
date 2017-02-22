@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
 import gClasses.GRessourcesCollector;
-import gClasses.gInterfaces.GPanel;
+import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
 
 public class NeuronTypeSelecter extends JPanel {
@@ -46,7 +46,7 @@ public class NeuronTypeSelecter extends JPanel {
 
 			NeuTypeButton neuTypeButton = new NeuTypeButton(typesDefinitions.get(type)[1]);
 
-			buttonPan.add(neuTypeButton, 1000 * i / types.length, 0, 1000 / types.length, 1000);
+			buttonPan.add(neuTypeButton, (float) i / (float) types.length, 0f, 1f / (float) types.length, 1f);
 			buttonList.add(neuTypeButton);
 			neuTypeButton.addActionListener((e) -> {
 				selectedType = type;
@@ -64,7 +64,7 @@ public class NeuronTypeSelecter extends JPanel {
 			textPane.setContentType("text/html");
 			textPane.setText("<body style='text-align: center;font-family: arial;'>" + typesDefinitions.get(type)[0]
 					+ "</body>");
-			labelPan.add(textPane, 1000 * i / types.length, 0, 1000 / types.length, 1000);
+			labelPan.add(textPane, (float) i / (float) types.length, 0f, 1f / (float) types.length, 1f);
 
 			textPane.addMouseListener(new MouseListener() {
 				public void mouseReleased(MouseEvent arg0) {}
@@ -93,10 +93,15 @@ public class NeuronTypeSelecter extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		int labelPanHeight = 25;
-
+/*
+		buttonPan.setLocation(0, 0);
+		buttonPan.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() - labelPanHeight));
+		labelPan.setLocation(0, this.getHeight() - labelPanHeight);
+		labelPan.setPreferredSize(new Dimension(this.getWidth(), labelPanHeight));
+*/
 		buttonPan.setBounds(0, 0, this.getWidth(), this.getHeight() - labelPanHeight);
 		labelPan.setBounds(0, this.getHeight() - labelPanHeight, this.getWidth(), labelPanHeight);
-
+		
 		super.paintComponent(g);
 	}
 
