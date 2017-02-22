@@ -1,8 +1,8 @@
 package interfaces.modPanel;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
+import gClasses.gInterfaces.gPanel.GLayout;
 import interfaces.MainPan;
 import utilities.Controler;
 import utilities.Preferences;
@@ -39,6 +40,8 @@ public class LearningPanel extends ModPanel {
 	private JScrollPane learningInfoTextScroll;
 
 	public LearningPanel(Controler controler) {
+
+		this.setLayout(new LearningPanelLayout());
 
 		unlimitedIterations = Preferences.isInterationsUnlimited();
 
@@ -117,7 +120,7 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setForeground(Preferences.FOREGROUND);
 		learningInfoTextScroll = new JScrollPane(learningInfoText);
 		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		learningInfoTextScroll.setBorder(BorderFactory.createEmptyBorder());
+		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Preferences.BORDER));
 
 		learningInfoText.setText("");
 
@@ -135,15 +138,15 @@ public class LearningPanel extends ModPanel {
 
 		this.add(multiThreadingLabel, 0, 0);
 		if (cores != 1) {
-			this.addToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
+			this.addAnchoredToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
 		}
 
-		this.addToBottom(maxIterLabel, multiThreadingLabel, 0, 8);
-		this.addToRight(maxIterPanel, maxIterLabel, 3, 0);
-		this.addToRight(infinitModButton, maxIterPanel, 3, 0);
+		this.addAnchoredToBottom(maxIterLabel, multiThreadingLabel, 0, 8);
+		this.addAnchoredToRight(maxIterPanel, maxIterLabel, 3, 0);
+		this.addAnchoredToRight(infinitModButton, maxIterPanel, 3, 0);
 
-		this.addToBottom(minProgressionLabel, maxIterLabel, 0, 8);
-		this.addToRight(minProgressionPanel, minProgressionLabel, 3, 0);
+		this.addAnchoredToBottom(minProgressionLabel, maxIterLabel, 0, 8);
+		this.addAnchoredToRight(minProgressionPanel, minProgressionLabel, 3, 0);
 
 		float xThreadButtonsRectangle = 0f;
 		float yThreadButtonsRectangle = 0.5f;
@@ -162,8 +165,8 @@ public class LearningPanel extends ModPanel {
 		stopButton.setVisible(false);
 		this.add(learningInfoPanel, 0.2f, 0.5f, 0.8f, 0.3f);
 		this.add(learningInfoTextScroll, 0.2f, 0.8f, 0.8f, 0.2f);
-		this.add(clearButton);
 		this.add(unlearnButton);
+		this.add(clearButton);
 
 		runButton.addActionListener((e) -> controler.startLearning());
 		stopButton.addActionListener((e) -> controler.endLearning());
@@ -174,6 +177,24 @@ public class LearningPanel extends ModPanel {
 		});
 		unlearnButton.addActionListener((e) -> controler.unlearn());
 
+	}
+
+	private class LearningPanelLayout extends GLayout {
+		@Override
+		public void layoutContainer(Container parent) {
+			super.layoutContainer(parent);
+
+			unlearnButton.setBounds(
+					0,
+					(int) ((float) parent.getHeight() / 2f + 0.5f) - 26,
+					(int) (0.2f * (float) parent.getWidth() + 0.5f),
+					26);
+			clearButton.setBounds(
+					(int) ((float) parent.getWidth() - (0.2f * (float) parent.getWidth()) + 0.5),
+					(int) ((float) parent.getHeight() / 2f + 0.5f) - 26,
+					(int) (0.2f * (float) parent.getWidth() + 0.5f),
+					26);
+		}
 	}
 
 	public int getMaxIter() {
@@ -229,14 +250,6 @@ public class LearningPanel extends ModPanel {
 			unlearnButton.setEnabled(!learning);
 			infinitModButton.setEnabled(!learning);
 		}
-	}
-
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-
-		unlearnButton.setBounds(0, this.getHeight() / 2 - 26, 200 * this.getWidth() / 1000, 26);
-		clearButton.setBounds(this.getWidth() - (200 * this.getWidth() / 1000), this.getHeight() / 2 - 26,
-				200 * this.getWidth() / 1000, 26);
 	}
 
 	public void startNewLearning() {

@@ -190,7 +190,7 @@ public class DataPan extends GTablePanel {
 
 	private void setDataTableHeaderToNone() {
 		for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setHeaderValue(i);
+			table.getColumnModel().getColumn(i).setHeaderValue(i+1);
 		}
 	}
 

@@ -43,8 +43,8 @@ public class PerceptronEditingPan extends GPanel {
 		this.add(neuTypSel, 0, 0, 1, 1f / 3f);
 		inputCountLabel.setPreferredSize(new Dimension(100, 26));
 		this.add(inputCountLabel, 0.025f, 0.4f);
-		this.addToRight(addInputButton, inputCountLabel, 3, 0);
-		this.addToRight(removeInputButton, addInputButton, 3, 0);
+		this.addAnchoredToRight(addInputButton, inputCountLabel, 3, 0);
+		this.addAnchoredToRight(removeInputButton, addInputButton, 3, 0);
 		this.add(resetButton, 0.75f, 0.4f, 0.2f, 0.2f);
 		this.add(validateButton, 0.5f, 0.4f, 0.2f, 0.2f);
 

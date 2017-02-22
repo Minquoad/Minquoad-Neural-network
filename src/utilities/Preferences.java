@@ -16,6 +16,7 @@ public abstract class Preferences {
 	public static final Color BACKGROUND = new Color(23, 23, 20);
 	public static final Color CONTENT_BACKGROUND = new Color(39, 40, 34);
 	public static final Color FOREGROUND = new Color(204, 204, 204);
+	public static final Color BORDER = new Color(122, 138, 153);
 
 	public static final File preferencesFile = new File(
 			FileSystemView.getFileSystemView().getDefaultDirectory().toString()

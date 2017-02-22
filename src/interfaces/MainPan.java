@@ -1,6 +1,5 @@
 package interfaces;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -59,13 +58,7 @@ public class MainPan extends GPanel {
 		super.paintComponent(g);
 
 		int i = (int) ((float) this.getWidth() / 2f + 0.5f);
-		g.setColor(new Color(44, 44, 43));
-		g.drawLine(i, 0, i, this.getHeight());
-		i++;
-		g.setColor(new Color(55, 56, 51));
-		g.drawLine(i, 0, i, this.getHeight());
-		i++;
-		g.setColor(new Color(44, 44, 43));
+		g.setColor(Preferences.BORDER);
 		g.drawLine(i, 0, i, this.getHeight());
 	}
 
