@@ -11,8 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
 import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
 import entities.neuralNetwork.neurons.BlankNeuron;
@@ -34,7 +32,7 @@ public class PerceptronDisplayer extends GPanel {
 	// grapicals
 	private int[] nerveWeb;
 	private ArrayList<Point> blankNeuronePosition;
-	private ArrayList<NeuronDisplayer> neuronDisplayers = new ArrayList<NeuronDisplayer>();
+	private ArrayList<GPanel> neuronDisplayers = new ArrayList<GPanel>();
 
 	public PerceptronDisplayer() {
 		this.setBackground(Preferences.CONTENT_BACKGROUND);
@@ -103,7 +101,10 @@ public class PerceptronDisplayer extends GPanel {
 				else if (currentNeuron.getClass() == Neuron.class)
 					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/lin.png");
 
-				NeuronDisplayer neuDisp = new NeuronDisplayer(fond);
+				GPanel neuDisp = new GPanel();
+				neuDisp.setBackgroundPicture(fond, GPanel.BackgroundDisplayType.FIT);
+				neuDisp.setBackground(Color.red);
+				neuDisp.setOpaque(false);
 
 				float w = 1f / (float) nerveWeb.length;
 				float h = 1f / (float) nerveWeb[i];
@@ -113,7 +114,7 @@ public class PerceptronDisplayer extends GPanel {
 				float x = (w * (float) i + w * ((float) i + 1f)) / 2f;
 				float y = (h * (float) j + h * ((float) j + 1f)) / 2f;
 
-				this.add(neuDisp, x - (w / 2), y - (fh / 2), w, fh);
+				this.add(neuDisp, x - (w / 4), y - (fh / 4), w/2, fh/2);
 
 				neuronDisplayers.add(neuDisp);
 
@@ -249,48 +250,6 @@ public class PerceptronDisplayer extends GPanel {
 				}
 			}
 		}
-	}
-
-	private class NeuronDisplayer extends JPanel {
-
-		private BufferedImage fond;
-
-		public NeuronDisplayer(BufferedImage fond) {
-
-			this.setOpaque(false);
-
-			this.fond = fond;
-
-		}
-
-		public void paintComponent(Graphics g) {
-
-			super.paintComponent(g);
-
-			float rate = Math.min((float) this.getWidth() / (float) fond.getWidth(),
-					(float) this.getHeight() / (float) fond.getHeight());
-
-			rate /= 2;
-
-			int imW = (int) ((float) fond.getWidth() * rate);
-			int imH = (int) ((float) fond.getHeight() * rate);
-
-			if (rate == 1)
-				g.drawImage(fond, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			else if (rate < 1) {
-				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
-						RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
-
-				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			} else {
-				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
-						RenderingHints.VALUE_INTERPOLATION_BILINEAR, false);
-
-				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			}
-
-		}
-
 	}
 
 }

@@ -1,8 +1,10 @@
 package interfaces;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.RenderingHints;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -83,6 +85,32 @@ public class NeuronTypeSelecter extends JPanel {
 			if (i == 0) {
 				neuTypeButton.doClick();
 			}
+			
+			this.setLayout(new LayoutManager() {
+				
+				@Override
+				public void removeLayoutComponent(Component comp) {}
+				
+				@Override
+				public Dimension preferredLayoutSize(Container parent) {
+					return null;
+				}
+				
+				@Override
+				public Dimension minimumLayoutSize(Container parent) {
+					return null;
+				}
+				
+				@Override
+				public void layoutContainer(Container parent) {
+					int labelPanHeight = 25;
+					buttonPan.setBounds(0, 0, parent.getWidth(), parent.getHeight() - labelPanHeight);
+					labelPan.setBounds(0, parent.getHeight() - labelPanHeight, parent.getWidth(), labelPanHeight);
+				}
+				
+				@Override
+				public void addLayoutComponent(String name, Component comp) {}
+			});
 		}
 
 	}
@@ -91,59 +119,18 @@ public class NeuronTypeSelecter extends JPanel {
 		return selectedType;
 	}
 
-	public void paintComponent(Graphics g) {
-		int labelPanHeight = 25;
-/*
-		buttonPan.setLocation(0, 0);
-		buttonPan.setPreferredSize(new Dimension(this.getWidth(), this.getHeight() - labelPanHeight));
-		labelPan.setLocation(0, this.getHeight() - labelPanHeight);
-		labelPan.setPreferredSize(new Dimension(this.getWidth(), labelPanHeight));
-*/
-		buttonPan.setBounds(0, 0, this.getWidth(), this.getHeight() - labelPanHeight);
-		labelPan.setBounds(0, this.getHeight() - labelPanHeight, this.getWidth(), labelPanHeight);
-		
-		super.paintComponent(g);
-	}
-
 	public enum Type {
 		LINEARE, CONSANT, SIGMOID, LOGARITHMIC, EXPONENTIAL, SINUSOIDAL;
 	}
 
 	private class NeuTypeButton extends JButton {
 
-		private String picturePath;
-
 		public NeuTypeButton(String picturePath) {
-			this.picturePath = "resources/pictures/neurons/" + picturePath;
+			BufferedImage fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/" + picturePath);
+			GPanel picturePanel = new GPanel();
+			picturePanel.setBackgroundPicture(fond, GPanel.BackgroundDisplayType.FIT);
+			this.add(picturePanel);
 		}
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-
-			BufferedImage fond = GRessourcesCollector.getBufferedImage(picturePath);
-
-			float rate = Math.min((float) this.getWidth() / (float) fond.getWidth(),
-					(float) (this.getHeight()) / (float) fond.getHeight());
-			int imW = (int) ((float) fond.getWidth() * rate);
-			int imH = (int) ((float) fond.getHeight() * rate);
-
-			if (rate == 1) {
-				g.drawImage(fond, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			} else if (rate < 1) {
-				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
-						RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
-
-				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			} else {
-				BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
-						RenderingHints.VALUE_INTERPOLATION_BILINEAR, false);
-
-				g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
-			}
-
-		}
-
 	}
 
 }

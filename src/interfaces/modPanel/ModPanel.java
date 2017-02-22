@@ -1,14 +1,12 @@
 package interfaces.modPanel;
 
 import java.awt.Graphics;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
-import interfaces.MainPan;
 
 public class ModPanel extends GPanel {
 
@@ -31,8 +29,7 @@ public class ModPanel extends GPanel {
 			int imW = (int) ((float) fond.getWidth() * rate);
 			int imH = (int) ((float) fond.getHeight() * rate);
 
-			BufferedImage scaled = MainPan.getScaledInstance(fond, imW, imH,
-					RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
+			BufferedImage scaled = GPanel.getScaledInstance(fond, imW, imH);
 
 			g.drawImage(scaled, (this.getWidth() - imW) / 2, (this.getHeight() - imH) / 2, imW, imH, this);
 		}
