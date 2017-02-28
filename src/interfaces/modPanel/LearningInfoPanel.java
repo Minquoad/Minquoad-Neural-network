@@ -28,7 +28,7 @@ public class LearningInfoPanel extends GTablePanel {
 
 	public void clear() {
 
-		String[] colHeadings = { "Iteration", "Square Error", "LIP (%)", "time (ms)" };
+		String[] colHeadings = { "Iteration", "Square error", "LIP (%)", "time (ms)" };
 		model = new DefaultTableModel(0, colHeadings.length);
 		model.setColumnIdentifiers(colHeadings);
 		table = new JTable(model);

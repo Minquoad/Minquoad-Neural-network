@@ -34,7 +34,7 @@ public class MainPan extends GPanel {
 	}
 
 	public void setDataPan(DataPan dataPan) {
-		this.setComponentIfChanged(dataPan, this.dataPan, 0f, 0.6f, 0.5f, 0.5f);
+		this.setComponentIfChanged(dataPan, this.dataPan, 0f, 0.6f, 0.5f, 0.4f);
 		this.dataPan = dataPan;
 	}
 
