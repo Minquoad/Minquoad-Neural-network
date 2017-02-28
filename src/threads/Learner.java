@@ -14,18 +14,21 @@ public class Learner extends Thread {
 	private Perceptron per;
 	private double[][] samples;
 
+	// to be setted
 	private int maxIterations = 1;
 	private boolean unlimitedIterations = false;
 	private LearningMode learningMode = LearningMode.SIMPLE;
 	private double minimumProgressionPerIteration = 0.01d;
+	private int multiThreading = 1;
 
+	// used by the algorithme
 	private boolean learningNotEnded = true;
 	private int iterations = 0;
-	private int multiThreading = 1;
 	private int insufficientProgressions = 0;
 	private double evolutionInLastIteration = 0d;
 	private double currentMse;
 	private double mseAfterLastIteration;
+	private int learnedSamplesCount = -1;
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
@@ -50,17 +53,30 @@ public class Learner extends Thread {
 
 			this.learn(samplesToLearn);
 
-			double mseOnUnlearnedData = per.getMse(samplesList.get(1));
+			double weightedMseOnUnlearnedData = per.getMse(samplesList.get(1)) / (double) samplesList.get(1).length;
+			double unlearnedPerceptronWeightedMSEMean = this.comuteUnlearnedPerceptronMSEMean(samples)
+					/ (double) samples.length;
 
-			controler.appendLearningInfo("\n" + "-> mse on learned data : " + currentMse);
-			controler.appendLearningInfo("\n" + "-> mse on control data : " + mseOnUnlearnedData);
+			double a = 1d / (getWeightedMseAfterLastIteration() - unlearnedPerceptronWeightedMSEMean);
+			double b = -a * unlearnedPerceptronWeightedMSEMean;
+			double neuralNetworkPortability = a * weightedMseOnUnlearnedData + b;
+
+			controler.appendLearningInfo("\n" + "-> MSE mean without learning : " + unlearnedPerceptronWeightedMSEMean);
+			controler.appendLearningInfo("\n" + "-> mse on learned data : " + getWeightedMseAfterLastIteration());
+			controler.appendLearningInfo("\n" + "-> mse on control data : " + weightedMseOnUnlearnedData);
+			controler.appendLearningInfo("\n" + "-> neural network portability (%) : " + neuralNetworkPortability * 100);
 
 			break;
+		}
+		
+		for (LearningStateListener learningStateListener : learningStateListeners) {
+			learningStateListener.learningEnded(this);
 		}
 	}
 
 	private void learn(double[][] samplesToLearn) {
 
+		learnedSamplesCount = samplesToLearn.length;
 		per.cleenInfinits(samplesToLearn);
 		currentMse = per.getMse(samplesToLearn);
 		mseAfterLastIteration = currentMse;
@@ -73,38 +89,13 @@ public class Learner extends Thread {
 		if (multiThreading == 1) {
 			leanMonoThread(samplesToLearn);
 		} else {
-			leanMultiThread(samplesToLearn);
-		}
-
-		for (LearningStateListener learningStateListener : learningStateListeners) {
-			learningStateListener.learningEnded(this);
-		}
-	}
-
-	private interface IterationPerformer {
-		public void performeIteration();
-	}
-
-	private void iterate(IterationPerformer iterationPerformer) {
-
-		updateLearningNotEnded();
-
-		while (learningNotEnded) {
-
-			iterationPerformer.performeIteration();
-
-			iterations++;
-			evolutionInLastIteration = 1 - currentMse / mseAfterLastIteration;
-			mseAfterLastIteration = currentMse;
-
-			if (evolutionInLastIteration < minimumProgressionPerIteration) {
-				insufficientProgressions++;
-			} else {
-				insufficientProgressions = 0;
+			try {
+				leanMultiThread(samplesToLearn);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-
-			updateLearningNotEnded();
 		}
+
 		controler.appendLearningInfo("\n" + "Learning ended");
 		if (!isMaxInsufficientProgressionsUnreached()) {
 			controler.appendLearningInfo("\n" + "-> no longer progressing");
@@ -114,22 +105,10 @@ public class Learner extends Thread {
 		}
 	}
 
-	private void updateLearningNotEnded() {
-		learningNotEnded &= isMaxInsufficientProgressionsUnreached() && isMaxIterationsUnreached();
-	}
-
-	private boolean isMaxInsufficientProgressionsUnreached() {
-		return insufficientProgressions != Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
-	}
-
-	private boolean isMaxIterationsUnreached() {
-		return unlimitedIterations || iterations != maxIterations;
-	}
-
 	private void leanMonoThread(double[][] samplesToLearn) {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
-		this.iterate(() -> {
+		for (updateLearningNotEnded(); learningNotEnded; peroformeIterationEnded()) {
 
 			for (Nerve nerve : nerves) {
 
@@ -145,11 +124,11 @@ public class Learner extends Thread {
 				}
 			}
 
-		});
+		}
 
 	}
 
-	private void leanMultiThread(double[][] samplesToLearn) {
+	private void leanMultiThread(double[][] samplesToLearn) throws InterruptedException {
 		ArrayList<double[][]> samplesList = splitSamples(samplesToLearn, multiThreading);
 
 		ArrayList<Perceptron> perceptronList = new ArrayList<Perceptron>();
@@ -163,48 +142,84 @@ public class Learner extends Thread {
 			nervesList.add(perceptronList.get(i).getAllNerve());
 		}
 
-		this.iterate(() -> {
+		for (updateLearningNotEnded(); learningNotEnded; peroformeIterationEnded()) {
 
-			try {
-				for (int i = 0; i < nervesList.get(0).size(); i++) {
+			for (int i = 0; i < nervesList.get(0).size(); i++) {
 
+				for (int j = 0; j < multiThreading; j++) {
+					nervesList.get(j).get(i).evolve();
+				}
+				Thread[] treads = new Thread[multiThreading];
+				double[] treadMses = new double[multiThreading];
+
+				for (int j = 0; j < multiThreading; j++) {
+					final int k = j;
+					treads[j] = new Thread(() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
+					treads[j].start();
+				}
+
+				for (Thread thread : treads) {
+					thread.join();
+				}
+
+				double newMse = 0;
+				for (double treadMse : treadMses) {
+					newMse += treadMse;
+				}
+
+				if (newMse < currentMse && Double.isFinite(newMse)) {
 					for (int j = 0; j < multiThreading; j++) {
-						nervesList.get(j).get(i).evolve();
+						nervesList.get(j).get(i).reactToProgression();
 					}
-					Thread[] treads = new Thread[multiThreading];
-					double[] treadMses = new double[multiThreading];
-
+					currentMse = newMse;
+				} else {
 					for (int j = 0; j < multiThreading; j++) {
-						final int k = j;
-						treads[j] = new Thread(() -> treadMses[k] = perceptronList.get(k).getMse(samplesList.get(k)));
-						treads[j].start();
-					}
-
-					for (Thread thread : treads) {
-						thread.join();
-					}
-
-					double newMse = 0;
-					for (double treadMse : treadMses) {
-						newMse += treadMse;
-					}
-
-					if (newMse < currentMse && Double.isFinite(newMse)) {
-						for (int j = 0; j < multiThreading; j++) {
-							nervesList.get(j).get(i).reactToProgression();
-						}
-						currentMse = newMse;
-					} else {
-						for (int j = 0; j < multiThreading; j++) {
-							nervesList.get(j).get(i).reactToRegression();
-						}
+						nervesList.get(j).get(i).reactToRegression();
 					}
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 
-		});
+		}
+	}
+
+	private void peroformeIterationEnded() {
+		iterations++;
+		evolutionInLastIteration = 1 - currentMse / mseAfterLastIteration;
+		mseAfterLastIteration = currentMse;
+
+		if (evolutionInLastIteration < minimumProgressionPerIteration) {
+			insufficientProgressions++;
+		} else {
+			insufficientProgressions = 0;
+		}
+		
+		updateLearningNotEnded();
+	}
+
+	private void updateLearningNotEnded() {
+		learningNotEnded &= isMaxInsufficientProgressionsUnreached() && isMaxIterationsUnreached();
+	}
+
+	private boolean isMaxInsufficientProgressionsUnreached() {
+		return insufficientProgressions != Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+	}
+
+	private boolean isMaxIterationsUnreached() {
+		return unlimitedIterations || iterations != maxIterations;
+	}
+
+	private double comuteUnlearnedPerceptronMSEMean(double[][] unlearnedSamples) {
+		Perceptron randomPer = per.duplicate();
+
+		int randomPerTested = 16;
+		double mseSum = 0;
+
+		for (int i = 0; i < randomPerTested; i++) {
+			randomPer.validate();
+			mseSum += randomPer.getMse(unlearnedSamples);
+		}
+
+		return mseSum / (double) randomPerTested;
 	}
 
 	private static ArrayList<double[][]> splitSamples(double[][] samples, int tableCount) {
@@ -299,6 +314,10 @@ public class Learner extends Thread {
 
 	public double getMseAfterLastIteration() {
 		return mseAfterLastIteration;
+	}
+
+	public double getWeightedMseAfterLastIteration() {
+		return mseAfterLastIteration / (double) learnedSamplesCount;
 	}
 
 	public LearningMode getLearningMode() {

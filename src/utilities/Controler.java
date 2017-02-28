@@ -301,8 +301,7 @@ public class Controler implements LearningStateListener {
 	public void randomizeSamplesOrder() {
 		if (data != null) {
 			data = CsvFormatHelper.randomizeSampleOrder(data);
-			dataPan.setLearningMode(data, per.getInputCount());
-			mainPan.validate();
+			updateMode();
 		}
 	}
 
