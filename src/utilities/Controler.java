@@ -156,13 +156,12 @@ public class Controler implements LearningStateListener {
 			break;
 		}
 
-		boolean occupied = mode.impliesOccupation();
-		frame.setOccupied(occupied);
-		perceptronEditingPan.setOccupied(occupied);
-		learningPan.setOccupied(occupied);
-		processingPan.setOccupied(occupied);
+		frame.setOccupied(mode.impliesOccupation());
+		perceptronEditingPan.setOccupied(mode.impliesOccupation());
+		learningPan.setOccupied(mode.impliesOccupation());
+		processingPan.setOccupied(mode.impliesOccupation());
 
-		frame.enableCsvSaving(results != null);
+		frame.enableCsvSaving(mode == ApplicationMode.WILL_PROCEED && results != null);
 
 		mainPan.validate();
 		mainPan.repaint();
