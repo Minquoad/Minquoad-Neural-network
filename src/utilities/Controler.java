@@ -1,8 +1,6 @@
 package utilities;
 
-import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
@@ -25,6 +23,7 @@ import interfaces.MainPan;
 import interfaces.NeuronTypeSelecter;
 import interfaces.PerceptronDisplayer;
 import interfaces.PerceptronEditingPan;
+import interfaces.ShortCutManager;
 import interfaces.modPanel.LearningPanel;
 import interfaces.modPanel.ProcessingPanel;
 import threads.Learner;
@@ -34,8 +33,12 @@ import threads.Processor;
 
 public class Controler implements LearningStateListener {
 
+	public static void main(String[] args) {
+		new Controler();
+	}
+
 	// repository
-	private Perceptron per = new Perceptron();
+	private Perceptron per;
 	private double[][] data = null;
 	private double[][] results = null;
 	private Learner learner = null;
@@ -52,47 +55,21 @@ public class Controler implements LearningStateListener {
 	private DataPan dataPan = new DataPan();
 	private LearningPanel learningPan = new LearningPanel(this);
 	private ProcessingPanel processingPan = new ProcessingPanel(this);
+	private ShortCutManager shortCutManager = new ShortCutManager(this);
 
 	public Controler() {
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-			boolean busy = false;
+		this.resetPerceptron();
 
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent arg0) {
-				if (!busy) {
-					busy = true;
-
-					switch (arg0.getKeyCode()) {
-					case KeyEvent.VK_F1:
-						Controler.this.loadPer();
-						break;
-					case KeyEvent.VK_F2:
-						Controler.this.savePer();
-						break;
-					case KeyEvent.VK_F3:
-						Controler.this.loadCsv();
-						break;
-					case KeyEvent.VK_F4:
-						if (Controler.this.results != null) {
-							Controler.this.saveCsv();
-						}
-						break;
-					default:
-						break;
-					}
-
-					busy = false;
-				}
-				return false;
-			}
-		});
-
-		frame.setContentPane(mainPan);
 		mainPan.setPerceptronEditingPan(perceptronEditingPan);
 		mainPan.setDataPan(dataPan);
 		mainPan.setPerceptronDisplayer(perceptronDisplayer);
+		frame.setContentPane(mainPan);
 
-		this.resetPerceptron();
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(shortCutManager);
+
+		if (Preferences.isFirstRunning()) {
+			help();
+		}
 
 		frame.setVisible(true);
 	}
@@ -156,12 +133,15 @@ public class Controler implements LearningStateListener {
 			break;
 		}
 
-		frame.setOccupied(mode.impliesOccupation());
-		perceptronEditingPan.setOccupied(mode.impliesOccupation());
-		learningPan.setOccupied(mode.impliesOccupation());
-		processingPan.setOccupied(mode.impliesOccupation());
+		boolean impliesOccupation = mode.impliesOccupation();
+		frame.setOccupied(impliesOccupation);
+		perceptronEditingPan.setOccupied(impliesOccupation);
+		learningPan.setOccupied(impliesOccupation);
+		processingPan.setOccupied(impliesOccupation);
 
-		frame.enableCsvSaving(mode == ApplicationMode.WILL_PROCEED && results != null);
+		boolean enableCsvSaving = mode == ApplicationMode.WILL_PROCEED && results != null;
+		frame.enableCsvSaving(enableCsvSaving);
+		shortCutManager.enableCsvSaving(enableCsvSaving);
 
 		mainPan.validate();
 		mainPan.repaint();
@@ -184,7 +164,7 @@ public class Controler implements LearningStateListener {
 				perceptronModified();
 				updateMode();
 			} catch (Exception e) {
-				if (Starter.printCaughtExceptionStackTraces) {
+				if (Preferences.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -203,7 +183,7 @@ public class Controler implements LearningStateListener {
 				data = CsvFormatHelper.getData(file);
 				updateMode();
 			} catch (Exception e) {
-				if (Starter.printCaughtExceptionStackTraces) {
+				if (Preferences.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -217,8 +197,12 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void resetPerceptron() {
-		per.removeAllLayer();
-		per.setInputCount(0);
+		if (per == null) {
+			per = new Perceptron();
+		} else {
+			per.removeAllLayer();
+			per.setInputCount(0);
+		}
 		per.addLayer(new Layer(per));
 		per.addLayer(new Layer(per));
 
@@ -238,7 +222,7 @@ public class Controler implements LearningStateListener {
 
 	public void about() {
 		new GDialog("About",
-				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Starter.version, 300,
+				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Preferences.VERSION, 300,
 				200, true).setVisible(true);
 	}
 

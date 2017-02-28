@@ -13,6 +13,10 @@ import threads.LearningMode;
 
 public abstract class Preferences {
 
+	public static final String VERSION = "2.0.2";
+
+	public static final boolean PRINT_CAUGHT_EXCEPTION_STACK_TRACES = false;
+
 	public static final Color HIGHLIGHTING = new Color(19, 71, 84);
 	public static final Color BACKGROUND = new Color(23, 23, 20);
 	public static final Color CONTENT_BACKGROUND = new Color(39, 40, 34);
@@ -44,7 +48,7 @@ public abstract class Preferences {
 		try {
 			DataAssociator da = new DataAssociator(preferencesFile);
 
-			if (!da.exists("version") || !da.getValueString("version").equals(Starter.version)) {
+			if (!da.exists("VERSION") || !da.getValueString("VERSION").equals(VERSION)) {
 				firstRunning = true;
 			}
 
@@ -96,7 +100,7 @@ public abstract class Preferences {
 			da.setValue("lastFolderLoaded", lastFolderLoaded);
 			da.setValue("minimumProgressionPerIteration", Double.toString(minimumProgressionPerIteration));
 			da.setValue("learningMode", learningMode.toString());
-			da.setValue("version", Starter.version);
+			da.setValue("VERSION", VERSION);
 
 			da.save();
 		} catch (Exception e) {

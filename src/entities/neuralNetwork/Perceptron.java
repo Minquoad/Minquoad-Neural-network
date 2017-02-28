@@ -99,11 +99,10 @@ public class Perceptron {
 	}
 
 	public void removeAllLayer() {
-		invalidate();
+		this.invalidate();
 		while (!layers.isEmpty()) {
 			layers.remove(0);
 		}
-		valid = false;
 	}
 
 	public void setInputs(double[] inputs) {
