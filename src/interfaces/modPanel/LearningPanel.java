@@ -266,8 +266,8 @@ public class LearningPanel extends ModPanel {
 		return (LearningMode) modComboBox.getSelectedItem();
 	}
 
-	public void appendInfo(int iter, double mse, double lastEvolution, long duration) {
-		learningInfoPanel.appendInfo(iter, mse, lastEvolution, duration);
+	public void appendInfo(int iter, double squareError, double lastEvolution, long duration) {
+		learningInfoPanel.appendInfo(iter, squareError, lastEvolution, duration);
 	}
 
 	public void appendInfo(String str) {

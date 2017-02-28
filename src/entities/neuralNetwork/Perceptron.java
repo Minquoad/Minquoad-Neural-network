@@ -141,9 +141,9 @@ public class Perceptron {
 		return outputs;
 	}
 
-	public double getMse(double[][] samples) {
+	public double getSquareError(double[][] samples) {
 
-		double mse = 0;
+		double squareError = 0;
 
 		for (double[] currentSample : samples) {
 
@@ -154,11 +154,11 @@ public class Perceptron {
 			Layer lastLayer = layers.get(layers.size() - 1);
 			int neuronesCount = lastLayer.getNeuroneCount();
 			for (int j = 0; j < neuronesCount; j++) {
-				mse += Math.pow(lastLayer.getNeurone(j).getCharge() - currentSample[j + inputCount], 2);
+				squareError += Math.pow(lastLayer.getNeurone(j).getCharge() - currentSample[j + inputCount], 2);
 			}
 		}
 
-		return mse;
+		return squareError;
 	}
 
 	public void cleenInfinits(double[][] samples) {

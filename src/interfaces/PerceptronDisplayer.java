@@ -114,7 +114,7 @@ public class PerceptronDisplayer extends GPanel {
 				float x = (w * (float) i + w * ((float) i + 1f)) / 2f;
 				float y = (h * (float) j + h * ((float) j + 1f)) / 2f;
 
-				this.add(neuDisp, x - (w / 4), y - (fh / 4), w/2, fh/2);
+				this.add(neuDisp, x - (w / 4), y - (fh / 4), w / 2, fh / 2);
 
 				neuronDisplayers.add(neuDisp);
 

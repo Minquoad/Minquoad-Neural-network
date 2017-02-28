@@ -24,7 +24,7 @@ public abstract class Preferences {
 					+ "/Minquoad's Perceptron/preferences");
 
 	public static final int INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP = 8;
-	
+
 	private static String lastFolderLoaded = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 	private static int multiThreading = 1;
 	private static int maxIter = 1;

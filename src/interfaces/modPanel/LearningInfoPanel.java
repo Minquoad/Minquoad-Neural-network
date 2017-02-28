@@ -28,7 +28,7 @@ public class LearningInfoPanel extends GTablePanel {
 
 	public void clear() {
 
-		String[] colHeadings = { "Iteration", "MSE", "LIP (%)", "time (ms)" };
+		String[] colHeadings = { "Iteration", "Square Error", "LIP (%)", "time (ms)" };
 		model = new DefaultTableModel(0, colHeadings.length);
 		model.setColumnIdentifiers(colHeadings);
 		table = new JTable(model);
@@ -36,24 +36,24 @@ public class LearningInfoPanel extends GTablePanel {
 		this.setTable(table);
 	}
 
-	public void appendInfo(int iter, double mse, double lastEvolution, long duration) {
+	public void appendInfo(int iter, double squareError, double lastEvolution, long duration) {
 
-		String mseString;
-		if (Double.isFinite(mse)) {
-			mseString = Double.toString(new BigDecimal(mse).round(new MathContext(5)).doubleValue());
+		String squareErrorString;
+		if (Double.isFinite(squareError)) {
+			squareErrorString = Double.toString(new BigDecimal(squareError).round(new MathContext(5)).doubleValue());
 		} else {
-			mseString = Double.toString(mse);
+			squareErrorString = Double.toString(squareError);
 		}
 
-		String mseProgression;
+		String squareErrorProgression;
 		if (iter == 0) {
-			mseProgression = "/";
+			squareErrorProgression = "/";
 		} else {
-			mseProgression = Double
+			squareErrorProgression = Double
 					.toString(new BigDecimal(lastEvolution * 100d).round(new MathContext(5)).doubleValue());
 		}
 
-		model.addRow(new Object[] { iter, mseString, mseProgression, duration });
+		model.addRow(new Object[] { iter, squareErrorString, squareErrorProgression, duration });
 
 		scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight() - 1));
 	}

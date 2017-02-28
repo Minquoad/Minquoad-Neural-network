@@ -27,7 +27,7 @@ public class DataPan extends GTablePanel {
 		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
 		this.generateGridColor();
 	}
-	
+
 	public void setNoneMode(double[][] data) {
 		if (data != null) {
 
@@ -190,7 +190,7 @@ public class DataPan extends GTablePanel {
 
 	private void setDataTableHeaderToNone() {
 		for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setHeaderValue(i+1);
+			table.getColumnModel().getColumn(i).setHeaderValue(i + 1);
 		}
 	}
 

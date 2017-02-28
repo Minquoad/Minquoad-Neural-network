@@ -310,8 +310,8 @@ public class Controler implements LearningStateListener {
 		this.updateMode();
 	}
 
-	public void appendLearningInfo(int iter, double mse, double lastEvolution, long duration) {
-		this.learningPan.appendInfo(iter, mse, lastEvolution, duration);
+	public void appendLearningInfo(int iter, double squareError, double lastEvolution, long duration) {
+		this.learningPan.appendInfo(iter, squareError, lastEvolution, duration);
 	}
 
 	public void appendLearningInfo(String str) {

@@ -56,7 +56,7 @@ public class LearnerObserver extends Thread implements LearningStateListener {
 
 			controler.appendLearningInfo(
 					iter,
-					lea.getWeightedMseAfterLastIteration(),
+					lea.getWeightedSquareErrorAfterLastIteration(),
 					lea.getEvolutionInLastIteration(),
 					time - startTime);
 

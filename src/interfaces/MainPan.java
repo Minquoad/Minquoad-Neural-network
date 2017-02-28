@@ -94,7 +94,7 @@ public class MainPan extends GPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {}
 		});
-		
+
 		dtf.setOpaque(false);
 		dtf.setForeground(Preferences.FOREGROUND);
 		dtf.setBorder(BorderFactory.createEmptyBorder());
