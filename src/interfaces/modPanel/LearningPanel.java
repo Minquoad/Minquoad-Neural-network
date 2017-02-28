@@ -1,6 +1,5 @@
 package interfaces.modPanel;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -10,15 +9,18 @@ import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
-import gClasses.gInterfaces.gPanel.GLayout;
 import interfaces.MainPan;
+import threads.LearningMode;
 import utilities.Controler;
 import utilities.Preferences;
 
@@ -31,6 +33,7 @@ public class LearningPanel extends ModPanel {
 	private MainButton stopButton;
 	private JSlider multiThreadingSlider;
 	private JButton unlearnButton;
+	private JButton randomizeSamplesOrderButton;
 	private JButton clearButton;
 	private JTextField maxIterField;
 	private JTextField minProgressionField;
@@ -38,12 +41,11 @@ public class LearningPanel extends ModPanel {
 	private boolean unlimitedIterations;
 	private JTextArea learningInfoText;
 	private JScrollPane learningInfoTextScroll;
+	private JComboBox<LearningMode> modComboBox;
 
 	public LearningPanel(Controler controler) {
 
-		this.setLayout(new LearningPanelLayout());
-
-		unlimitedIterations = Preferences.isInterationsUnlimited();
+		// multithreading
 
 		int cores = Runtime.getRuntime().availableProcessors();
 		int multiThreading = Math.min(Preferences.getMultiThreading(), cores);
@@ -56,8 +58,12 @@ public class LearningPanel extends ModPanel {
 			multiThreadingLabel.setText("Thread used : " + multiThreadingSlider.getValue());
 		});
 
+		// max iterration
+
 		JTextPane maxIterLabel = MainPan.creadStandartJTextPane();
 		maxIterLabel.setText("Max number of iterations : ");
+
+		unlimitedIterations = Preferences.isInterationsUnlimited();
 
 		maxIterField = MainPan.getIntegerField();
 		maxIterField.addKeyListener(new KeyListener() {
@@ -72,27 +78,23 @@ public class LearningPanel extends ModPanel {
 				unlimitedIterations = false;
 			}
 		});
-		;
+
 		maxIterField.setCaretColor(Preferences.FOREGROUND);
 		if (unlimitedIterations) {
 			maxIterField.setText("\u221E");
 		} else {
 			maxIterField.setText(Integer.toString(Preferences.getMaxIter()));
 		}
-		JPanel maxIterPanel = new JPanel();
-		maxIterPanel.setLayout(new GridLayout());
-		maxIterPanel.add(maxIterField);
-		maxIterPanel.setOpaque(false);
-		maxIterField.setOpaque(false);
-		maxIterField.setForeground(Preferences.FOREGROUND);
-		maxIterField.setBorder(BorderFactory.createEmptyBorder());
-		maxIterPanel.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
+		JPanel maxIterFieldPanel = LearningPanel.getFieldPanel();
+		maxIterFieldPanel.add(maxIterField);
 
 		infinitModButton = new JButton("\u221E");
-		infinitModButton.addActionListener((e) -> {
+		infinitModButton.addActionListener(e -> {
 			this.maxIterField.setText("\u221E");
 			unlimitedIterations = true;
 		});
+
+		// minimum progression
 
 		JTextPane minProgressionLabel = MainPan.creadStandartJTextPane();
 		minProgressionLabel.setText("Minimum progression per iterations (%) : ");
@@ -100,14 +102,17 @@ public class LearningPanel extends ModPanel {
 		minProgressionField = MainPan.getDoubleField();
 		minProgressionField.setCaretColor(Preferences.FOREGROUND);
 		minProgressionField.setText(Double.toString(Preferences.getMinimumProgressionPerIteration() * 100d));
-		JPanel minProgressionPanel = new JPanel();
-		minProgressionPanel.setLayout(new GridLayout());
-		minProgressionPanel.add(minProgressionField);
-		minProgressionPanel.setOpaque(false);
-		minProgressionField.setOpaque(false);
-		minProgressionField.setForeground(Preferences.FOREGROUND);
-		minProgressionField.setBorder(BorderFactory.createEmptyBorder());
-		minProgressionPanel.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
+		JPanel minProgressionFieldPanel = LearningPanel.getFieldPanel();
+		minProgressionFieldPanel.add(minProgressionField);
+
+		// learning mode
+
+		JTextPane modeLabel = MainPan.creadStandartJTextPane();
+		modeLabel.setText("Learning mode : ");
+		modComboBox = new JComboBox<LearningMode>(LearningMode.values());
+		modComboBox.setSelectedItem(Preferences.getLearningMode());
+
+		// info displayer
 
 		learningInfoPanel = new LearningInfoPanel();
 
@@ -122,79 +127,109 @@ public class LearningPanel extends ModPanel {
 		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Preferences.BORDER));
 
-		learningInfoText.setText("");
+		// action buttons
 
 		clearButton = new JButton("Clear");
 		runButton = new MainButton("resources/pictures/computing.jpg");
 		stopButton = new MainButton("resources/pictures/stopLearning.jpg");
 		unlearnButton = new JButton("UNLEARN");
+		randomizeSamplesOrderButton = new JButton("Randomize samples order");
+
+		// sizing
 
 		multiThreadingLabel.setPreferredSize(new Dimension(multiThreadingLabel.getPreferredSize().width, 26));
 		minProgressionLabel.setPreferredSize(new Dimension(minProgressionLabel.getPreferredSize().width, 26));
-		multiThreadingSlider.setPreferredSize(new Dimension(160, 26));
-		minProgressionPanel.setPreferredSize(new Dimension(160, 23));
-		maxIterPanel.setPreferredSize(new Dimension(160, 23));
-		infinitModButton.setPreferredSize(new Dimension(48, 23));
+		maxIterLabel.setPreferredSize(new Dimension(maxIterLabel.getPreferredSize().width, 26));
+		modeLabel.setPreferredSize(new Dimension(modeLabel.getPreferredSize().width, 26));
+		Dimension fieldDimension = new Dimension(160, 26);
+		minProgressionFieldPanel.setPreferredSize(fieldDimension);
+		maxIterFieldPanel.setPreferredSize(fieldDimension);
+		multiThreadingSlider.setPreferredSize(fieldDimension);
+		randomizeSamplesOrderButton.setPreferredSize(new Dimension(185, fieldDimension.height));
+		modComboBox.setPreferredSize(new Dimension(195, fieldDimension.height));
+		infinitModButton.setPreferredSize(new Dimension(48, 26));
 
-		this.add(multiThreadingLabel, 0, 0);
+		// placing
+
+		this.add(multiThreadingLabel, 0f, 0f);
 		if (cores != 1) {
 			this.addAnchoredToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
 		}
 
 		this.addAnchoredToBottom(maxIterLabel, multiThreadingLabel, 0, 8);
-		this.addAnchoredToRight(maxIterPanel, maxIterLabel, 3, 0);
-		this.addAnchoredToRight(infinitModButton, maxIterPanel, 3, 0);
+		this.addAnchoredToRight(maxIterFieldPanel, maxIterLabel, 3, -2);
+		this.addAnchoredToRight(infinitModButton, maxIterFieldPanel, 3, 0);
 
 		this.addAnchoredToBottom(minProgressionLabel, maxIterLabel, 0, 8);
-		this.addAnchoredToRight(minProgressionPanel, minProgressionLabel, 3, 0);
+		this.addAnchoredToRight(minProgressionFieldPanel, minProgressionLabel, 3, -2);
 
-		float xThreadButtonsRectangle = 0f;
-		float yThreadButtonsRectangle = 0.5f;
-		float wThreadButtonsRectangle = 0.2f;
-		float hThreadButtonsRectangle = 0.5f;
-		this.add(runButton,
-				xThreadButtonsRectangle,
-				yThreadButtonsRectangle,
-				wThreadButtonsRectangle,
-				hThreadButtonsRectangle);
-		this.add(stopButton,
-				xThreadButtonsRectangle,
-				yThreadButtonsRectangle,
-				wThreadButtonsRectangle,
-				hThreadButtonsRectangle);
+		this.addAnchoredToBottom(modeLabel, minProgressionLabel, 0, 8);
+		this.addAnchoredToRight(modComboBox, modeLabel, 3, -2);
+		modComboBox.getModel().addListDataListener(new ListDataListener() {
+			@Override
+			public void intervalRemoved(ListDataEvent arg0) {}
+
+			@Override
+			public void intervalAdded(ListDataEvent arg0) {}
+
+			@Override
+			public void contentsChanged(ListDataEvent arg0) {
+				randomizeSamplesOrderButton.setVisible(
+						modComboBox.getSelectedItem() == LearningMode.WITH_CONTROL_SAMPLE);
+			}
+		});
+		this.addAnchoredToRight(randomizeSamplesOrderButton, modComboBox, 3, 0);
+		randomizeSamplesOrderButton.setVisible(
+				modComboBox.getSelectedItem() == LearningMode.WITH_CONTROL_SAMPLE);
+
 		stopButton.setVisible(false);
 		this.add(learningInfoPanel, 0.2f, 0.5f, 0.8f, 0.3f);
 		this.add(learningInfoTextScroll, 0.2f, 0.8f, 0.8f, 0.2f);
+		this.add(runButton);
+		this.add(stopButton);
 		this.add(unlearnButton);
 		this.add(clearButton);
 
+		this.addComponentBoundsSetter(thisLp -> {
+			float xThreadButtonsRectangle = 0f;
+			float yThreadButtonsRectangle = 0.5f;
+			float wThreadButtonsRectangle = 0.2f;
+			float hThreadButtonsRectangle = 0.5f;
+			runButton.setBounds(
+					(int) ((float) thisLp.getWidth() * xThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getHeight() * yThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26);
+			stopButton.setBounds(
+					(int) ((float) thisLp.getWidth() * xThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getHeight() * yThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
+					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26);
+			unlearnButton.setBounds(
+					0,
+					thisLp.getHeight() - 26,
+					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
+					26);
+			clearButton.setBounds(
+					(int) ((float) thisLp.getWidth() - (0.2f * (float) thisLp.getWidth())
+							+ 0.5),
+					(int) ((float) thisLp.getHeight() / 2f + 0.5f) - 26,
+					(int) (0.2f * (float) thisLp.getWidth() + 0.5f),
+					26);
+		});
+
+		// action performed
+
 		runButton.addActionListener((e) -> controler.startLearning());
-		stopButton.addActionListener((e) -> controler.endLearning());
+		stopButton.addActionListener((e) -> controler.handleUserRequestLearningEnd());
 		clearButton.addActionListener((e) -> {
 			learningInfoPanel.clear();
 			learningInfoText.setText("");
 			LearningPanel.this.validate();
 		});
 		unlearnButton.addActionListener((e) -> controler.unlearn());
+		randomizeSamplesOrderButton.addActionListener((e) -> controler.randomizeSamplesOrder());
 
-	}
-
-	private class LearningPanelLayout extends GLayout {
-		@Override
-		public void layoutContainer(Container parent) {
-			super.layoutContainer(parent);
-
-			unlearnButton.setBounds(
-					0,
-					(int) ((float) parent.getHeight() / 2f + 0.5f) - 26,
-					(int) (0.2f * (float) parent.getWidth() + 0.5f),
-					26);
-			clearButton.setBounds(
-					(int) ((float) parent.getWidth() - (0.2f * (float) parent.getWidth()) + 0.5),
-					(int) ((float) parent.getHeight() / 2f + 0.5f) - 26,
-					(int) (0.2f * (float) parent.getWidth() + 0.5f),
-					26);
-		}
 	}
 
 	public int getMaxIter() {
@@ -227,11 +262,20 @@ public class LearningPanel extends ModPanel {
 		return mppi;
 	}
 
+	public LearningMode getLearningMode() {
+		return (LearningMode) modComboBox.getSelectedItem();
+	}
+
 	public void appendInfo(int iter, double mse, double lastEvolution, long duration) {
 		learningInfoPanel.appendInfo(iter, mse, lastEvolution, duration);
 	}
 
 	public void appendInfo(String str) {
+		if (learningInfoText.getText().length() == 0) {
+			while (str.indexOf("\n") == 0) {
+				str = str.replaceFirst("\n", "");
+			}
+		}
 		learningInfoText.append(str);
 		learningInfoText.setCaretPosition(learningInfoText.getDocument().getLength());
 	}
@@ -249,6 +293,9 @@ public class LearningPanel extends ModPanel {
 			multiThreadingSlider.setEnabled(!learning);
 			unlearnButton.setEnabled(!learning);
 			infinitModButton.setEnabled(!learning);
+
+			modComboBox.setEnabled(!learning);
+			randomizeSamplesOrderButton.setEnabled(!learning);
 		}
 	}
 
@@ -257,6 +304,14 @@ public class LearningPanel extends ModPanel {
 		if (learningInfoText.getText().length() != 0) {
 			learningInfoText.append("\n");
 		}
+	}
+
+	public static JPanel getFieldPanel() {
+		JPanel fp = new JPanel();
+		fp.setLayout(new GridLayout());
+		fp.setOpaque(false);
+		fp.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
+		return fp;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
@@ -93,6 +94,10 @@ public class MainPan extends GPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {}
 		});
+		
+		dtf.setOpaque(false);
+		dtf.setForeground(Preferences.FOREGROUND);
+		dtf.setBorder(BorderFactory.createEmptyBorder());
 
 		return dtf;
 	}
@@ -127,22 +132,22 @@ public class MainPan extends GPanel {
 	}
 
 	public static JTextField getIntegerField() {
-		JTextField dtf = new JTextField();
-		dtf.addKeyListener(new KeyListener() {
+		JTextField itf = new JTextField();
+		itf.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				String text = dtf.getText();
+				String text = itf.getText();
 
 				String newText = formatIntegerString(text);
 
 				newText = newText.substring(0, Math.min(newText.length(), 10));
 
 				if (text != newText) {
-					dtf.setText(newText);
+					itf.setText(newText);
 				}
 			}
 
@@ -150,7 +155,11 @@ public class MainPan extends GPanel {
 			public void keyPressed(KeyEvent e) {}
 		});
 
-		return dtf;
+		itf.setOpaque(false);
+		itf.setForeground(Preferences.FOREGROUND);
+		itf.setBorder(BorderFactory.createEmptyBorder());
+
+		return itf;
 	}
 
 	public static String formatIntegerString(String str) {

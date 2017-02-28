@@ -1,10 +1,6 @@
 package interfaces;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -13,14 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
 
-public class NeuronTypeSelecter extends JPanel {
+public class NeuronTypeSelecter extends GPanel {
 
 	private Type selectedType;
 	private GPanel buttonPan = new GPanel();
@@ -85,34 +80,15 @@ public class NeuronTypeSelecter extends JPanel {
 			if (i == 0) {
 				neuTypeButton.doClick();
 			}
-			
-			this.setLayout(new LayoutManager() {
-				
-				@Override
-				public void removeLayoutComponent(Component comp) {}
-				
-				@Override
-				public Dimension preferredLayoutSize(Container parent) {
-					return null;
-				}
-				
-				@Override
-				public Dimension minimumLayoutSize(Container parent) {
-					return null;
-				}
-				
-				@Override
-				public void layoutContainer(Container parent) {
-					int labelPanHeight = 25;
-					buttonPan.setBounds(0, 0, parent.getWidth(), parent.getHeight() - labelPanHeight);
-					labelPan.setBounds(0, parent.getHeight() - labelPanHeight, parent.getWidth(), labelPanHeight);
-				}
-				
-				@Override
-				public void addLayoutComponent(String name, Component comp) {}
-			});
 		}
 
+		this.addComponentBoundsSetter(thisNts -> {
+			int labelPanHeight = 25;
+			buttonPan.setBounds(0, 0, thisNts.getWidth(),
+					thisNts.getHeight() - labelPanHeight);
+			labelPan.setBounds(0, thisNts.getHeight() - labelPanHeight,
+					thisNts.getWidth(), labelPanHeight);
+		});
 	}
 
 	public Type getSelectedType() {

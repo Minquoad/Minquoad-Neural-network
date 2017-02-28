@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileSystemView;
 import gClasses.DataAssociator;
 import gClasses.gInterfaces.GChoixFichier;
 import gClasses.gInterfaces.GChoixFichier.FileActionListener;
+import threads.LearningMode;
 
 public abstract class Preferences {
 
@@ -29,6 +30,7 @@ public abstract class Preferences {
 	private static int maxIter = 1;
 	private static boolean interationsUnlimited = true;
 	private static double minimumProgressionPerIteration = 0.01;
+	private static LearningMode learningMode = LearningMode.SIMPLE;
 	private static boolean firstRunning = false;
 
 	static {
@@ -57,6 +59,9 @@ public abstract class Preferences {
 			}
 			if (da.exists("interationsUnlimited")) {
 				interationsUnlimited = Boolean.parseBoolean(da.getValueString("interationsUnlimited"));
+			}
+			if (da.exists("learningMode")) {
+				learningMode = LearningMode.getLearningModeByName(da.getValueString("learningMode"));
 			}
 			if (da.exists("minimumProgressionPerIteration")) {
 				minimumProgressionPerIteration = Double
@@ -90,12 +95,17 @@ public abstract class Preferences {
 			da.setValue("multiThreading", multiThreading);
 			da.setValue("lastFolderLoaded", lastFolderLoaded);
 			da.setValue("minimumProgressionPerIteration", Double.toString(minimumProgressionPerIteration));
+			da.setValue("learningMode", learningMode.toString());
 			da.setValue("version", Starter.version);
 
 			da.save();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static boolean isFirstRunning() {
+		return firstRunning;
 	}
 
 	public static String getLastFolderLoaded() {
@@ -138,8 +148,12 @@ public abstract class Preferences {
 		Preferences.minimumProgressionPerIteration = minimumProgressionPerIteration;
 	}
 
-	public static boolean isFirstRunning() {
-		return firstRunning;
+	public static LearningMode getLearningMode() {
+		return learningMode;
+	}
+
+	public static void setLearningMode(LearningMode learningMode) {
+		Preferences.learningMode = learningMode;
 	}
 
 }

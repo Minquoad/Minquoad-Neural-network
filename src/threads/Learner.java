@@ -1,9 +1,7 @@
 package threads;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
@@ -12,21 +10,18 @@ import utilities.Preferences;
 
 public class Learner extends Thread {
 
-	public enum LearningMode {
-		SIMPLE, WITH_INDICE_COMPUTING
-	}
-
 	private Controler controler;
 	private Perceptron per;
 	private double[][] samples;
 
-	private boolean learningNotEnded = true;
 	private int maxIterations = 1;
 	private boolean unlimitedIterations = false;
 	private LearningMode learningMode = LearningMode.SIMPLE;
+	private double minimumProgressionPerIteration = 0.01d;
+
+	private boolean learningNotEnded = true;
 	private int iterations = 0;
 	private int multiThreading = 1;
-	private double minimumProgressionPerIteration = 0.01d;
 	private int insufficientProgressions = 0;
 	private double evolutionInLastIteration = 0d;
 	private double currentMse;
@@ -38,51 +33,47 @@ public class Learner extends Thread {
 		this.controler = controler;
 		this.per = per;
 		this.samples = samples;
-
-		if (per.isValid()) {
-			per.cleenInfinits(samples);
-		}
-		currentMse = per.getMse(samples);
-		mseAfterLastIteration = currentMse;
 	}
 
 	public void run() {
-
-		for (LearningStateListener learningStateListener : learningStateListeners) {
-			learningStateListener.learningStarted(this);
-		}
-
 		switch (learningMode) {
 		case SIMPLE:
 
-			if (multiThreading == 1) {
-				leanMonoThread(samples);
-			} else {
-				leanMultiThread(samples);
-			}
+			this.learn(samples);
 
 			break;
-		case WITH_INDICE_COMPUTING:
+		case WITH_CONTROL_SAMPLE:
 
-			per.validate();
-			
-			double[][] samplesInRandomOrder = randomizeSampleOrder(samples);
-			
-			ArrayList<double[][]> samplesList = separatSamples(samplesInRandomOrder, 2);
+			ArrayList<double[][]> samplesList = splitSamples(samples, 2);
 
 			double[][] samplesToLearn = samplesList.get(0);
-			if (multiThreading == 1) {
-				leanMonoThread(samplesToLearn);
-			} else {
-				leanMultiThread(samplesToLearn);
-			}
+
+			this.learn(samplesToLearn);
 
 			double mseOnUnlearnedData = per.getMse(samplesList.get(1));
 
-			controler.appendLearningInfo("-----currentMse : " + currentMse + "\n");
-			controler.appendLearningInfo("-----mseOnUnlearnedData : " + mseOnUnlearnedData + "\n");
+			controler.appendLearningInfo("\n" + "-> mse on learned data : " + currentMse);
+			controler.appendLearningInfo("\n" + "-> mse on control data : " + mseOnUnlearnedData);
 
 			break;
+		}
+	}
+
+	private void learn(double[][] samplesToLearn) {
+
+		per.cleenInfinits(samplesToLearn);
+		currentMse = per.getMse(samplesToLearn);
+		mseAfterLastIteration = currentMse;
+		multiThreading = Math.min(multiThreading, samplesToLearn.length);
+
+		for (LearningStateListener learningStateListener : learningStateListeners) {
+			learningStateListener.learningStarting(this);
+		}
+
+		if (multiThreading == 1) {
+			leanMonoThread(samplesToLearn);
+		} else {
+			leanMultiThread(samplesToLearn);
 		}
 
 		for (LearningStateListener learningStateListener : learningStateListeners) {
@@ -96,10 +87,8 @@ public class Learner extends Thread {
 
 	private void iterate(IterationPerformer iterationPerformer) {
 
-		if (!unlimitedIterations && maxIterations == 0) {
-			learningNotEnded = false;
-			controler.appendLearningInfo("Learning reached the maximum number of iterations\n");
-		}
+		updateLearningNotEnded();
+
 		while (learningNotEnded) {
 
 			iterationPerformer.performeIteration();
@@ -114,22 +103,27 @@ public class Learner extends Thread {
 				insufficientProgressions = 0;
 			}
 
-			boolean maxInsufficientProgressionsReached = insufficientProgressions == Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
-			boolean maxIterationsReached = !unlimitedIterations && iterations == maxIterations;
-			if (maxInsufficientProgressionsReached || maxIterationsReached) {
-
-				learningNotEnded = false;
-
-				controler.appendLearningInfo("Learning stopped:\n");
-				if (maxInsufficientProgressionsReached) {
-					controler.appendLearningInfo("\tno longer progressing\n");
-				}
-				if (maxIterationsReached) {
-					controler.appendLearningInfo("\treached maximum number of iterations\n");
-				}
-			}
+			updateLearningNotEnded();
 		}
+		controler.appendLearningInfo("\n" + "Learning ended");
+		if (!isMaxInsufficientProgressionsUnreached()) {
+			controler.appendLearningInfo("\n" + "-> no longer progressing");
+		}
+		if (!isMaxIterationsUnreached()) {
+			controler.appendLearningInfo("\n" + "-> reached maximum number of iterations");
+		}
+	}
 
+	private void updateLearningNotEnded() {
+		learningNotEnded &= isMaxInsufficientProgressionsUnreached() && isMaxIterationsUnreached();
+	}
+
+	private boolean isMaxInsufficientProgressionsUnreached() {
+		return insufficientProgressions != Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+	}
+
+	private boolean isMaxIterationsUnreached() {
+		return unlimitedIterations || iterations != maxIterations;
 	}
 
 	private void leanMonoThread(double[][] samplesToLearn) {
@@ -156,7 +150,7 @@ public class Learner extends Thread {
 	}
 
 	private void leanMultiThread(double[][] samplesToLearn) {
-		ArrayList<double[][]> samplesList = separatSamples(samplesToLearn, multiThreading);
+		ArrayList<double[][]> samplesList = splitSamples(samplesToLearn, multiThreading);
 
 		ArrayList<Perceptron> perceptronList = new ArrayList<Perceptron>();
 
@@ -213,24 +207,7 @@ public class Learner extends Thread {
 		});
 	}
 
-	public static double[][] randomizeSampleOrder(double[][] samples) {
-		double[][] randomizedSamples = new double[samples.length][samples[0].length];
-
-		List<double[]> sampleList = new LinkedList<double[]>();
-		for (double[] sample : samples) {
-			sampleList.add(sample);
-		}
-		Random rand = new Random();
-		for (int i = 0; i < randomizedSamples.length; i++) {
-			int j = rand.nextInt(sampleList.size());
-			randomizedSamples[i] = sampleList.get(j);
-			sampleList.remove(j);
-		}
-
-		return randomizedSamples;
-	}
-
-	private static ArrayList<double[][]> separatSamples(double[][] samples, int tableCount) {
+	private static ArrayList<double[][]> splitSamples(double[][] samples, int tableCount) {
 
 		ArrayList<ArrayList<double[]>> sampleListList = new ArrayList<ArrayList<double[]>>();
 
@@ -238,7 +215,7 @@ public class Learner extends Thread {
 			sampleListList.add(new ArrayList<double[]>());
 		}
 		for (int i = 0; i < samples.length; i++) {
-			sampleListList.get(i % tableCount).add(samples[i]);
+			sampleListList.get(i * tableCount / samples.length).add(samples[i]);
 		}
 		ArrayList<double[][]> samplesList = new ArrayList<double[][]>();
 
@@ -262,8 +239,6 @@ public class Learner extends Thread {
 
 	public void endLearning() {
 		learningNotEnded = false;
-		controler.appendLearningInfo("Learning stopped:\n"
-				+ "\tstoped by user\n");
 	}
 
 	public boolean isLearningNotEnded() {
@@ -335,7 +310,7 @@ public class Learner extends Thread {
 	}
 
 	public interface LearningStateListener {
-		public void learningStarted(Learner source);
+		public void learningStarting(Learner source);
 
 		public void learningEnded(Learner source);
 	}

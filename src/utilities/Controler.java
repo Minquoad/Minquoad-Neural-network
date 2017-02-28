@@ -1,5 +1,8 @@
 package utilities;
 
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
@@ -53,6 +56,39 @@ public class Controler implements LearningStateListener {
 	private ProcessingPanel processingPan = new ProcessingPanel(this);
 
 	public Controler() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			boolean busy = false;
+
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent arg0) {
+				if (!busy) {
+					busy = true;
+
+					switch (arg0.getKeyCode()) {
+					case KeyEvent.VK_F1:
+						Controler.this.loadPer();
+						break;
+					case KeyEvent.VK_F2:
+						Controler.this.savePer();
+						break;
+					case KeyEvent.VK_F3:
+						Controler.this.loadCsv();
+						break;
+					case KeyEvent.VK_F4:
+						if (Controler.this.mode == Mode.HAS_PROCEED) {
+							Controler.this.saveCsv();
+						}
+						break;
+					default:
+						break;
+					}
+
+					busy = false;
+				}
+				return false;
+			}
+		});
+
 		frame.setContentPane(mainPan);
 		mainPan.setPerceptronEditingPan(perceptronEditingPan);
 		mainPan.setDataPan(dataPan);
@@ -238,7 +274,7 @@ public class Controler implements LearningStateListener {
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
 		learner.setUnlimitedIterations(learningPan.isUnlimitedIterations());
-		learner.setLearningMode(Learner.LearningMode.SIMPLE);
+		learner.setLearningMode(learningPan.getLearningMode());
 
 		learner.addLearningStateListener(this);
 
@@ -255,9 +291,18 @@ public class Controler implements LearningStateListener {
 		updateMode();
 	}
 
-	public void endLearning() {
+	public void handleUserRequestLearningEnd() {
 		if (learner != null) {
+			this.appendLearningInfo("\n" + "Learning ending request by user...");
 			learner.endLearning();
+		}
+	}
+
+	public void randomizeSamplesOrder() {
+		if (data != null) {
+			data = CsvFormatHelper.randomizeSampleOrder(data);
+			dataPan.setLearningMode(data, per.getInputCount());
+			mainPan.validate();
 		}
 	}
 
@@ -279,6 +324,7 @@ public class Controler implements LearningStateListener {
 		Preferences.setMultiThreading(this.learningPan.getMultiThreading());
 		Preferences.setMinimumProgressionPerIteration(this.learningPan.getMinimumProgressionPerIteration());
 		Preferences.setInterationsUnlimited(this.learningPan.isUnlimitedIterations());
+		Preferences.setLearningMode(this.learningPan.getLearningMode());
 
 		Preferences.save();
 	}
@@ -365,6 +411,6 @@ public class Controler implements LearningStateListener {
 	}
 
 	@Override
-	public void learningStarted(Learner source) {}
+	public void learningStarting(Learner source) {}
 
 }

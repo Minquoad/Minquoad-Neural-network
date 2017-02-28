@@ -6,6 +6,8 @@ import entities.neuralNetwork.neurons.Neuron;
 import gClasses.DataAssociator;
 
 public class Nerve {
+	
+	protected final static double EVOLUTION_FACTOR = 2d;
 
 	private Neuron source;
 
@@ -45,9 +47,9 @@ public class Nerve {
 	public void reactToProgression() {
 
 		if (progressing) {
-			evolution *= 2;
+			evolution *= EVOLUTION_FACTOR;
 		} else {
-			evolution /= 2;
+			evolution /= EVOLUTION_FACTOR;
 		}
 		progressing = true;
 	}
@@ -56,9 +58,9 @@ public class Nerve {
 		coefficient = previousCoefficient;
 
 		if (progressing) {
-			evolution /= 4d;
+			evolution /= 2*EVOLUTION_FACTOR;
 		} else {
-			evolution /= -2d;
+			evolution /= -EVOLUTION_FACTOR;
 		}
 		progressing = false;
 	}

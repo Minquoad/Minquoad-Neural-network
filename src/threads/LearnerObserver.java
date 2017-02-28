@@ -7,7 +7,7 @@ public class LearnerObserver extends Thread implements LearningStateListener {
 
 	private Controler controler;
 	private Learner lea;
-	private boolean learning;
+	private boolean learning = false;
 	private static final long fps = 8;
 	private long startTime;
 	private int lastDescibedIteration = -1;
@@ -19,7 +19,7 @@ public class LearnerObserver extends Thread implements LearningStateListener {
 	}
 
 	@Override
-	public void learningStarted(Learner source) {
+	public void learningStarting(Learner source) {
 		learning = true;
 		startTime = System.currentTimeMillis();
 		printInfo();

@@ -2,7 +2,7 @@ package utilities;
 
 public class Starter {
 
-	public static final String version = "1.6.0";
+	public static final String version = "2.0.1";
 	public static final boolean printCaughtExceptionStackTraces = false;
 
 	public static void main(String[] args) {

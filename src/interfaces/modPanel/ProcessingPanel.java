@@ -8,9 +8,9 @@ public class ProcessingPanel extends ModPanel {
 
 		MainButton runButton = new MainButton("resources/pictures/proceed.jpg");
 
-		this.add(runButton, 0, 500, 200, 500);
+		this.add(runButton, 0, 0.5f, 0.2f, 0.5f);
 
-		runButton.addActionListener((e) -> controler.startProcessing());
+		runButton.addActionListener(e -> controler.startProcessing());
 
 	}
 
