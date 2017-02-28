@@ -28,7 +28,7 @@ public class Learner extends Thread {
 	private double evolutionInLastIteration = 0d;
 	private double currentMse;
 	private double mseAfterLastIteration;
-	private int learnedSamplesCount = -1;
+	private int learnedSamplesCount = 0;
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
@@ -64,18 +64,18 @@ public class Learner extends Thread {
 			controler.appendLearningInfo("\n" + "-> MSE mean without learning : " + unlearnedPerceptronWeightedMSEMean);
 			controler.appendLearningInfo("\n" + "-> mse on learned data : " + getWeightedMseAfterLastIteration());
 			controler.appendLearningInfo("\n" + "-> mse on control data : " + weightedMseOnUnlearnedData);
-			controler.appendLearningInfo("\n" + "-> neural network portability (%) : " + neuralNetworkPortability * 100);
+			controler.appendLearningInfo(
+					"\n" + "-> neural network portability (%) : " + neuralNetworkPortability * 100);
 
 			break;
 		}
-		
+
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningEnded(this);
 		}
 	}
 
 	private void learn(double[][] samplesToLearn) {
-
 		learnedSamplesCount = samplesToLearn.length;
 		per.cleenInfinits(samplesToLearn);
 		currentMse = per.getMse(samplesToLearn);
@@ -111,11 +111,9 @@ public class Learner extends Thread {
 		for (updateLearningNotEnded(); learningNotEnded; peroformeIterationEnded()) {
 
 			for (Nerve nerve : nerves) {
-
 				nerve.evolve();
 
 				double newMse = per.getMse(samplesToLearn);
-
 				if (newMse < currentMse && Double.isFinite(newMse)) {
 					nerve.reactToProgression();
 					currentMse = newMse;
@@ -123,9 +121,7 @@ public class Learner extends Thread {
 					nerve.reactToRegression();
 				}
 			}
-
 		}
-
 	}
 
 	private void leanMultiThread(double[][] samplesToLearn) throws InterruptedException {
@@ -192,7 +188,7 @@ public class Learner extends Thread {
 		} else {
 			insufficientProgressions = 0;
 		}
-		
+
 		updateLearningNotEnded();
 	}
 
