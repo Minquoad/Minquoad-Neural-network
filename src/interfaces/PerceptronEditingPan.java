@@ -14,7 +14,7 @@ public class PerceptronEditingPan extends GPanel {
 
 	// meta
 	private Controler controler;
-	private boolean learning = false;
+	private boolean occupied = false;
 
 	// grapicals
 	private NeuronTypeSelecter neuTypSel = new NeuronTypeSelecter();
@@ -175,10 +175,10 @@ public class PerceptronEditingPan extends GPanel {
 		}
 	}
 
-	public void setLearning(boolean learning) {
-		if (learning != this.learning) {
-			this.learning = learning;
-			validateButton.setEnabled(!learning);
+	public void setOccupied(boolean occupied) {
+		if (occupied != this.occupied) {
+			this.occupied = occupied;
+			validateButton.setEnabled(!occupied);
 		}
 	}
 

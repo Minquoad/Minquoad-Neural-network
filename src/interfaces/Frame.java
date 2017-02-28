@@ -14,7 +14,7 @@ public class Frame extends GFrame implements WindowListener {
 	private Controler controler;
 
 	private JMenuItem saveCsvMI;
-	private boolean learning = false;
+	private boolean occupied = false;
 
 	public Frame(Controler controler) {
 		super("Minquoad's Neurons", 1040, 768 - 40, "resources/pictures/icon.png",
@@ -61,10 +61,10 @@ public class Frame extends GFrame implements WindowListener {
 		saveCsvMI.setEnabled(b);
 	}
 
-	public void setLearning(boolean learning) {
-		if (learning != this.learning) {
-			this.learning = learning;
-			this.getMenu("File").setEnabled(!learning);
+	public void setOccupied(boolean occupied) {
+		if (occupied != this.occupied) {
+			this.occupied = occupied;
+			this.getMenu("File").setEnabled(!occupied);
 		}
 	}
 

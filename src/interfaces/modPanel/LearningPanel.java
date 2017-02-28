@@ -27,7 +27,7 @@ import utilities.Preferences;
 public class LearningPanel extends ModPanel {
 
 	private LearningInfoPanel learningInfoPanel;
-	private boolean learning = false;
+	private boolean occupied = false;
 
 	private MainButton runButton;
 	private MainButton stopButton;
@@ -183,8 +183,8 @@ public class LearningPanel extends ModPanel {
 				modComboBox.getSelectedItem() == LearningMode.WITH_CONTROL_SAMPLE);
 
 		stopButton.setVisible(false);
-		this.add(learningInfoPanel, 0.2f, 0.5f, 0.8f, 0.3f);
-		this.add(learningInfoTextScroll, 0.2f, 0.8f, 0.8f, 0.2f);
+		this.add(learningInfoPanel, 0.2f, 0.5f, 0.8f, 0.25f);
+		this.add(learningInfoTextScroll, 0.2f, 0.75f, 0.8f, 0.25f);
 		this.add(runButton);
 		this.add(stopButton);
 		this.add(unlearnButton);
@@ -280,22 +280,22 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setCaretPosition(learningInfoText.getDocument().getLength());
 	}
 
-	public void setLearning(boolean learning) {
-		if (learning != this.learning) {
-			this.learning = learning;
+	public void setOccupied(boolean occupied) {
+		if (occupied != this.occupied) {
+			this.occupied = occupied;
 
-			runButton.setVisible(!learning);
-			stopButton.setVisible(learning);
+			runButton.setVisible(!occupied);
+			stopButton.setVisible(occupied);
 
-			maxIterField.setEditable(!learning);
-			minProgressionField.setEditable(!learning);
+			maxIterField.setEditable(!occupied);
+			minProgressionField.setEditable(!occupied);
 
-			multiThreadingSlider.setEnabled(!learning);
-			unlearnButton.setEnabled(!learning);
-			infinitModButton.setEnabled(!learning);
+			multiThreadingSlider.setEnabled(!occupied);
+			unlearnButton.setEnabled(!occupied);
+			infinitModButton.setEnabled(!occupied);
 
-			modComboBox.setEnabled(!learning);
-			randomizeSamplesOrderButton.setEnabled(!learning);
+			modComboBox.setEnabled(!occupied);
+			randomizeSamplesOrderButton.setEnabled(!occupied);
 		}
 	}
 

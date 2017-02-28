@@ -7,13 +7,15 @@ import java.math.MathContext;
 import javax.swing.JTable;
 
 import gClasses.gInterfaces.GTablePanel;
-import utilities.Controler;
-import utilities.Controler.Mode;
 import utilities.Preferences;
 
 public class DataPan extends GTablePanel {
 
-	private Controler.Mode showedMod = null;
+	public enum Mode {
+		NONE, LEARNING, PROCESSING_WITH_RESULTS, PROCESSING_WITHOUT_RESULTS;
+	}
+
+	private Mode showedMod = null;
 	private double[][] showedData = null;
 	private double[][] showedResults = null;
 	private int showedInputCount = 0;
@@ -31,7 +33,7 @@ public class DataPan extends GTablePanel {
 	public void setNoneMode(double[][] data) {
 		if (data != null) {
 
-			if (showedMod == Mode.WILL_LEARN && showedData == data) {
+			if (showedMod == Mode.LEARNING && showedData == data) {
 				this.setDataTableHeaderToNone();
 			} else if (showedMod != Mode.NONE || showedData != data) {
 
@@ -68,7 +70,7 @@ public class DataPan extends GTablePanel {
 
 			if (showedMod == Mode.NONE && showedData == data) {
 				this.updatDataTableHeader(inputCount);
-			} else if (showedMod != Mode.WILL_LEARN || showedData != data || showedInputCount != inputCount) {
+			} else if (showedMod != Mode.LEARNING || showedData != data || showedInputCount != inputCount) {
 
 				int columnCount = data[0].length;
 
@@ -95,7 +97,7 @@ public class DataPan extends GTablePanel {
 				this.setTable(table);
 			}
 
-			showedMod = Mode.WILL_LEARN;
+			showedMod = Mode.LEARNING;
 			showedData = data;
 			showedInputCount = inputCount;
 		}
@@ -104,7 +106,9 @@ public class DataPan extends GTablePanel {
 
 	public void setProcessingMode(double[][] data, int outputCount) {
 		if (data != null) {
-			if (showedMod != Mode.WILL_PROCEED || showedData != data || showedOutputCount != outputCount) {
+
+			if (showedMod != Mode.PROCESSING_WITHOUT_RESULTS || showedData != data
+					|| showedOutputCount != outputCount) {
 
 				int columnCount = data[0].length + outputCount;
 
@@ -134,7 +138,7 @@ public class DataPan extends GTablePanel {
 				this.setTable(table);
 			}
 
-			showedMod = Mode.WILL_PROCEED;
+			showedMod = Mode.PROCESSING_WITHOUT_RESULTS;
 			showedData = data;
 			showedOutputCount = outputCount;
 		}
@@ -143,7 +147,7 @@ public class DataPan extends GTablePanel {
 	public void setProcessedMode(double[][] data, double[][] results) {
 		if (data != null) {
 
-			if (showedMod != Mode.HAS_PROCEED || showedData != data || showedResults != results) {
+			if (showedMod != Mode.PROCESSING_WITH_RESULTS || showedData != data || showedResults != results) {
 
 				int columnCount = data[0].length + results[0].length;
 
@@ -172,7 +176,7 @@ public class DataPan extends GTablePanel {
 				this.setTable(table);
 			}
 
-			showedMod = Mode.HAS_PROCEED;
+			showedMod = Mode.PROCESSING_WITH_RESULTS;
 			showedData = data;
 			showedResults = results;
 		}

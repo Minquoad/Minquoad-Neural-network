@@ -119,14 +119,18 @@ public class Perceptron {
 		double[][] results = new double[samples.length][this.getOutputCount()];
 
 		for (int i = 0; i < samples.length; i++) {
-			this.setInputs(samples[i]);
-			this.proceed();
-			results[i] = this.getOutputs();
+			results[i] = this.getOutputs(samples[i]);
 		}
 
 		return results;
 	}
 
+	public double[] getOutputs(double[] sample) {
+		this.setInputs(sample);
+		this.proceed();
+		return this.getOutputs();
+	}
+	
 	public double[] getOutputs() {
 
 		Layer lastLayer = layers.get(layers.size() - 1);

@@ -30,6 +30,7 @@ import interfaces.modPanel.ProcessingPanel;
 import threads.Learner;
 import threads.Learner.LearningStateListener;
 import threads.LearnerObserver;
+import threads.Processor;
 
 public class Controler implements LearningStateListener {
 
@@ -38,13 +39,10 @@ public class Controler implements LearningStateListener {
 	private double[][] data = null;
 	private double[][] results = null;
 	private Learner learner = null;
+	private Processor processor = null;
 
 	// meta
-	private Mode mode = Mode.NONE;
-
-	public enum Mode {
-		NONE, WILL_LEARN, LEARNING, WILL_PROCEED, HAS_PROCEED;
-	}
+	private ApplicationMode mode = ApplicationMode.NONE;
 
 	// grapicals
 	private Frame frame = new Frame(this);
@@ -75,7 +73,7 @@ public class Controler implements LearningStateListener {
 						Controler.this.loadCsv();
 						break;
 					case KeyEvent.VK_F4:
-						if (Controler.this.mode == Mode.HAS_PROCEED) {
+						if (Controler.this.results != null) {
 							Controler.this.saveCsv();
 						}
 						break;
@@ -101,70 +99,77 @@ public class Controler implements LearningStateListener {
 
 	public synchronized void updateMode() {
 
-		if (mode == Mode.HAS_PROCEED) {
-			results = null;
-		}
-
-		if (learner != null) {
-			mode = Mode.LEARNING;
-		} else if (data == null || !per.isValid()) {
-			mode = Mode.NONE;
+		if (data == null || !per.isValid()) {
+			mode = ApplicationMode.NONE;
+		} else if (learner != null) {
+			mode = ApplicationMode.LEARNING;
+		} else if (processor != null) {
+			mode = ApplicationMode.PROCESSING;
 		} else {
 			int inputCount = per.getInputCount();
 			int outputCount = per.getOutputCount();
 			int columnCount = data[0].length;
 
 			if (columnCount == inputCount + outputCount)
-				mode = Mode.WILL_LEARN;
-			else if (columnCount == inputCount && results == null)
-				mode = Mode.WILL_PROCEED;
-			else if (columnCount == inputCount && results != null)
-				mode = Mode.HAS_PROCEED;
+				mode = ApplicationMode.WILL_LEARN;
+			else if (columnCount == inputCount)
+				mode = ApplicationMode.WILL_PROCEED;
 			else {
-				mode = Mode.NONE;
+				mode = ApplicationMode.NONE;
 			}
 		}
 
-		frame.enableCsvSaving(mode == Mode.HAS_PROCEED);
-		frame.setLearning(mode == Mode.LEARNING);
-		learningPan.setLearning(mode == Mode.LEARNING);
-		perceptronEditingPan.setLearning(mode == Mode.LEARNING);
-
 		switch (mode) {
 		case NONE:
+
 			mainPan.setModePan(null);
 			dataPan.setNoneMode(data);
-			break;
 
+			break;
 		case WILL_LEARN:
+
 			mainPan.setModePan(learningPan);
 			dataPan.setLearningMode(data, per.getInputCount());
-			break;
 
+			break;
 		case LEARNING:
+
 			mainPan.setModePan(learningPan);
 			dataPan.setLearningMode(data, per.getInputCount());
-			break;
 
+			break;
 		case WILL_PROCEED:
+
+			mainPan.setModePan(processingPan);
+			if (results == null) {
+				dataPan.setProcessingMode(data, per.getOutputCount());
+			} else {
+				dataPan.setProcessedMode(data, results);
+			}
+
+			break;
+		case PROCESSING:
+
 			mainPan.setModePan(processingPan);
 			dataPan.setProcessingMode(data, per.getOutputCount());
-			break;
 
-		case HAS_PROCEED:
-			mainPan.setModePan(null);
-			dataPan.setProcessedMode(data, results);
-			break;
-
-		default:
 			break;
 		}
+
+		boolean occupied = mode.impliesOccupation();
+		frame.setOccupied(occupied);
+		perceptronEditingPan.setOccupied(occupied);
+		learningPan.setOccupied(occupied);
+		processingPan.setOccupied(occupied);
+
+		frame.enableCsvSaving(results != null);
 
 		mainPan.validate();
 		mainPan.repaint();
 	}
 
 	public void perceptronModified() {
+		results = null;
 		perceptronEditingPan.regen(per);
 		perceptronDisplayer.setPerceptron(per);
 
@@ -267,6 +272,7 @@ public class Controler implements LearningStateListener {
 
 	public void startLearning() {
 		learningPan.startNewLearning();
+		this.appendLearningInfo("\n" + "Learning starting");
 
 		learner = new Learner(this, per, data);
 
@@ -280,9 +286,9 @@ public class Controler implements LearningStateListener {
 
 		new LearnerObserver(this, learner);
 
-		learner.start();
-
 		updateMode();
+
+		learner.start();
 	}
 
 	@Override
@@ -306,8 +312,17 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void startProcessing() {
-		results = per.getResults(data);
-		this.updateMode();
+		results = null;
+		processor = new Processor(this, per, data);
+
+		updateMode();
+	}
+
+	public void processingEnded(double[][] results) {
+		this.results = results;
+		processor = null;
+
+		updateMode();
 	}
 
 	public void appendLearningInfo(int iter, double squareError, double lastEvolution, long duration) {
@@ -316,6 +331,10 @@ public class Controler implements LearningStateListener {
 
 	public void appendLearningInfo(String str) {
 		this.learningPan.appendInfo(str);
+	}
+
+	public void appendProcessingInfo(String str) {
+		this.processingPan.appendInfo(str);
 	}
 
 	public void savePreferences() {
