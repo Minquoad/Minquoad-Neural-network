@@ -2,7 +2,6 @@ package interfaces.modPanel;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -79,13 +78,12 @@ public class LearningPanel extends ModPanel {
 			}
 		});
 
-		maxIterField.setCaretColor(Preferences.FOREGROUND);
 		if (unlimitedIterations) {
 			maxIterField.setText("\u221E");
 		} else {
 			maxIterField.setText(Integer.toString(Preferences.getMaxIter()));
 		}
-		JPanel maxIterFieldPanel = LearningPanel.getFieldPanel();
+		JPanel maxIterFieldPanel = MainPan.getFieldPanel();
 		maxIterFieldPanel.add(maxIterField);
 
 		infinitModButton = new JButton("\u221E");
@@ -100,9 +98,8 @@ public class LearningPanel extends ModPanel {
 		minProgressionLabel.setText("Minimum progression per iterations (%) : ");
 
 		minProgressionField = MainPan.getDoubleField();
-		minProgressionField.setCaretColor(Preferences.FOREGROUND);
 		minProgressionField.setText(Double.toString(Preferences.getMinimumProgressionPerIteration() * 100d));
-		JPanel minProgressionFieldPanel = LearningPanel.getFieldPanel();
+		JPanel minProgressionFieldPanel = MainPan.getFieldPanel();
 		minProgressionFieldPanel.add(minProgressionField);
 
 		// learning mode
@@ -151,7 +148,8 @@ public class LearningPanel extends ModPanel {
 
 		// placing
 
-		this.add(multiThreadingLabel, 0f, 0f);
+		this.add(multiThreadingLabel);
+		multiThreadingLabel.setBounds(3, 3, multiThreadingLabel.getPreferredSize().width, multiThreadingLabel.getPreferredSize().height);
 		if (cores != 1) {
 			this.addAnchoredToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
 		}
@@ -304,14 +302,6 @@ public class LearningPanel extends ModPanel {
 		if (learningInfoText.getText().length() != 0) {
 			learningInfoText.append("\n");
 		}
-	}
-
-	public static JPanel getFieldPanel() {
-		JPanel fp = new JPanel();
-		fp.setLayout(new GridLayout());
-		fp.setOpaque(false);
-		fp.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
-		return fp;
 	}
 
 }

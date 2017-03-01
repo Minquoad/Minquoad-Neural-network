@@ -25,6 +25,14 @@ import utilities.Preferences;
 
 public class PerceptronDisplayer extends GPanel {
 
+	private static final BufferedImage LIN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/lin.png");
+	private static final BufferedImage SIG_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sig.png");
+	private static final BufferedImage SIN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sin.png");
+	private static final BufferedImage LN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/ln.png");
+	private static final BufferedImage EXP_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/exp.png");
+	private static final BufferedImage BLANK_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/blank.png");
+	private static final BufferedImage NEU_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/neu.png");
+	
 	// meta
 	private boolean valide;
 	private int inputCount;
@@ -87,19 +95,19 @@ public class PerceptronDisplayer extends GPanel {
 				BufferedImage fond = null;
 
 				if (i == 0 && j < per.getInputCount())
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/neu.png");
+					fond = NEU_IMG;
 				else if (currentNeuron.getClass() == BlankNeuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/blank.png");
+					fond = BLANK_IMG;
 				else if (currentNeuron.getClass() == ExpNeuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/exp.png");
+					fond = EXP_IMG;
 				else if (currentNeuron.getClass() == LnNeuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/ln.png");
+					fond = LN_IMG;
 				else if (currentNeuron.getClass() == PeriodicNeuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sin.png");
+					fond = SIN_IMG;
 				else if (currentNeuron.getClass() == SigNeuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sig.png");
+					fond = SIG_IMG;
 				else if (currentNeuron.getClass() == Neuron.class)
-					fond = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/lin.png");
+					fond = LIN_IMG;
 
 				GPanel neuDisp = new GPanel();
 				neuDisp.setBackgroundPicture(fond, GPanel.BackgroundDisplayType.FIT);

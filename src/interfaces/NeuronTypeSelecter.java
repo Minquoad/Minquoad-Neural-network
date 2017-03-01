@@ -96,7 +96,12 @@ public class NeuronTypeSelecter extends GPanel {
 	}
 
 	public enum Type {
-		LINEARE, CONSANT, SIGMOID, LOGARITHMIC, EXPONENTIAL, SINUSOIDAL;
+		LINEARE,
+		CONSANT,
+		SIGMOID,
+		LOGARITHMIC,
+		EXPONENTIAL,
+		SINUSOIDAL;
 	}
 
 	private class NeuTypeButton extends JButton {

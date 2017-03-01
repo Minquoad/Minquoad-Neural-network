@@ -222,7 +222,8 @@ public class Controler implements LearningStateListener {
 
 	public void about() {
 		new GDialog("About",
-				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Preferences.VERSION, 300,
+				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Preferences.VERSION,
+				300,
 				200, true).setVisible(true);
 	}
 
@@ -351,48 +352,50 @@ public class Controler implements LearningStateListener {
 	}
 
 	public void addNeuron(NeuronTypeSelecter.Type type, int layer) {
-
-		if (layer == 0) {
-			per.getLayer(layer).addNeuron(new BlankNeuron(per));
-			this.incrementInputCount();
-		} else {
-			Neuron newNeuron = null;
-			switch (type) {
-			case CONSANT:
-				newNeuron = new BlankNeuron(per);
-				break;
-			case LINEARE:
-				newNeuron = new Neuron(per);
-				break;
-			case SIGMOID:
-				newNeuron = new SigNeuron(per);
-				break;
-			case LOGARITHMIC:
-				newNeuron = new LnNeuron(per);
-				break;
-			case EXPONENTIAL:
-				newNeuron = new ExpNeuron(per);
-				break;
-			case SINUSOIDAL:
-				newNeuron = new PeriodicNeuron(per);
-				break;
-			default:
-				break;
+		for (int i = 0; i < perceptronEditingPan.getNeronCountToAdd(); i++) {
+			if (layer == 0) {
+				per.getLayer(layer).addNeuron(new BlankNeuron(per));
+				this.incrementInputCount();
+			} else {
+				Neuron newNeuron = null;
+				switch (type) {
+				case CONSANT:
+					newNeuron = new BlankNeuron(per);
+					break;
+				case LINEARE:
+					newNeuron = new Neuron(per);
+					break;
+				case SIGMOID:
+					newNeuron = new SigNeuron(per);
+					break;
+				case LOGARITHMIC:
+					newNeuron = new LnNeuron(per);
+					break;
+				case EXPONENTIAL:
+					newNeuron = new ExpNeuron(per);
+					break;
+				case SINUSOIDAL:
+					newNeuron = new PeriodicNeuron(per);
+					break;
+				default:
+					break;
+				}
+				per.getLayer(layer).addNeuron(newNeuron);
 			}
-			per.getLayer(layer).addNeuron(newNeuron);
 		}
 
 		this.perceptronModified();
 	}
 
 	public void removeNeuron(int layer) {
-		int neuronCountInLayer = per.getLayer(layer).getNeuroneCount();
-		if (neuronCountInLayer != 0) {
-			per.getLayer(layer).removeNeuron(neuronCountInLayer - 1);
-
-			if (layer == 0) {
-				per.setInputCount(Math.max(per.getInputCount(), 1));
-				per.setInputCount(Math.min(per.getInputCount(), per.getLayer(0).getNeuroneCount()));
+		for (int i = 0; i < perceptronEditingPan.getNeronCountToAdd(); i++) {
+			int neuronCountInLayer = per.getLayer(layer).getNeuroneCount();
+			if (neuronCountInLayer != 0) {
+				per.getLayer(layer).removeNeuron(neuronCountInLayer - 1);
+				if (layer == 0) {
+					per.setInputCount(Math.max(per.getInputCount(), 1));
+					per.setInputCount(Math.min(per.getInputCount(), per.getLayer(0).getNeuroneCount()));
+				}
 			}
 		}
 

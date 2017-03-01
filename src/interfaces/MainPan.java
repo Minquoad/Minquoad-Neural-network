@@ -2,10 +2,12 @@ package interfaces;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
@@ -63,6 +65,14 @@ public class MainPan extends GPanel {
 		g.drawLine(i, 0, i, this.getHeight());
 	}
 
+	public static JPanel getFieldPanel() {
+		JPanel fp = new JPanel();
+		fp.setLayout(new GridLayout());
+		fp.setOpaque(false);
+		fp.setBorder(BorderFactory.createLineBorder(Preferences.HIGHLIGHTING));
+		return fp;
+	}
+
 	public static JTextPane creadStandartJTextPane() {
 		JTextPane taxtPane = new JTextPane();
 		taxtPane.setEditable(false);
@@ -86,7 +96,7 @@ public class MainPan extends GPanel {
 
 				newText = newText.substring(0, Math.min(newText.length(), 10));
 
-				if (text != newText) {
+				if (!text.equals(newText)) {
 					dtf.setText(newText);
 				}
 			}
@@ -97,6 +107,7 @@ public class MainPan extends GPanel {
 
 		dtf.setOpaque(false);
 		dtf.setForeground(Preferences.FOREGROUND);
+		dtf.setCaretColor(Preferences.FOREGROUND);
 		dtf.setBorder(BorderFactory.createEmptyBorder());
 
 		return dtf;
@@ -134,7 +145,6 @@ public class MainPan extends GPanel {
 	public static JTextField getIntegerField() {
 		JTextField itf = new JTextField();
 		itf.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyTyped(KeyEvent e) {}
 
@@ -146,7 +156,7 @@ public class MainPan extends GPanel {
 
 				newText = newText.substring(0, Math.min(newText.length(), 10));
 
-				if (text != newText) {
+				if (!text.equals(newText)) {
 					itf.setText(newText);
 				}
 			}
@@ -157,6 +167,7 @@ public class MainPan extends GPanel {
 
 		itf.setOpaque(false);
 		itf.setForeground(Preferences.FOREGROUND);
+		itf.setCaretColor(Preferences.FOREGROUND);
 		itf.setBorder(BorderFactory.createEmptyBorder());
 
 		return itf;
