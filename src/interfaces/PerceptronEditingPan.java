@@ -1,6 +1,5 @@
 package interfaces;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -33,24 +32,9 @@ public class PerceptronEditingPan extends GPanel {
 	private JTextPane neronCountToAddLabel;
 	private JPanel neronCountToAddFieldPanel;
 
-	private LockingPanel topLockingPanel = new LockingPanel();
-	private LockingPanel bottomLockingPanel = new LockingPanel();
-	private LockingPanel leftLockingPanel = new LockingPanel();
-	private LockingPanel rightLockingPanel = new LockingPanel();
-
 	public PerceptronEditingPan(Controler controler) {
 		this.controler = controler;
 
-		this.add(topLockingPanel, 0f, 0f, 1f, 0.4f);
-		this.add(bottomLockingPanel, 0f, 0f, 1f, 0.4f);
-		this.add(topLockingPanel, 0f, 0f, 1f, 0.4f);
-		this.add(topLockingPanel, 0f, 0f, 1f, 0.4f);
-		topLockingPanel.setVisible(false);
-		bottomLockingPanel.setVisible(false);
-		leftLockingPanel.setVisible(false);
-		rightLockingPanel.setVisible(false);
-		
-		
 		inputCountLabel = MainPan.creadStandartJTextPane();
 		inputCountLabel.setText("Input Neurones :");
 		addInputButton = new JButton("+");
@@ -124,8 +108,7 @@ public class PerceptronEditingPan extends GPanel {
 	public void regen(Perceptron per) {
 
 		boolean perValide = per.isValid();
-		
-		/*
+
 		inputCountLabel.setVisible(!perValide);
 		addInputButton.setVisible(!perValide);
 		removeInputButton.setVisible(!perValide);
@@ -134,8 +117,6 @@ public class PerceptronEditingPan extends GPanel {
 		neronCountToAddLabel.setVisible(!perValide);
 		neronCountToAddFieldPanel.setVisible(!perValide);
 		neuTypSel.setVisible(!perValide);
-		*/
-		topLockingPanel.setVisible(perValide);
 
 		if (perValide) {
 			validateButton.setBackground(Preferences.HIGHLIGHTING);
@@ -252,12 +233,6 @@ public class PerceptronEditingPan extends GPanel {
 		if (occupied != this.occupied) {
 			this.occupied = occupied;
 			validateButton.setEnabled(!occupied);
-		}
-	}
-
-	private class LockingPanel extends GPanel {
-		public LockingPanel() {
-			this.setBackground(new Color(255, 0, 0, 255/2));
 		}
 	}
 

@@ -7,11 +7,8 @@ import java.io.IOException;
 import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
 import entities.neuralNetwork.neurons.BlankNeuron;
-import entities.neuralNetwork.neurons.ExpNeuron;
-import entities.neuralNetwork.neurons.LnNeuron;
 import entities.neuralNetwork.neurons.Neuron;
-import entities.neuralNetwork.neurons.PeriodicNeuron;
-import entities.neuralNetwork.neurons.SigNeuron;
+import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.DataAssociator;
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GChoixFichier;
@@ -20,7 +17,6 @@ import interfaces.DataPan;
 import interfaces.ErrorInFilePopup;
 import interfaces.Frame;
 import interfaces.MainPan;
-import interfaces.NeuronTypeSelecter;
 import interfaces.PerceptronDisplayer;
 import interfaces.PerceptronEditingPan;
 import interfaces.ShortCutManager;
@@ -351,35 +347,13 @@ public class Controler implements LearningStateListener {
 		}
 	}
 
-	public void addNeuron(NeuronTypeSelecter.Type type, int layer) {
+	public void addNeuron(NeuronType type, int layer) {
 		for (int i = 0; i < perceptronEditingPan.getNeronCountToAdd(); i++) {
 			if (layer == 0) {
 				per.getLayer(layer).addNeuron(new BlankNeuron(per));
 				this.incrementInputCount();
 			} else {
-				Neuron newNeuron = null;
-				switch (type) {
-				case CONSANT:
-					newNeuron = new BlankNeuron(per);
-					break;
-				case LINEARE:
-					newNeuron = new Neuron(per);
-					break;
-				case SIGMOID:
-					newNeuron = new SigNeuron(per);
-					break;
-				case LOGARITHMIC:
-					newNeuron = new LnNeuron(per);
-					break;
-				case EXPONENTIAL:
-					newNeuron = new ExpNeuron(per);
-					break;
-				case SINUSOIDAL:
-					newNeuron = new PeriodicNeuron(per);
-					break;
-				default:
-					break;
-				}
+				Neuron newNeuron = type.getNewInstance(per);
 				per.getLayer(layer).addNeuron(newNeuron);
 			}
 		}

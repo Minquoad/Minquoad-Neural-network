@@ -14,25 +14,17 @@ import java.util.ArrayList;
 import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
 import entities.neuralNetwork.neurons.BlankNeuron;
-import entities.neuralNetwork.neurons.ExpNeuron;
-import entities.neuralNetwork.neurons.LnNeuron;
 import entities.neuralNetwork.neurons.Neuron;
-import entities.neuralNetwork.neurons.PeriodicNeuron;
-import entities.neuralNetwork.neurons.SigNeuron;
+import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
 
 public class PerceptronDisplayer extends GPanel {
 
-	private static final BufferedImage LIN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/lin.png");
-	private static final BufferedImage SIG_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sig.png");
-	private static final BufferedImage SIN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/sin.png");
-	private static final BufferedImage LN_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/ln.png");
-	private static final BufferedImage EXP_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/exp.png");
-	private static final BufferedImage BLANK_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/blank.png");
-	private static final BufferedImage NEU_IMG = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/neu.png");
-	
+	private static final BufferedImage INPUT_NEURON_PICTURE = GRessourcesCollector
+			.getBufferedImage("resources/pictures/neurons/neu.png");
+
 	// meta
 	private boolean valide;
 	private int inputCount;
@@ -94,25 +86,12 @@ public class PerceptronDisplayer extends GPanel {
 
 				BufferedImage fond = null;
 
+				fond = NeuronType.getEnumFromInstance(currentNeuron).getPicture();
 				if (i == 0 && j < per.getInputCount())
-					fond = NEU_IMG;
-				else if (currentNeuron.getClass() == BlankNeuron.class)
-					fond = BLANK_IMG;
-				else if (currentNeuron.getClass() == ExpNeuron.class)
-					fond = EXP_IMG;
-				else if (currentNeuron.getClass() == LnNeuron.class)
-					fond = LN_IMG;
-				else if (currentNeuron.getClass() == PeriodicNeuron.class)
-					fond = SIN_IMG;
-				else if (currentNeuron.getClass() == SigNeuron.class)
-					fond = SIG_IMG;
-				else if (currentNeuron.getClass() == Neuron.class)
-					fond = LIN_IMG;
+					fond = INPUT_NEURON_PICTURE;
 
 				GPanel neuDisp = new GPanel();
 				neuDisp.setBackgroundPicture(fond, GPanel.BackgroundDisplayType.FIT);
-				neuDisp.setBackground(Color.red);
-				neuDisp.setOpaque(false);
 
 				float w = 1f / (float) nerveWeb.length;
 				float h = 1f / (float) nerveWeb[i];

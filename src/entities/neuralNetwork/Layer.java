@@ -73,6 +73,11 @@ public class Layer {
 		neurons.add(newNeuron);
 	}
 
+	public void addNeuron(int i, Neuron newNeuron) {
+		per.invalidate();
+		neurons.add(i, newNeuron);
+	}
+
 	public void removeNeuron(int i) {
 		per.invalidate();
 		neurons.remove(i);
