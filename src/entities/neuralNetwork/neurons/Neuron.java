@@ -11,20 +11,15 @@ public class Neuron {
 
 	public int id;
 
-	protected Perceptron per;
+	protected Perceptron per = null;
 
 	protected ArrayList<Nerve> nerves = new ArrayList<Nerve>();
 
 	protected double charge = 1;
 
-	public Neuron(Perceptron per) {
-		this.per = per;
-	}
-
-	public Neuron(DataAssociator da, Perceptron per) {
-
-		this.per = per;
-
+	public void buildFromDataAssociator(DataAssociator da, Perceptron per) {
+		this.setPerceptron(per);
+		
 		id = da.getValueInt("id");
 
 		int nerveCount = da.getValueInt("nerveCount");
@@ -32,7 +27,7 @@ public class Neuron {
 			nerves.add(new Nerve(da.getValueDataAssociator(i), per));
 		}
 	}
-
+	
 	public void proceed() {
 		charge = 0;
 
@@ -83,8 +78,7 @@ public class Neuron {
 	}
 
 	public void linkTo(Neuron neu) {
-		per.invalidate();
-
+		invalidate();
 		nerves.add(new Nerve(neu));
 	}
 
@@ -95,11 +89,8 @@ public class Neuron {
 	}
 
 	public void removeAllNerves() {
-		per.invalidate();
-
-		while (!nerves.isEmpty()) {
-			nerves.remove(0);
-		}
+		invalidate();
+		nerves.clear();
 	}
 
 	public double getCharge() {
@@ -118,18 +109,37 @@ public class Neuron {
 		return nerves.size();
 	}
 
+	public ArrayList<Nerve> getAllNervs() {
+		ArrayList<Nerve> nerves = new ArrayList<Nerve>();
+		for (Nerve nerve : this.nerves) {
+			nerves.add(nerve);
+		}
+		return nerves;
+	}
+	
 	public DataAssociator toDataAssociator() {
 		DataAssociator da = new DataAssociator();
 
 		da.addValue("id", id);
 
-		da.addValue("class", this.getClass().toString());
+		da.addValue("type", NeuronType.getEnumFromInstance(this).toString());
 
 		da.addValue("nerveCount", getNerveCount());
 		for (int i = 0; i < getNerveCount(); i++) {
 			da.addValue(i, getNerve(i).toDataAssociator());
 		}
 		return da;
+	}
+
+	public void setPerceptron(Perceptron per) {
+		invalidate();
+		this.per = per;
+	}
+
+	private void invalidate() {
+		if (per != null) {
+			per.invalidate();
+		}
 	}
 
 }

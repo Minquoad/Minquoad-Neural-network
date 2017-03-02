@@ -2,49 +2,31 @@ package entities.neuralNetwork;
 
 import java.util.ArrayList;
 
-import entities.neuralNetwork.neurons.BlankNeuron;
-import entities.neuralNetwork.neurons.ExpNeuron;
-import entities.neuralNetwork.neurons.LnNeuron;
 import entities.neuralNetwork.neurons.Neuron;
-import entities.neuralNetwork.neurons.PeriodicNeuron;
-import entities.neuralNetwork.neurons.SigNeuron;
+import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.DataAssociator;
 
 public class Layer {
 
-	private Perceptron per;
+	private Perceptron per = null;
 
 	private ArrayList<Neuron> neurons = new ArrayList<Neuron>();
 
-	public Layer(Perceptron per) {
-		this.per = per;
-	}
+	public Layer() {}
 
 	public Layer(DataAssociator da, Perceptron per) {
-
-		this.per = per;
+		this.setPerceptron(per);
 
 		int neuroneCount = da.getValueInt("neuroneCount");
 		for (int i = 0; i < neuroneCount; i++) {
-
 			DataAssociator neuronDataAssociator = da.getValueDataAssociator(i);
 
-			String neuClass = neuronDataAssociator.getValueString("class");
+			String neuTypeName = neuronDataAssociator.getValueString("type");
 
-			if (Neuron.class.toString().equals(neuClass))
-				neurons.add(new Neuron(neuronDataAssociator, per));
-			if (SigNeuron.class.toString().equals(neuClass))
-				neurons.add(new SigNeuron(neuronDataAssociator, per));
-			if (LnNeuron.class.toString().equals(neuClass))
-				neurons.add(new LnNeuron(neuronDataAssociator, per));
-			if (ExpNeuron.class.toString().equals(neuClass))
-				neurons.add(new ExpNeuron(neuronDataAssociator, per));
-			if (BlankNeuron.class.toString().equals(neuClass))
-				neurons.add(new BlankNeuron(neuronDataAssociator, per));
-			if (PeriodicNeuron.class.toString().equals(neuClass)) {
-				neurons.add(new PeriodicNeuron(neuronDataAssociator, per));
-			}
+			Neuron newNeuron = NeuronType.getEnumFromSting(neuTypeName).getNewInstance();
+			newNeuron.buildFromDataAssociator(neuronDataAssociator, per);
 
+			this.addNeuron(newNeuron);
 		}
 	}
 
@@ -69,17 +51,17 @@ public class Layer {
 	}
 
 	public void addNeuron(Neuron newNeuron) {
-		per.invalidate();
-		neurons.add(newNeuron);
+		this.addNeuron(this.getNeuroneCount(), newNeuron);
 	}
 
-	public void addNeuron(int i, Neuron newNeuron) {
-		per.invalidate();
-		neurons.add(i, newNeuron);
+	public void addNeuron(int i, Neuron neuron) {
+		invalidate();
+		neurons.add(i, neuron);
+		neuron.setPerceptron(per);
 	}
 
 	public void removeNeuron(int i) {
-		per.invalidate();
+		invalidate();
 		neurons.remove(i);
 	}
 
@@ -91,6 +73,32 @@ public class Layer {
 			da.addValue(i, getNeurone(i).toDataAssociator());
 		}
 		return da;
+	}
+
+	public void setPerceptron(Perceptron per) {
+		invalidate();
+		this.per = per;
+		for (Neuron neuron : neurons) {
+			neuron.setPerceptron(per);
+		}
+	}
+
+	public void invalidate() {
+		if (per != null) {
+			per.invalidate();
+		}
+	}
+
+	public boolean isValidable() {
+		return this.getNeuroneCount() != 0;
+	}
+
+	public ArrayList<Nerve> getAllNervs() {
+		ArrayList<Nerve> nerves = new ArrayList<Nerve>();
+		for (Neuron neuron : neurons) {
+			nerves.addAll(neuron.getAllNervs());
+		}
+		return nerves;
 	}
 
 }

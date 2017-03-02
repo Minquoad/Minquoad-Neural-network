@@ -4,10 +4,7 @@
 package entities.neuralNetwork.neurons;
 
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
-import entities.neuralNetwork.Perceptron;
 import gClasses.GRessourcesCollector;
 
 public enum NeuronType {
@@ -38,6 +35,16 @@ public enum NeuronType {
 		return picture;
 	}
 
+	public static NeuronType getEnumFromSting(String name) {
+		NeuronType foundedNeuronType = null;
+		for (NeuronType neuronType : NeuronType.values()) {
+			if (neuronType.toString().equals(name)) {
+				foundedNeuronType = neuronType;
+			}
+		}
+		return foundedNeuronType;
+	}
+
 	public static NeuronType getEnumFromInstance(Neuron neuron) {
 		NeuronType foundedNeuronType = null;
 		for (NeuronType neuronType : NeuronType.values()) {
@@ -48,17 +55,13 @@ public enum NeuronType {
 		return foundedNeuronType;
 	}
 
-	public Neuron getNewInstance(Perceptron per) {
+	public Neuron getNewInstance() {
 		Neuron newNeuron = null;
 
 		try {
-
-			Constructor<? extends Neuron> constructor = associateClass.getConstructor(Perceptron.class);
-			newNeuron = constructor.newInstance(per);
-
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			newNeuron = associateClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e1) {
+			e1.printStackTrace();
 		}
 
 		return newNeuron;

@@ -18,67 +18,74 @@ public class Perceptron {
 	public Perceptron(DataAssociator da) throws Exception {
 		if (da != null && da.exists("inputCount") && da.exists("valid") && da.exists("layerCount")) {
 			inputCount = da.getValueInt("inputCount");
-			valid = Boolean.parseBoolean(da.getValueString("valid"));
 
 			int layerCount = da.getValueInt("layerCount");
 			for (int i = 0; i < layerCount; i++) {
 				layers.add(new Layer(da.getValueDataAssociator(i), this));
 			}
+
+			valid = Boolean.parseBoolean(da.getValueString("valid"));
 		} else {
 			throw new Exception("DataAssociator does not contains the required feilds");
 		}
 	}
 
 	public ArrayList<Nerve> getAllNerve() {
-		ArrayList<Nerve> list = new ArrayList<Nerve>();
-
-		for (int i = 1; i < getLayerCount(); i++) {
-			Layer currentLayer = getLayer(i);
-			for (int j = 0; j < currentLayer.getNeuroneCount(); j++) {
-				Neuron currentNeuron = currentLayer.getNeurone(j);
-				for (int k = 0; k < currentNeuron.getNerveCount(); k++) {
-					list.add(currentNeuron.getNerve(k));
-				}
-			}
+		ArrayList<Nerve> nerves = new ArrayList<Nerve>();
+		for (Layer layer : layers) {
+			nerves.addAll(layer.getAllNervs());
 		}
-
-		return list;
+		return nerves;
 	}
 
 	public boolean isValidable() {
-		boolean hasEmptyLayer = false;
+		boolean hasOnlyValidableLayer = true;
 		for (int i = 0; i < layers.size(); i++) {
-			hasEmptyLayer |= layers.get(i).getNeuroneCount() == 0;
+			hasOnlyValidableLayer &= layers.get(i).isValidable();
 		}
-		return layers.size() >= 2 && !hasEmptyLayer;
+		return layers.size() >= 2 && hasOnlyValidableLayer;
 	}
 
 	public void validate() {
+		if (this.isValidable()) {
 
-		for (int i = 1; i < layers.size(); i++) {
-			Layer iLayer = layers.get(i);
-			for (int j = 0; j < iLayer.getNeuroneCount(); j++) {
-				iLayer.getNeurone(j).removeAllNerves();
+			for (Layer layer : layers) {
+				layer.setPerceptron(this);
 			}
-		}
+			
+			for (int i = 1; i < layers.size(); i++) {
+				Layer iLayer = layers.get(i);
+				for (int j = 0; j < iLayer.getNeuroneCount(); j++) {
+					iLayer.getNeurone(j).removeAllNerves();
+				}
+			}
 
-		if (layers.size() >= 2 && this.isValidable()) {
 			for (int i = 1; i < layers.size(); i++) {
 				for (int j = 0; j < layers.get(i).getNeuroneCount(); j++) {
 					layers.get(i).getNeurone(j).linkTo(layers.get(i - 1));
 				}
 			}
+			
 			valid = true;
 		}
 	}
 
+	public void addLayer() {
+		this.addLayer(new Layer());
+	}
+
+	public void addLayer(int i) {
+		this.addLayer(i, new Layer());
+	}
+
 	public void addLayer(Layer newLayer) {
-		addLayer(layers.size(), newLayer);
+		addLayer(this.getLayerCount(), newLayer);
 	}
 
 	public void addLayer(int i, Layer newLayer) {
 		invalidate();
 		layers.add(i, newLayer);
+		newLayer.setPerceptron(this);
 	}
 
 	public void removeLayer(int i) {
@@ -99,7 +106,7 @@ public class Perceptron {
 	}
 
 	public void removeAllLayer() {
-		this.invalidate();
+		invalidate();
 		while (!layers.isEmpty()) {
 			layers.remove(0);
 		}
@@ -129,7 +136,7 @@ public class Perceptron {
 		this.proceed();
 		return this.getOutputs();
 	}
-	
+
 	public double[] getOutputs() {
 
 		Layer lastLayer = layers.get(layers.size() - 1);

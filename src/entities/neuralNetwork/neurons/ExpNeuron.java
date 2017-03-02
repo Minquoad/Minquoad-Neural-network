@@ -1,18 +1,8 @@
 package entities.neuralNetwork.neurons;
 
 import entities.neuralNetwork.Nerve;
-import entities.neuralNetwork.Perceptron;
-import gClasses.DataAssociator;
 
 public class ExpNeuron extends Neuron {
-
-	public ExpNeuron(Perceptron per) {
-		super(per);
-	}
-
-	public ExpNeuron(DataAssociator da, Perceptron per) {
-		super(da, per);
-	}
 
 	public void proceed() {
 		super.proceed();

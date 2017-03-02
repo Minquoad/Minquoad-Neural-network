@@ -4,7 +4,6 @@ import java.awt.KeyboardFocusManager;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
-import entities.neuralNetwork.Layer;
 import entities.neuralNetwork.Perceptron;
 import entities.neuralNetwork.neurons.BlankNeuron;
 import entities.neuralNetwork.neurons.Neuron;
@@ -192,19 +191,6 @@ public class Controler implements LearningStateListener {
 				(file) -> CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results)));
 	}
 
-	public void resetPerceptron() {
-		if (per == null) {
-			per = new Perceptron();
-		} else {
-			per.removeAllLayer();
-			per.setInputCount(0);
-		}
-		per.addLayer(new Layer(per));
-		per.addLayer(new Layer(per));
-
-		perceptronModified();
-	}
-
 	public void togglePerceptronValidation() {
 		if (per.isValid()) {
 			per.invalidate();
@@ -347,13 +333,26 @@ public class Controler implements LearningStateListener {
 		}
 	}
 
+	public void resetPerceptron() {
+		if (per == null) {
+			per = new Perceptron();
+		} else {
+			per.removeAllLayer();
+			per.setInputCount(0);
+		}
+		per.addLayer();
+		per.addLayer();
+
+		perceptronModified();
+	}
+
 	public void addNeuron(NeuronType type, int layer) {
 		for (int i = 0; i < perceptronEditingPan.getNeronCountToAdd(); i++) {
 			if (layer == 0) {
-				per.getLayer(layer).addNeuron(new BlankNeuron(per));
+				per.getLayer(layer).addNeuron(new BlankNeuron());
 				this.incrementInputCount();
 			} else {
-				Neuron newNeuron = type.getNewInstance(per);
+				Neuron newNeuron = type.getNewInstance();
 				per.getLayer(layer).addNeuron(newNeuron);
 			}
 		}
@@ -376,15 +375,13 @@ public class Controler implements LearningStateListener {
 		this.perceptronModified();
 	}
 
-	public void addLayer(int layer) {
-		per.addLayer(layer, new Layer(per));
-
+	public void addLayer(int i) {
+		per.addLayer(i);
 		this.perceptronModified();
 	}
 
 	public void removeLayer(int layer) {
 		per.removeLayer(layer);
-
 		this.perceptronModified();
 	}
 
