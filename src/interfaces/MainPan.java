@@ -2,13 +2,6 @@ package interfaces;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Preferences;
