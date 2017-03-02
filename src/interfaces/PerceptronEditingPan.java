@@ -1,16 +1,13 @@
 package interfaces;
 
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.gPanel.GPanel;
+import gClasses.gInterfaces.numberField.IntegerField;
 import utilities.Controler;
 import utilities.Preferences;
 
@@ -28,14 +25,13 @@ public class PerceptronEditingPan extends GPanel {
 	private JButton addInputButton;
 	private JButton removeInputButton;
 	private JButton resetButton;
-	private JTextField neronCountToAddField;
+	private IntegerField neronCountToAddField;
 	private JTextPane neronCountToAddLabel;
-	private JPanel neronCountToAddFieldPanel;
 
 	public PerceptronEditingPan(Controler controler) {
 		this.controler = controler;
 
-		inputCountLabel = MainPan.creadStandartJTextPane();
+		inputCountLabel = new GLabel();
 		inputCountLabel.setText("Input Neurones :");
 		addInputButton = new JButton("+");
 		removeInputButton = new JButton("-");
@@ -44,41 +40,17 @@ public class PerceptronEditingPan extends GPanel {
 		resetButton = new JButton("Reset");
 		perceptronAdaptablePan = new GPanel();
 
-		neronCountToAddLabel = MainPan.creadStandartJTextPane();
+		neronCountToAddLabel = new GLabel();
 		neronCountToAddLabel.setText("Neurons added or removed : ");
-		neronCountToAddField = MainPan.getIntegerField();
-		neronCountToAddField.setText("1");
-		neronCountToAddField.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String text = neronCountToAddField.getText();
-
-				String newText = text.substring(0, Math.min(text.length(), 3));
-
-				if (newText.length() != 0) {
-					boolean containsOnly0s = true;
-					for (int i = 0; i < newText.length(); i++) {
-						containsOnly0s &= newText.charAt(i) == '0';
-					}
-					if (containsOnly0s) {
-						newText = "1";
-					}
-				}
-
-				if (!text.equals(newText)) {
-					neronCountToAddField.setText(newText);
-				}
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {}
-		});
-		neronCountToAddFieldPanel = MainPan.getFieldPanel();
-		neronCountToAddFieldPanel.add(neronCountToAddField);
-		neronCountToAddFieldPanel.setPreferredSize(new Dimension(64, 26));
+		neronCountToAddField = new IntegerField();
+		neronCountToAddField.setForeground(Preferences.FOREGROUND);
+		neronCountToAddField.setBorderColor(Preferences.HIGHLIGHTING);
+		neronCountToAddField.setDefaultValue(1);
+		neronCountToAddField.displayDefaultValue();
+		neronCountToAddField.setMaxDigit(4);
+		neronCountToAddField.setMinValue(1);
+		neronCountToAddField.setMaxValue(1000);
+		neronCountToAddField.setPreferredSize(new Dimension(64, 26));
 
 		this.add(neuTypSel, 0, 0, 1, 1f / 3f);
 		inputCountLabel.setPreferredSize(new Dimension(100, 26));
@@ -86,7 +58,7 @@ public class PerceptronEditingPan extends GPanel {
 		this.addAnchoredToRight(addInputButton, inputCountLabel, 3, 0);
 		this.addAnchoredToRight(removeInputButton, addInputButton, 3, 0);
 		this.addAnchored(neronCountToAddLabel, perceptronAdaptablePan, 4, -30);
-		this.addAnchoredToRight(neronCountToAddFieldPanel, neronCountToAddLabel, 3, 0);
+		this.addAnchoredToRight(neronCountToAddField, neronCountToAddLabel, 3, 0);
 		this.add(resetButton, 0.75f, 0.4f, 0.2f, 0.2f);
 		this.add(validateButton, 0.5f, 0.4f, 0.2f, 0.2f);
 
@@ -97,12 +69,9 @@ public class PerceptronEditingPan extends GPanel {
 	}
 
 	public int getNeronCountToAdd() {
-		if (this.neronCountToAddField.getText().length() == 0) {
-			this.neronCountToAddField.setText("1");
-		}
-		String str = MainPan.formatIntegerString(this.neronCountToAddField.getText());
-		int neronCountToAdd = Integer.parseInt(str);
-		return neronCountToAdd;
+		Integer value = neronCountToAddField.getValue();
+		neronCountToAddField.setValue(value);
+		return value;
 	}
 
 	public void regen(Perceptron per) {
@@ -115,7 +84,7 @@ public class PerceptronEditingPan extends GPanel {
 		resetButton.setVisible(!perValide);
 		perceptronAdaptablePan.setVisible(!perValide);
 		neronCountToAddLabel.setVisible(!perValide);
-		neronCountToAddFieldPanel.setVisible(!perValide);
+		neronCountToAddField.setVisible(!perValide);
 		neuTypSel.setVisible(!perValide);
 
 		if (perValide) {

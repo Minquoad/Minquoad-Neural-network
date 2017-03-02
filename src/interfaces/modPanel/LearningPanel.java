@@ -9,16 +9,16 @@ import java.awt.event.KeyListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import interfaces.MainPan;
+import gClasses.gInterfaces.numberField.DoubleField;
+import gClasses.gInterfaces.numberField.IntegerField;
+import interfaces.GLabel;
 import threads.LearningMode;
 import utilities.Controler;
 import utilities.Preferences;
@@ -34,8 +34,8 @@ public class LearningPanel extends ModPanel {
 	private JButton unlearnButton;
 	private JButton randomizeSamplesOrderButton;
 	private JButton clearButton;
-	private JTextField maxIterField;
-	private JTextField minProgressionField;
+	private IntegerField maxIterField;
+	private DoubleField minProgressionField;
 	private JButton infinitModButton;
 	private boolean unlimitedIterations;
 	private JTextArea learningInfoText;
@@ -49,7 +49,7 @@ public class LearningPanel extends ModPanel {
 		int cores = Runtime.getRuntime().availableProcessors();
 		int multiThreading = Math.min(Preferences.getMultiThreading(), cores);
 
-		JTextPane multiThreadingLabel = MainPan.creadStandartJTextPane();
+		JTextPane multiThreadingLabel = new GLabel();
 		multiThreadingLabel.setText("Thread used : " + multiThreading);
 		multiThreadingSlider = new JSlider(1, cores, multiThreading);
 		multiThreadingSlider.setOpaque(false);
@@ -59,13 +59,20 @@ public class LearningPanel extends ModPanel {
 
 		// max iterration
 
-		JTextPane maxIterLabel = MainPan.creadStandartJTextPane();
+		JTextPane maxIterLabel = new GLabel();
 		maxIterLabel.setText("Max number of iterations : ");
 
 		unlimitedIterations = Preferences.isInterationsUnlimited();
 
-		maxIterField = MainPan.getIntegerField();
-		maxIterField.addKeyListener(new KeyListener() {
+		maxIterField = new IntegerField();
+		maxIterField.setDefaultValue(0);
+		maxIterField.displayDefaultValue();
+		maxIterField.setMinValue(0);
+		maxIterField.setMaxValue(Integer.MAX_VALUE);
+		maxIterField.setMaxDigit(11);
+		maxIterField.setForeground(Preferences.FOREGROUND);
+		maxIterField.setBorderColor(Preferences.HIGHLIGHTING);
+		maxIterField.addTextKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
 
@@ -79,32 +86,33 @@ public class LearningPanel extends ModPanel {
 		});
 
 		if (unlimitedIterations) {
-			maxIterField.setText("\u221E");
+			maxIterField.forceText("\u221E");
 		} else {
-			maxIterField.setText(Integer.toString(Preferences.getMaxIter()));
+			maxIterField.setValue(Preferences.getMaxIter());
 		}
-		JPanel maxIterFieldPanel = MainPan.getFieldPanel();
-		maxIterFieldPanel.add(maxIterField);
-
 		infinitModButton = new JButton("\u221E");
 		infinitModButton.addActionListener(e -> {
-			this.maxIterField.setText("\u221E");
+			maxIterField.forceText("\u221E");
 			unlimitedIterations = true;
 		});
 
 		// minimum progression
 
-		JTextPane minProgressionLabel = MainPan.creadStandartJTextPane();
+		JTextPane minProgressionLabel = new GLabel();
 		minProgressionLabel.setText("Minimum progression per iterations (%) : ");
 
-		minProgressionField = MainPan.getDoubleField();
-		minProgressionField.setText(Double.toString(Preferences.getMinimumProgressionPerIteration() * 100d));
-		JPanel minProgressionFieldPanel = MainPan.getFieldPanel();
-		minProgressionFieldPanel.add(minProgressionField);
+		minProgressionField = new DoubleField();
+		minProgressionField.setDefaultValue(Preferences.getMinimumProgressionPerIteration() * 100d);
+		minProgressionField.displayDefaultValue();
+		minProgressionField.setMinValue(0d);
+		minProgressionField.setMaxDigit(11);
+		minProgressionField.setMaxValue(Double.MAX_VALUE);
+		minProgressionField.setForeground(Preferences.FOREGROUND);
+		minProgressionField.setBorderColor(Preferences.HIGHLIGHTING);
 
 		// learning mode
 
-		JTextPane modeLabel = MainPan.creadStandartJTextPane();
+		JTextPane modeLabel = new GLabel();
 		modeLabel.setText("Learning mode : ");
 		modComboBox = new JComboBox<LearningMode>(LearningMode.values());
 		modComboBox.setSelectedItem(Preferences.getLearningMode());
@@ -139,8 +147,8 @@ public class LearningPanel extends ModPanel {
 		maxIterLabel.setPreferredSize(new Dimension(maxIterLabel.getPreferredSize().width, 26));
 		modeLabel.setPreferredSize(new Dimension(modeLabel.getPreferredSize().width, 26));
 		Dimension fieldDimension = new Dimension(160, 26);
-		minProgressionFieldPanel.setPreferredSize(fieldDimension);
-		maxIterFieldPanel.setPreferredSize(fieldDimension);
+		minProgressionField.setPreferredSize(fieldDimension);
+		maxIterField.setPreferredSize(fieldDimension);
 		multiThreadingSlider.setPreferredSize(fieldDimension);
 		randomizeSamplesOrderButton.setPreferredSize(new Dimension(185, fieldDimension.height));
 		modComboBox.setPreferredSize(new Dimension(195, fieldDimension.height));
@@ -149,17 +157,18 @@ public class LearningPanel extends ModPanel {
 		// placing
 
 		this.add(multiThreadingLabel);
-		multiThreadingLabel.setBounds(3, 3, multiThreadingLabel.getPreferredSize().width, multiThreadingLabel.getPreferredSize().height);
+		multiThreadingLabel.setBounds(3, 3, multiThreadingLabel.getPreferredSize().width,
+				multiThreadingLabel.getPreferredSize().height);
 		if (cores != 1) {
 			this.addAnchoredToRight(multiThreadingSlider, multiThreadingLabel, 3, 0);
 		}
 
 		this.addAnchoredToBottom(maxIterLabel, multiThreadingLabel, 0, 8);
-		this.addAnchoredToRight(maxIterFieldPanel, maxIterLabel, 3, -2);
-		this.addAnchoredToRight(infinitModButton, maxIterFieldPanel, 3, 0);
+		this.addAnchoredToRight(maxIterField, maxIterLabel, 3, -2);
+		this.addAnchoredToRight(infinitModButton, maxIterField, 3, 0);
 
 		this.addAnchoredToBottom(minProgressionLabel, maxIterLabel, 0, 8);
-		this.addAnchoredToRight(minProgressionFieldPanel, minProgressionLabel, 3, -2);
+		this.addAnchoredToRight(minProgressionField, minProgressionLabel, 3, -2);
 
 		this.addAnchoredToBottom(modeLabel, minProgressionLabel, 0, 8);
 		this.addAnchoredToRight(modComboBox, modeLabel, 3, -2);
@@ -234,12 +243,9 @@ public class LearningPanel extends ModPanel {
 		if (unlimitedIterations) {
 			return -1;
 		} else {
-			if (this.maxIterField.getText().length() == 0) {
-				this.maxIterField.setText("0");
-			}
-			String str = MainPan.formatIntegerString(this.maxIterField.getText());
-			int maxIter = Integer.parseInt(str);
-			return maxIter;
+			int value = maxIterField.getValue();
+			maxIterField.setValue(value);
+			return value;
 		}
 	}
 
@@ -252,12 +258,9 @@ public class LearningPanel extends ModPanel {
 	}
 
 	public double getMinimumProgressionPerIteration() {
-		if (this.minProgressionField.getText().length() == 0) {
-			this.minProgressionField.setText("0.0");
-		}
-		String str = MainPan.formatDoubleString(this.minProgressionField.getText());
-		double mppi = Double.parseDouble(str) / 100d;
-		return mppi;
+		double value = minProgressionField.getValue();
+		minProgressionField.setValue(value);
+		return value / 100d;
 	}
 
 	public LearningMode getLearningMode() {
