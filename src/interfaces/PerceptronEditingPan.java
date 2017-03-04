@@ -143,6 +143,10 @@ public class PerceptronEditingPan extends GPanel {
 				final int j = i;
 
 				addNeuron.addActionListener(e -> controler.addNeuron(neuTypSel.getSelectedType(), j));
+				
+				if (controler.isCurveMode() && i == layerCount - 1 && per.getOutputCount() == 1) {
+					addNeuron.setEnabled(false);
+				}
 
 				if (j == 0) {
 					perceptronAdaptablePan.add(removeNeuron, (float) j / (float) layerCount, 1f / 3f,

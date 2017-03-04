@@ -33,6 +33,8 @@ public class Controler {
 
 	// repository
 	private Perceptron per;
+	private boolean curveMode = false;
+	private double[][] fileData = null;
 	private double[][] data = null;
 	private double[][] results = null;
 	private Learner learner = null;
@@ -69,6 +71,12 @@ public class Controler {
 	}
 
 	public synchronized void updateMode() {
+
+		if (curveMode && fileData != null && per.isValid()) {
+			data = CsvFormatHelper.toSampleArray(fileData, per.getInputCount());
+		} else {
+			data = fileData;
+		}
 
 		if (data == null || !per.isValid()) {
 			mode = ApplicationMode.NONE;
@@ -174,7 +182,15 @@ public class Controler {
 	public void loadCsv() {
 		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
 			try {
-				data = CsvFormatHelper.getData(file);
+				fileData = CsvFormatHelper.getData(file);
+				curveMode = CsvFormatHelper.isCurve(fileData);
+				if (curveMode) {
+					fileData = CsvFormatHelper.toColumnIfNeeded(fileData);
+					while (per.getOutputCount() > 1) {
+						per.getLayer(per.getLayerCount()-1).removeNeuron();
+					}
+					this.perceptronModified();
+				}
 				updateMode();
 			} catch (Exception e) {
 				if (Preferences.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
@@ -239,7 +255,7 @@ public class Controler {
 		learningPan.startNewLearning();
 		this.appendLearningInfo("\n" + "Learning starting");
 
-		new Learner(this, per, data);
+		learner = new Learner(this, per, data);
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
@@ -349,7 +365,7 @@ public class Controler {
 			if (layer == 0) {
 				per.getLayer(layer).addNeuron(new BlankNeuron());
 				this.incrementInputCount();
-			} else {
+			} else if (!curveMode || layer != per.getLayerCount() - 1 || per.getOutputCount() == 0) {
 				Neuron newNeuron = type.getNewInstance();
 				per.getLayer(layer).addNeuron(newNeuron);
 			}
@@ -362,9 +378,8 @@ public class Controler {
 		for (int i = 0; i < perceptronEditingPan.getNeronCountToAdd(); i++) {
 			int neuronCountInLayer = per.getLayer(layer).getNeuroneCount();
 			if (neuronCountInLayer != 0) {
-				per.getLayer(layer).removeNeuron(neuronCountInLayer - 1);
+				per.getLayer(layer).removeNeuron();
 				if (layer == 0) {
-					per.setInputCount(Math.max(per.getInputCount(), 1));
 					per.setInputCount(Math.min(per.getInputCount(), per.getLayer(0).getNeuroneCount()));
 				}
 			}
@@ -383,4 +398,8 @@ public class Controler {
 		this.perceptronModified();
 	}
 
+	public boolean isCurveMode() {
+		return curveMode;
+	}
+	
 }

@@ -13,6 +13,37 @@ import java.util.Random;
 
 public abstract class CsvFormatHelper {
 
+	public static boolean isCurve(double[][] data) {
+		return data[0].length == 1 || data.length == 1;
+	}
+
+	public static double[][] toSampleArray(double[][] data, int inputCount) {
+		double[] curve = null;
+		if (data[0].length == 1) {
+			curve = columnToCurve(data);
+		}
+		if (data.length == 1) {
+			curve = lineToCurve(data);
+		}
+		if (curve != null && inputCount < curve.length) {
+			data = toSampleArray(curve, inputCount);
+		}
+		return data;
+	}
+
+	public static double[][] toSampleArray(double[] curve, int inputCount) {
+		double[][] samples = new double[curve.length - inputCount][inputCount + 1];
+
+		for (int i = 0; i < samples.length; i++) {
+			for (int j = 0; j < inputCount; j++) {
+				samples[i][j] = curve[i + j];
+			}
+			samples[i][inputCount] = curve[i + inputCount];
+		}
+
+		return samples;
+	}
+
 	public static double[][] concatLineByLine(double[][] table0, double[][] table1) {
 		double[][] newTab = new double[table0.length][table0[0].length + table1[0].length];
 		for (int i = 0; i < newTab.length; i++) {
@@ -64,10 +95,14 @@ public abstract class CsvFormatHelper {
 	}
 
 	public static double[] getDoubleTable(String str) {
+		char separator = ',';
+		if (str.indexOf(';') != -1) {
+			separator = ';';
+		}
 
 		int valuesCount = 1;
 		for (int i = 0; i < str.length(); i++) {
-			if (str.charAt(i) == ';') {
+			if (str.charAt(i) == separator) {
 				valuesCount++;
 			}
 		}
@@ -75,8 +110,8 @@ public abstract class CsvFormatHelper {
 		double[] values = new double[valuesCount];
 
 		for (int i = 0; i < values.length - 1; i++) {
-			values[i] = Double.valueOf(str.substring(0, str.indexOf(';')));
-			str = str.substring(str.indexOf(';') + 1, str.length());
+			values[i] = Double.valueOf(str.substring(0, str.indexOf(separator)));
+			str = str.substring(str.indexOf(separator) + 1, str.length());
 		}
 
 		values[values.length - 1] = Double.valueOf(str);
@@ -113,8 +148,50 @@ public abstract class CsvFormatHelper {
 				}
 			}
 
-			return data;
+			if (data.length == 1 && data[0].length == 1) {
+				return null;
+			} else {
+				return data;
+			}
 		}
+	}
+
+	public static double[] columnToCurve(double[][] data) {
+		double[] curve = new double[data.length];
+
+		for (int i = 0; i < curve.length; i++) {
+			curve[i] = data[i][0];
+		}
+
+		return curve;
+	}
+
+	public static double[][] curveToColumn(double[] curve) {
+		double[][] column = new double[curve.length][1];
+
+		for (int i = 0; i < curve.length; i++) {
+			column[i][0] = curve[i];
+		}
+
+		return column;
+	}
+
+	public static double[][] toColumnIfNeeded(double[][] curve) {
+		if (curve.length == 1) {
+			return curveToColumn(lineToCurve(curve));
+		} else {
+			return curve;
+		}
+	}
+
+	public static double[] lineToCurve(double[][] data) {
+		double[] curve = new double[data[0].length];
+
+		for (int i = 0; i < curve.length; i++) {
+			curve[i] = data[0][i];
+		}
+
+		return curve;
 	}
 
 }

@@ -65,6 +65,10 @@ public class Layer {
 		neurons.remove(i);
 	}
 
+	public void removeNeuron() {
+		this.removeNeuron(this.getNeuroneCount()-1);
+	}
+
 	public DataAssociator toDataAssociator() {
 		DataAssociator da = new DataAssociator();
 
