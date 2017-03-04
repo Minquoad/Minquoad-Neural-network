@@ -22,11 +22,10 @@ import interfaces.ShortCutManager;
 import interfaces.modPanel.LearningPanel;
 import interfaces.modPanel.ProcessingPanel;
 import threads.Learner;
-import threads.Learner.LearningStateListener;
 import threads.LearnerObserver;
 import threads.Processor;
 
-public class Controler implements LearningStateListener {
+public class Controler {
 
 	public static void main(String[] args) {
 		new Controler();
@@ -240,25 +239,22 @@ public class Controler implements LearningStateListener {
 		learningPan.startNewLearning();
 		this.appendLearningInfo("\n" + "Learning starting");
 
-		learner = new Learner(this, per, data);
-
+		new Learner(this, per, data);
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
 		learner.setUnlimitedIterations(learningPan.isUnlimitedIterations());
 		learner.setLearningMode(learningPan.getLearningMode());
 
-		learner.addLearningStateListener(this);
-
 		new LearnerObserver(this, learner);
 
 		updateMode();
 
 		learner.start();
+
 	}
 
-	@Override
-	public void learningEnded(Learner source) {
+	public void learningEnded() {
 		this.learner = null;
 		updateMode();
 	}
@@ -282,6 +278,8 @@ public class Controler implements LearningStateListener {
 		processor = new Processor(this, per, data);
 
 		updateMode();
+
+		processor.start();
 	}
 
 	public void processingEnded(double[][] results) {
@@ -384,8 +382,5 @@ public class Controler implements LearningStateListener {
 		per.removeLayer(layer);
 		this.perceptronModified();
 	}
-
-	@Override
-	public void learningStarting(Learner source) {}
 
 }

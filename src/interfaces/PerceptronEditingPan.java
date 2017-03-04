@@ -54,13 +54,26 @@ public class PerceptronEditingPan extends GPanel {
 
 		this.add(neuTypSel, 0, 0, 1, 1f / 3f);
 		inputCountLabel.setPreferredSize(new Dimension(100, 26));
-		this.addAnchoredToBottom(inputCountLabel, neuTypSel, 4, 4);
 		this.addAnchoredToRight(addInputButton, inputCountLabel, 3, 0);
 		this.addAnchoredToRight(removeInputButton, addInputButton, 3, 0);
-		this.addAnchored(neronCountToAddLabel, perceptronAdaptablePan, 4, -30);
 		this.addAnchoredToRight(neronCountToAddField, neronCountToAddLabel, 3, 0);
 		this.add(resetButton, 0.75f, 0.4f, 0.2f, 0.2f);
 		this.add(validateButton, 0.5f, 0.4f, 0.2f, 0.2f);
+
+		this.add(inputCountLabel);
+		this.add(neronCountToAddLabel);
+		this.addComponentBoundsSetter(thisPep -> {
+			inputCountLabel.setBounds(
+					4,
+					(int) ((float) thisPep.getHeight() * 4f / 9f + 0.5f)-inputCountLabel.getPreferredSize().height/2-3,
+					inputCountLabel.getPreferredSize().width,
+					inputCountLabel.getPreferredSize().height);
+			neronCountToAddLabel.setBounds(
+					4,
+					(int) ((float) thisPep.getHeight() * 5f / 9f + 0.5f)-neronCountToAddLabel.getPreferredSize().height/2+3,
+					neronCountToAddLabel.getPreferredSize().width,
+					neronCountToAddLabel.getPreferredSize().height);
+		});
 
 		addInputButton.addActionListener((e) -> controler.incrementInputCount());
 		removeInputButton.addActionListener((e) -> controler.decrementInputCount());

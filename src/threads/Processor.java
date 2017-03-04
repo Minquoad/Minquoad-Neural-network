@@ -13,16 +13,14 @@ public class Processor extends Thread {
 		this.controler = controler;
 		this.per = per;
 		this.data = data;
-		
-		this.start();
 	}
 
 	public void run() {
 		controler.appendProcessingInfo("\n" + "Processing started");
 		double[][] results = per.getResults(data);
 		controler.appendProcessingInfo("\n" + "Processing ended");
-		
+
 		controler.processingEnded(results);
 	}
-	
+
 }

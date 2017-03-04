@@ -77,6 +77,8 @@ public class Learner extends Thread {
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningEnded(this);
 		}
+		
+		controler.learningEnded();
 	}
 
 	private void learn(double[][] samplesToLearn) {
