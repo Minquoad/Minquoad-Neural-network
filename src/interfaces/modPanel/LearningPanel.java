@@ -12,7 +12,6 @@ import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -26,14 +25,12 @@ import utilities.Preferences;
 public class LearningPanel extends ModPanel {
 
 	private LearningInfoPanel learningInfoPanel;
-	private boolean occupied = false;
 
 	private MainButton runButton;
 	private MainButton stopButton;
 	private JSlider multiThreadingSlider;
 	private JButton unlearnButton;
 	private JButton randomizeSamplesOrderButton;
-	private JButton clearButton;
 	private IntegerField maxIterField;
 	private DoubleField minProgressionField;
 	private JButton infinitModButton;
@@ -43,13 +40,14 @@ public class LearningPanel extends ModPanel {
 	private JComboBox<LearningMode> modComboBox;
 
 	public LearningPanel(Controler controler) {
-
+		super(controler);
+		
 		// multithreading
 
 		int cores = Runtime.getRuntime().availableProcessors();
 		int multiThreading = Math.min(Preferences.getMultiThreading(), cores);
 
-		JTextPane multiThreadingLabel = new GLabel();
+		GLabel multiThreadingLabel = new GLabel();
 		multiThreadingLabel.setText("Thread used : " + multiThreading);
 		multiThreadingSlider = new JSlider(1, cores, multiThreading);
 		multiThreadingSlider.setOpaque(false);
@@ -59,7 +57,7 @@ public class LearningPanel extends ModPanel {
 
 		// max iterration
 
-		JTextPane maxIterLabel = new GLabel();
+		GLabel maxIterLabel = new GLabel();
 		maxIterLabel.setText("Max number of iterations : ");
 
 		unlimitedIterations = Preferences.isInterationsUnlimited();
@@ -98,7 +96,7 @@ public class LearningPanel extends ModPanel {
 
 		// minimum progression
 
-		JTextPane minProgressionLabel = new GLabel();
+		GLabel minProgressionLabel = new GLabel();
 		minProgressionLabel.setText("Minimum progression per iterations (%) : ");
 
 		minProgressionField = new DoubleField();
@@ -112,7 +110,7 @@ public class LearningPanel extends ModPanel {
 
 		// learning mode
 
-		JTextPane modeLabel = new GLabel();
+		GLabel modeLabel = new GLabel();
 		modeLabel.setText("Learning mode : ");
 		modComboBox = new JComboBox<LearningMode>(LearningMode.values());
 		modComboBox.setSelectedItem(Preferences.getLearningMode());
@@ -134,7 +132,6 @@ public class LearningPanel extends ModPanel {
 
 		// action buttons
 
-		clearButton = new JButton("Clear");
 		runButton = new MainButton("resources/pictures/computing.jpg");
 		stopButton = new MainButton("resources/pictures/stopLearning.jpg");
 		unlearnButton = new JButton("UNLEARN");
@@ -195,7 +192,6 @@ public class LearningPanel extends ModPanel {
 		this.add(runButton);
 		this.add(stopButton);
 		this.add(unlearnButton);
-		this.add(clearButton);
 
 		this.addComponentBoundsSetter(thisLp -> {
 			float xThreadButtonsRectangle = 0f;
@@ -217,26 +213,22 @@ public class LearningPanel extends ModPanel {
 					thisLp.getHeight() - 26,
 					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
 					26);
-			clearButton.setBounds(
-					(int) ((float) thisLp.getWidth() - (0.2f * (float) thisLp.getWidth())
-							+ 0.5),
-					(int) ((float) thisLp.getHeight() / 2f + 0.5f) - 26,
-					(int) (0.2f * (float) thisLp.getWidth() + 0.5f),
-					26);
 		});
 
 		// action performed
 
 		runButton.addActionListener((e) -> controler.startLearning());
 		stopButton.addActionListener((e) -> controler.handleUserRequestLearningEnd());
-		clearButton.addActionListener((e) -> {
-			learningInfoPanel.clear();
-			learningInfoText.setText("");
-			LearningPanel.this.validate();
-		});
 		unlearnButton.addActionListener((e) -> controler.unlearn());
 		randomizeSamplesOrderButton.addActionListener((e) -> controler.randomizeSamplesOrder());
 
+	}
+
+	@Override
+	protected void clear() {
+		learningInfoPanel.clear();
+		learningInfoText.setText("");
+		this.validate();
 	}
 
 	public int getMaxIter() {
@@ -281,9 +273,10 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setCaretPosition(learningInfoText.getDocument().getLength());
 	}
 
+	@Override
 	public void setOccupied(boolean occupied) {
-		if (occupied != this.occupied) {
-			this.occupied = occupied;
+		if (occupied != this.isOccupied()) {
+			super.setOccupied(occupied);
 
 			runButton.setVisible(!occupied);
 			stopButton.setVisible(occupied);

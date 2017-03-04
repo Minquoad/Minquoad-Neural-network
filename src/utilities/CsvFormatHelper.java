@@ -46,6 +46,7 @@ public abstract class CsvFormatHelper {
 
 	public static double[][] concatLineByLine(double[][] table0, double[][] table1) {
 		double[][] newTab = new double[table0.length][table0[0].length + table1[0].length];
+
 		for (int i = 0; i < newTab.length; i++) {
 			for (int j = 0; j < table0[0].length; j++) {
 				newTab[i][j] = table0[i][j];
@@ -54,6 +55,20 @@ public abstract class CsvFormatHelper {
 				newTab[i][j + table0[0].length] = table1[i][j];
 			}
 		}
+
+		return newTab;
+	}
+
+	public static double[][] concatColumnByColumn(double[][] table0, double[][] table1) {
+		double[][] newTab = new double[table0.length + table1.length][table0[0].length];
+
+		for (int i = 0; i < table0.length; i++) {
+			newTab[i] = table0[i];
+		}
+		for (int i = 0; i < table1.length; i++) {
+			newTab[i + table0.length] = table1[i];
+		}
+
 		return newTab;
 	}
 

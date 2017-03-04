@@ -3,7 +3,6 @@ package interfaces;
 import java.awt.Dimension;
 
 import javax.swing.JButton;
-import javax.swing.JTextPane;
 
 import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.gPanel.GPanel;
@@ -21,12 +20,12 @@ public class PerceptronEditingPan extends GPanel {
 	private NeuronTypeSelecter neuTypSel = new NeuronTypeSelecter();
 	private GPanel perceptronAdaptablePan;
 	private JButton validateButton;
-	private JTextPane inputCountLabel;
+	private GLabel inputCountLabel;
 	private JButton addInputButton;
 	private JButton removeInputButton;
 	private JButton resetButton;
 	private IntegerField neronCountToAddField;
-	private JTextPane neronCountToAddLabel;
+	private GLabel neronCountToAddLabel;
 
 	public PerceptronEditingPan(Controler controler) {
 		this.controler = controler;
@@ -144,7 +143,7 @@ public class PerceptronEditingPan extends GPanel {
 
 				addNeuron.addActionListener(e -> controler.addNeuron(neuTypSel.getSelectedType(), j));
 				
-				if (controler.isCurveMode() && i == layerCount - 1 && per.getOutputCount() == 1) {
+				if (controler.isCurveData() && i == layerCount - 1 && per.getOutputCount() > 0) {
 					addNeuron.setEnabled(false);
 				}
 

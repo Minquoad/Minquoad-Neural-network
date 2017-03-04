@@ -1,13 +1,15 @@
 package interfaces.modPanel;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import gClasses.gInterfaces.numberField.IntegerField;
+import interfaces.GLabel;
 import utilities.Controler;
 import utilities.Preferences;
 
@@ -15,9 +17,21 @@ public class ProcessingPanel extends ModPanel {
 
 	private JTextArea processingInfoText;
 	private MainButton runButton;
-	private boolean occupied = false;
+
+	private IntegerField valueExtendedCount;
+	private GLabel valueExtendedCountLabel;
 
 	public ProcessingPanel(Controler controler) {
+		super(controler);
+
+		valueExtendedCountLabel = new GLabel();
+		valueExtendedCountLabel.setText("Number of values to generate : ");
+		valueExtendedCount = new IntegerField();
+		valueExtendedCount.setDefaultValue(1);
+		valueExtendedCount.setMinValue(1);
+		valueExtendedCount.displayDefaultValue();
+		valueExtendedCount.setForeground(Preferences.FOREGROUND);
+		valueExtendedCount.setBorderColor(Preferences.HIGHLIGHTING);
 
 		processingInfoText = new JTextArea();
 		processingInfoText.setEditable(false);
@@ -32,24 +46,32 @@ public class ProcessingPanel extends ModPanel {
 
 		runButton = new MainButton("resources/pictures/proceed.jpg");
 
-		JButton clearButton = new JButton("Clear");
+		// sizing
+
+		valueExtendedCountLabel.setPreferredSize(new Dimension(valueExtendedCountLabel.getPreferredSize().width, 26));
+		valueExtendedCount.setPreferredSize(new Dimension(160, 26));
 
 		// placement
+
+		this.add(valueExtendedCountLabel);
+		valueExtendedCountLabel.setBounds(3, 3, valueExtendedCountLabel.getPreferredSize().width,
+				valueExtendedCountLabel.getPreferredSize().height);
+		this.addAnchoredToRight(valueExtendedCount, valueExtendedCountLabel, 3, -2);
+
 		this.add(runButton, 0, 0.5f, 0.2f, 0.5f);
-		this.add(processingInfoTextScroll, 0f, 0f, 1f, 0.5f);
-		this.add(clearButton);
-		this.addComponentBoundsSetter(thisPp -> {
-			clearButton.setBounds(
-					(int) ((float) thisPp.getWidth() - (0.2f * (float) thisPp.getWidth())
-							+ 0.5),
-					(int) ((float) thisPp.getHeight() / 2f + 0.5f),
-					(int) (0.2f * (float) thisPp.getWidth() + 0.5f),
-					26);
-		});
+		this.add(processingInfoTextScroll, 0.2f, 0.5f, 0.8f, 0.5f);
+
+		valueExtendedCountLabel.setVisible(isCurveMode());
+		valueExtendedCount.setVisible(isCurveMode());
 
 		// actions
 		runButton.addActionListener(e -> controler.startProcessing());
-		clearButton.addActionListener(e -> processingInfoText.setText(""));
+	}
+
+	public int getValueExtendedCount() {
+		int value = valueExtendedCount.getValue();
+		valueExtendedCount.setValue(value);
+		return value;
 	}
 
 	public void appendInfo(String str) {
@@ -62,12 +84,25 @@ public class ProcessingPanel extends ModPanel {
 		processingInfoText.setCaretPosition(processingInfoText.getDocument().getLength());
 	}
 
+	@Override
 	public void setOccupied(boolean occupied) {
-		if (occupied != this.occupied ) {
-			this.occupied = occupied;
+		if (occupied != this.isOccupied()) {
+			super.setOccupied(occupied);
 
 			runButton.setEnabled(!occupied);
 		}
+	}
+
+	@Override
+	public void setCurveMode(boolean curveMode) {
+		super.setCurveMode(curveMode);
+		valueExtendedCountLabel.setVisible(isCurveMode());
+		valueExtendedCount.setVisible(isCurveMode());
+	}
+
+	@Override
+	protected void clear() {
+		processingInfoText.setText("");
 	}
 
 }

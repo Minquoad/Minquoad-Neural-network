@@ -1,4 +1,4 @@
-package interfaces;
+package interfaces.popup;
 
 import gClasses.gInterfaces.GDialog;
 

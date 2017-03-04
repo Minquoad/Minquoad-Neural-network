@@ -13,7 +13,6 @@ import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.GChoixFichier;
 import gClasses.gInterfaces.GDialog;
 import interfaces.DataPan;
-import interfaces.ErrorInFilePopup;
 import interfaces.Frame;
 import interfaces.MainPan;
 import interfaces.PerceptronDisplayer;
@@ -21,6 +20,8 @@ import interfaces.PerceptronEditingPan;
 import interfaces.ShortCutManager;
 import interfaces.modPanel.LearningPanel;
 import interfaces.modPanel.ProcessingPanel;
+import interfaces.popup.ErrorCurvePerceptron;
+import interfaces.popup.ErrorInFilePopup;
 import threads.Learner;
 import threads.LearnerObserver;
 import threads.Processor;
@@ -33,15 +34,15 @@ public class Controler {
 
 	// repository
 	private Perceptron per;
-	private boolean curveMode = false;
-	private double[][] fileData = null;
 	private double[][] data = null;
+	private double[][] dataForCurveLearning = null;
 	private double[][] results = null;
 	private Learner learner = null;
 	private Processor processor = null;
 
 	// meta
 	private ApplicationMode mode = ApplicationMode.NONE;
+	private boolean curveData = false;
 
 	// grapicals
 	private Frame frame = new Frame(this);
@@ -72,19 +73,26 @@ public class Controler {
 
 	public synchronized void updateMode() {
 
-		if (curveMode && fileData != null && per.isValid()) {
-			data = CsvFormatHelper.toSampleArray(fileData, per.getInputCount());
-		} else {
-			data = fileData;
-		}
-
 		if (data == null || !per.isValid()) {
 			mode = ApplicationMode.NONE;
 		} else if (learner != null) {
 			mode = ApplicationMode.LEARNING;
 		} else if (processor != null) {
 			mode = ApplicationMode.PROCESSING;
+		} else if (curveData) {
+			if (per.getInputCount() < data.length) {
+				if (mode == ApplicationMode.WILL_PROCEED || mode == ApplicationMode.PROCESSING) {
+					mode = ApplicationMode.WILL_PROCEED;
+				} else if (mode == ApplicationMode.WILL_LEARN || mode == ApplicationMode.LEARNING) {
+					mode = ApplicationMode.WILL_LEARN;
+				} else {
+					mode = ApplicationMode.WILL_LEARN;
+				}
+			} else {
+				mode = ApplicationMode.NONE;
+			}
 		} else {
+			// auto detected mode
 			int inputCount = per.getInputCount();
 			int outputCount = per.getOutputCount();
 			int columnCount = data[0].length;
@@ -108,29 +116,49 @@ public class Controler {
 		case WILL_LEARN:
 
 			mainPan.setModePan(learningPan);
-			dataPan.setLearningMode(data, per.getInputCount());
+			if (curveData) {
+				dataPan.setLearningMode(dataForCurveLearning, per.getInputCount());
+			} else {
+				dataPan.setLearningMode(data, per.getInputCount());
+			}
 
 			break;
 		case LEARNING:
 
 			mainPan.setModePan(learningPan);
-			dataPan.setLearningMode(data, per.getInputCount());
+			if (curveData) {
+				dataPan.setLearningMode(dataForCurveLearning, per.getInputCount());
+			} else {
+				dataPan.setLearningMode(data, per.getInputCount());
+			}
 
 			break;
 		case WILL_PROCEED:
 
 			mainPan.setModePan(processingPan);
-			if (results == null) {
-				dataPan.setProcessingMode(data, per.getOutputCount());
+			if (curveData) {
+				if (results == null) {
+					dataPan.setCurveProcessingMode(data);
+				} else {
+					dataPan.setCurveProcessedMode(data, results);
+				}
 			} else {
-				dataPan.setProcessedMode(data, results);
+				if (results == null) {
+					dataPan.setProcessingMode(data, per.getOutputCount());
+				} else {
+					dataPan.setProcessedMode(data, results);
+				}
 			}
 
 			break;
 		case PROCESSING:
 
 			mainPan.setModePan(processingPan);
-			dataPan.setProcessingMode(data, per.getOutputCount());
+			if (curveData) {
+				dataPan.setCurveProcessingMode(data);
+			} else {
+				dataPan.setProcessingMode(data, per.getOutputCount());
+			}
 
 			break;
 		}
@@ -141,6 +169,9 @@ public class Controler {
 		learningPan.setOccupied(impliesOccupation);
 		processingPan.setOccupied(impliesOccupation);
 
+		processingPan.setCurveMode(curveData);
+		learningPan.setCurveMode(curveData);
+
 		boolean enableCsvSaving = mode == ApplicationMode.WILL_PROCEED && results != null;
 		frame.enableCsvSaving(enableCsvSaving);
 		shortCutManager.enableCsvSaving(enableCsvSaving);
@@ -149,7 +180,27 @@ public class Controler {
 		mainPan.repaint();
 	}
 
+	public void toggleCurveApplicationMode() {
+		if (curveData) {
+			switch (mode) {
+			case WILL_LEARN:
+				mode = ApplicationMode.WILL_PROCEED;
+				break;
+			case WILL_PROCEED:
+				mode = ApplicationMode.WILL_LEARN;
+				break;
+			default:
+				break;
+			}
+		}
+		this.updateMode();
+	}
+
 	public void perceptronModified() {
+		if (curveData && data != null && per.isValid()) {
+			dataForCurveLearning = CsvFormatHelper.toSampleArray(data, per.getInputCount());
+		}
+
 		results = null;
 		perceptronEditingPan.regen(per);
 		perceptronDisplayer.setPerceptron(per);
@@ -160,9 +211,13 @@ public class Controler {
 
 	public void loadPer() {
 
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, file -> {
 			try {
 				per = new Perceptron(new DataAssociator(file));
+				if (curveData && per.isValid() && per.getOutputCount() > 1) {
+					per.invalidate();
+					new ErrorCurvePerceptron();
+				}
 				perceptronModified();
 				updateMode();
 			} catch (Exception e) {
@@ -176,20 +231,26 @@ public class Controler {
 
 	public void savePer() {
 		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
-				(file) -> per.toDataAssociator().save(file));
+				file -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, (file) -> {
+		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, file -> {
 			try {
-				fileData = CsvFormatHelper.getData(file);
-				curveMode = CsvFormatHelper.isCurve(fileData);
-				if (curveMode) {
-					fileData = CsvFormatHelper.toColumnIfNeeded(fileData);
-					while (per.getOutputCount() > 1) {
-						per.getLayer(per.getLayerCount()-1).removeNeuron();
+				data = CsvFormatHelper.getData(file);
+				curveData = CsvFormatHelper.isCurve(data);
+				if (curveData) {
+					data = CsvFormatHelper.toColumnIfNeeded(data);
+
+					if (per.isValid()) {
+						if (per.getOutputCount() == 1 && per.getInputCount() != 0) {
+							dataForCurveLearning = CsvFormatHelper.toSampleArray(data, per.getInputCount());
+						} else {
+							per.invalidate();
+							perceptronModified();
+							new ErrorCurvePerceptron();
+						}
 					}
-					this.perceptronModified();
 				}
 				updateMode();
 			} catch (Exception e) {
@@ -203,17 +264,26 @@ public class Controler {
 
 	public void saveCsv() {
 		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
-				(file) -> CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results)));
+				file -> {
+					if (curveData) {
+						CsvFormatHelper.save(file, CsvFormatHelper.concatColumnByColumn(data, results));
+					} else {
+						CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results));
+					}
+				});
 	}
 
 	public void togglePerceptronValidation() {
 		if (per.isValid()) {
 			per.invalidate();
 		} else {
-			per.validate();
+			if (curveData && per.getOutputCount() > 1) {
+				new ErrorCurvePerceptron();
+			} else {
+				per.validate();
+			}
 		}
 		perceptronModified();
-
 		updateMode();
 	}
 
@@ -255,7 +325,13 @@ public class Controler {
 		learningPan.startNewLearning();
 		this.appendLearningInfo("\n" + "Learning starting");
 
-		learner = new Learner(this, per, data);
+		double[][] dataToLearn;
+		if (curveData) {
+			dataToLearn = dataForCurveLearning;
+		} else {
+			dataToLearn = data;
+		}
+		learner = new Learner(this, per, dataToLearn);
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
@@ -292,6 +368,8 @@ public class Controler {
 	public void startProcessing() {
 		results = null;
 		processor = new Processor(this, per, data);
+		processor.setCurveData(curveData);
+		processor.setValueExtendedCount(processingPan.getValueExtendedCount());
 
 		updateMode();
 
@@ -365,7 +443,7 @@ public class Controler {
 			if (layer == 0) {
 				per.getLayer(layer).addNeuron(new BlankNeuron());
 				this.incrementInputCount();
-			} else if (!curveMode || layer != per.getLayerCount() - 1 || per.getOutputCount() == 0) {
+			} else if (!curveData || layer != per.getLayerCount() - 1 || per.getOutputCount() == 0) {
 				Neuron newNeuron = type.getNewInstance();
 				per.getLayer(layer).addNeuron(newNeuron);
 			}
@@ -398,8 +476,8 @@ public class Controler {
 		this.perceptronModified();
 	}
 
-	public boolean isCurveMode() {
-		return curveMode;
+	public boolean isCurveData() {
+		return curveData;
 	}
-	
+
 }

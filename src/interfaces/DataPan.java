@@ -12,7 +12,7 @@ import utilities.Preferences;
 public class DataPan extends GTablePanel {
 
 	public enum Mode {
-		NONE, LEARNING, PROCESSING_WITH_RESULTS, PROCESSING_WITHOUT_RESULTS;
+		NONE, LEARNING, PROCESSING_WITH_RESULTS, PROCESSING_WITHOUT_RESULTS, PROCESSING_CURVE, PROCESSED_CURVE;
 	}
 
 	private Mode showedMod = null;
@@ -33,8 +33,11 @@ public class DataPan extends GTablePanel {
 	public void setNoneMode(double[][] data) {
 		if (data != null) {
 
-			if (showedMod == Mode.LEARNING && showedData == data) {
+			if ((showedMod == Mode.LEARNING || showedMod == Mode.PROCESSING_CURVE) && showedData == data) {
 				this.setDataTableHeaderToNone();
+				if (data[0].length == 1) {
+					this.table.getTableHeader().setUI(null);
+				}
 			} else if (showedMod != Mode.NONE || showedData != data) {
 
 				int columnCount = data[0].length;
@@ -56,6 +59,9 @@ public class DataPan extends GTablePanel {
 				}
 
 				this.table = new JTable(tableData, columnNames);
+				if (columnCount == 1) {
+					this.table.getTableHeader().setUI(null);
+				}
 
 				this.setTable(table);
 			}
@@ -141,6 +147,58 @@ public class DataPan extends GTablePanel {
 			showedMod = Mode.PROCESSING_WITHOUT_RESULTS;
 			showedData = data;
 			showedOutputCount = outputCount;
+		}
+	}
+
+	public void setCurveProcessingMode(double[][] data) {
+		if (data != null) {
+
+			if (showedMod != Mode.PROCESSING_CURVE || showedData != data) {
+
+				String[] columnNames = new String[1];
+				columnNames[0] = "source data";
+
+				Object[][] tableData = new Object[data.length][1];
+
+				for (int i = 0; i < data.length; i++) {
+					tableData[i][0] = formatDouble(data[i][0]);
+				}
+
+				this.table = new JTable(tableData, columnNames);
+
+				this.setTable(table);
+			}
+
+			showedMod = Mode.PROCESSING_CURVE;
+			showedData = data;
+		}
+	}
+
+	public void setCurveProcessedMode(double[][] data, double[][] results) {
+		if (data != null) {
+
+			if (showedMod != Mode.PROCESSED_CURVE || showedData != data || showedResults != results) {
+
+				String[] columnNames = new String[1];
+				columnNames[0] = "source and generated data";
+
+				Object[][] tableData = new Object[data.length + results.length][1];
+
+				for (int i = 0; i < data.length; i++) {
+					tableData[i][0] = formatDouble(data[i][0]);
+				}
+				for (int i = 0; i < results.length; i++) {
+					tableData[i + data.length][0] = formatDouble(results[i][0]);
+				}
+
+				this.table = new JTable(tableData, columnNames);
+
+				this.setTable(table);
+			}
+
+			showedMod = Mode.PROCESSED_CURVE;
+			showedData = data;
+			showedResults = results;
 		}
 	}
 
