@@ -10,7 +10,7 @@ import javax.swing.JTextPane;
 
 import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.gInterfaces.gPanel.GPanel;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class NeuronTypeSelecter extends GPanel {
 
@@ -40,7 +40,7 @@ public class NeuronTypeSelecter extends GPanel {
 					buttonList.get(j).setBackground(null);
 				}
 				neuTypeButton.setEnabled(false);
-				neuTypeButton.setBackground(Preferences.HIGHLIGHTING);
+				neuTypeButton.setBackground(Propreties.HIGHLIGHTING);
 			});
 
 			JTextPane textPane = new JTextPane();

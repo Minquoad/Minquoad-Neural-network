@@ -8,7 +8,7 @@ import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.gPanel.GPanel;
 import gClasses.gInterfaces.numberField.IntegerField;
 import utilities.Controler;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class PerceptronEditingPan extends GPanel {
 
@@ -42,8 +42,8 @@ public class PerceptronEditingPan extends GPanel {
 		neronCountToAddLabel = new GLabel();
 		neronCountToAddLabel.setText("Neurons added or removed : ");
 		neronCountToAddField = new IntegerField();
-		neronCountToAddField.setForeground(Preferences.FOREGROUND);
-		neronCountToAddField.setBorderColor(Preferences.HIGHLIGHTING);
+		neronCountToAddField.setForeground(Propreties.FOREGROUND);
+		neronCountToAddField.setBorderColor(Propreties.HIGHLIGHTING);
 		neronCountToAddField.setDefaultValue(1);
 		neronCountToAddField.displayDefaultValue();
 		neronCountToAddField.setMaxDigit(4);
@@ -100,8 +100,8 @@ public class PerceptronEditingPan extends GPanel {
 		neuTypSel.setVisible(!perValide);
 
 		if (perValide) {
-			validateButton.setBackground(Preferences.HIGHLIGHTING);
-			validateButton.setForeground(Preferences.FOREGROUND);
+			validateButton.setBackground(Propreties.HIGHLIGHTING);
+			validateButton.setForeground(Propreties.FOREGROUND);
 			validateButton.setText("Is valide");
 
 			validateButton.setEnabled(true);

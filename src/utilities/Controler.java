@@ -221,7 +221,7 @@ public class Controler {
 				perceptronModified();
 				updateMode();
 			} catch (Exception e) {
-				if (Preferences.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
+				if (Propreties.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -254,7 +254,7 @@ public class Controler {
 				}
 				updateMode();
 			} catch (Exception e) {
-				if (Preferences.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
+				if (Propreties.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
 					e.printStackTrace();
 				}
 				new ErrorInFilePopup();
@@ -289,7 +289,7 @@ public class Controler {
 
 	public void about() {
 		new GDialog("About",
-				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Preferences.VERSION,
+				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Propreties.VERSION,
 				300,
 				200, true).setVisible(true);
 	}
@@ -414,7 +414,7 @@ public class Controler {
 			String helpText = new String(ba);
 
 			helpText = helpText.replaceAll("_insufficientProgressionsNeededToStop",
-					Integer.toString(Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
+					Integer.toString(Propreties.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
 
 			GDialog helpDialog = new GDialog("Help", helpText, 800, 600, false);
 			helpDialog.setAlwaysOnTop(false);

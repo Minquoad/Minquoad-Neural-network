@@ -9,18 +9,18 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import gClasses.gInterfaces.GTablePanel;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class LearningInfoPanel extends GTablePanel {
 
 	private DefaultTableModel model;
 
 	public LearningInfoPanel() {
-		this.setBackground(Preferences.HIGHLIGHTING);
-		this.setForeground(Preferences.FOREGROUND);
+		this.setBackground(Propreties.HIGHLIGHTING);
+		this.setForeground(Propreties.FOREGROUND);
 		this.setHeaderBackground(new Color(8, 8, 8));
-		this.setHeaderForeground(Preferences.HIGHLIGHTING);
-		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
+		this.setHeaderForeground(Propreties.HIGHLIGHTING);
+		this.setHeaderCellBorderColor(Propreties.HIGHLIGHTING);
 		this.generateGridColor();
 
 		this.clear();
@@ -55,6 +55,7 @@ public class LearningInfoPanel extends GTablePanel {
 
 		model.addRow(new Object[] { iter, squareErrorString, squareErrorProgression, duration });
 
+		scrollPane.validate();
 		scrollPane.getViewport().setViewPosition(new Point(0, table.getHeight() - 1));
 	}
 

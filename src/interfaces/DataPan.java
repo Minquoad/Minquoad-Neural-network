@@ -7,7 +7,7 @@ import java.math.MathContext;
 import javax.swing.JTable;
 
 import gClasses.gInterfaces.GTablePanel;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class DataPan extends GTablePanel {
 
@@ -22,11 +22,11 @@ public class DataPan extends GTablePanel {
 	private int showedOutputCount = 0;
 
 	public DataPan() {
-		this.setBackground(Preferences.CONTENT_BACKGROUND);
-		this.setForeground(Preferences.FOREGROUND);
+		this.setBackground(Propreties.CONTENT_BACKGROUND);
+		this.setForeground(Propreties.FOREGROUND);
 		this.setHeaderBackground(new Color(8, 8, 8));
-		this.setHeaderForeground(Preferences.HIGHLIGHTING);
-		this.setHeaderCellBorderColor(Preferences.HIGHLIGHTING);
+		this.setHeaderForeground(Propreties.HIGHLIGHTING);
+		this.setHeaderCellBorderColor(Propreties.HIGHLIGHTING);
 		this.generateGridColor();
 	}
 

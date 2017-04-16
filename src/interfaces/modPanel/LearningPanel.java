@@ -21,6 +21,7 @@ import interfaces.GLabel;
 import threads.LearningMode;
 import utilities.Controler;
 import utilities.Preferences;
+import utilities.Propreties;
 
 public class LearningPanel extends ModPanel {
 
@@ -68,8 +69,8 @@ public class LearningPanel extends ModPanel {
 		maxIterField.setMinValue(0);
 		maxIterField.setMaxValue(Integer.MAX_VALUE);
 		maxIterField.setMaxDigit(11);
-		maxIterField.setForeground(Preferences.FOREGROUND);
-		maxIterField.setBorderColor(Preferences.HIGHLIGHTING);
+		maxIterField.setForeground(Propreties.FOREGROUND);
+		maxIterField.setBorderColor(Propreties.HIGHLIGHTING);
 		maxIterField.addTextKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
@@ -105,8 +106,8 @@ public class LearningPanel extends ModPanel {
 		minProgressionField.setMinValue(0d);
 		minProgressionField.setMaxDigit(11);
 		minProgressionField.setMaxValue(Double.MAX_VALUE);
-		minProgressionField.setForeground(Preferences.FOREGROUND);
-		minProgressionField.setBorderColor(Preferences.HIGHLIGHTING);
+		minProgressionField.setForeground(Propreties.FOREGROUND);
+		minProgressionField.setBorderColor(Propreties.HIGHLIGHTING);
 
 		// learning mode
 
@@ -124,11 +125,11 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setTabSize(4);
 		learningInfoText.setMargin(new Insets(0, 3, 0, 3));
 		learningInfoText.setFont(new Font("monospaced", Font.BOLD, 12));
-		learningInfoText.setBackground(Preferences.CONTENT_BACKGROUND);
-		learningInfoText.setForeground(Preferences.FOREGROUND);
+		learningInfoText.setBackground(Propreties.CONTENT_BACKGROUND);
+		learningInfoText.setForeground(Propreties.FOREGROUND);
 		learningInfoTextScroll = new JScrollPane(learningInfoText);
 		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Preferences.BORDER));
+		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Propreties.BORDER));
 
 		// action buttons
 

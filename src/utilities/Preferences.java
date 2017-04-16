@@ -1,6 +1,5 @@
 package utilities;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 
@@ -13,21 +12,9 @@ import threads.LearningMode;
 
 public abstract class Preferences {
 
-	public static final String VERSION = "2.1.0";
-
-	public static final boolean PRINT_CAUGHT_EXCEPTION_STACK_TRACES = false;
-
-	public static final Color HIGHLIGHTING = new Color(19, 71, 84);
-	public static final Color BACKGROUND = new Color(23, 23, 20);
-	public static final Color CONTENT_BACKGROUND = new Color(39, 40, 34);
-	public static final Color FOREGROUND = new Color(204, 204, 204);
-	public static final Color BORDER = new Color(122, 138, 153);
-
 	public static final File preferencesFile = new File(
 			FileSystemView.getFileSystemView().getDefaultDirectory().toString()
 					+ "/Minquoad's Perceptron/preferences");
-
-	public static final int INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP = 8;
 
 	private static String lastFolderLoaded = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
 	private static int multiThreading = 1;
@@ -48,7 +35,7 @@ public abstract class Preferences {
 		try {
 			DataAssociator da = new DataAssociator(preferencesFile);
 
-			if (!da.exists("VERSION") || !da.getValueString("VERSION").equals(VERSION)) {
+			if (!da.exists("VERSION") || !da.getValueString("VERSION").equals(Propreties.VERSION)) {
 				firstRunning = true;
 			}
 
@@ -100,7 +87,7 @@ public abstract class Preferences {
 			da.setValue("lastFolderLoaded", lastFolderLoaded);
 			da.setValue("minimumProgressionPerIteration", Double.toString(minimumProgressionPerIteration));
 			da.setValue("learningMode", learningMode.toString());
-			da.setValue("VERSION", VERSION);
+			da.setValue("VERSION", Propreties.VERSION);
 
 			da.save();
 		} catch (Exception e) {

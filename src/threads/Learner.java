@@ -6,7 +6,7 @@ import java.util.List;
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
 import utilities.Controler;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class Learner extends Thread {
 
@@ -204,7 +204,7 @@ public class Learner extends Thread {
 	}
 
 	private boolean isMaxInsufficientProgressionsUnreached() {
-		return insufficientProgressions != Preferences.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+		return insufficientProgressions != Propreties.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
 	}
 
 	private boolean isMaxIterationsUnreached() {

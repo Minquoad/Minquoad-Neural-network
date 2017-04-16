@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 
 import gClasses.gInterfaces.gPanel.GPanel;
-import utilities.Preferences;
+import utilities.Propreties;
 
 public class MainPan extends GPanel {
 
@@ -14,7 +14,7 @@ public class MainPan extends GPanel {
 	private GPanel modePan = null;
 
 	public MainPan() {
-		this.setBackground(Preferences.BACKGROUND);
+		this.setBackground(Propreties.BACKGROUND);
 	}
 
 	public void setModePan(GPanel modePan) {
@@ -53,7 +53,7 @@ public class MainPan extends GPanel {
 		super.paintComponent(g);
 
 		int i = (int) ((float) this.getWidth() / 2f + 0.5f);
-		g.setColor(Preferences.BORDER);
+		g.setColor(Propreties.BORDER);
 		g.drawLine(i, 0, i, this.getHeight());
 	}
 
