@@ -5,7 +5,7 @@ import java.awt.Color;
 public abstract class Propreties {
 
 	//dev
-	public static final String VERSION = "2.1.0";
+	public static final String VERSION = "2.1.1";
 	public static final boolean PRINT_CAUGHT_EXCEPTION_STACK_TRACES = false;
 
 	//interface
