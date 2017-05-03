@@ -32,12 +32,12 @@ public class Frame extends GFrame implements WindowListener {
 		JMenuItem helpMI = new JMenuItem("Help");
 		JMenuItem aboutMI = new JMenuItem("About");
 
-		loadPerMI.addActionListener((e) -> controler.loadPer());
-		savePerMI.addActionListener((e) -> controler.savePer());
-		loadCsvMI.addActionListener((e) -> controler.loadCsv());
-		saveCsvMI.addActionListener((e) -> controler.saveCsv());
-		helpMI.addActionListener((e) -> controler.help());
-		aboutMI.addActionListener((e) -> controler.about());
+		loadPerMI.addActionListener(e -> controler.loadPer());
+		savePerMI.addActionListener(e -> controler.savePer());
+		loadCsvMI.addActionListener(e -> controler.loadCsv());
+		saveCsvMI.addActionListener(e -> controler.saveCsv());
+		helpMI.addActionListener(e -> controler.help());
+		aboutMI.addActionListener(e -> controler.about());
 
 		saveCsvMI.setEnabled(false);
 

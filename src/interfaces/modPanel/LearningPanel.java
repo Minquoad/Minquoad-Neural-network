@@ -42,7 +42,7 @@ public class LearningPanel extends ModPanel {
 
 	public LearningPanel(Controler controler) {
 		super(controler);
-		
+
 		// multithreading
 
 		int cores = Runtime.getRuntime().availableProcessors();
@@ -52,9 +52,8 @@ public class LearningPanel extends ModPanel {
 		multiThreadingLabel.setText("Thread used : " + multiThreading);
 		multiThreadingSlider = new JSlider(1, cores, multiThreading);
 		multiThreadingSlider.setOpaque(false);
-		multiThreadingSlider.addChangeListener((e) -> {
-			multiThreadingLabel.setText("Thread used : " + multiThreadingSlider.getValue());
-		});
+		multiThreadingSlider.addChangeListener(
+				e -> multiThreadingLabel.setText("Thread used : " + multiThreadingSlider.getValue()));
 
 		// max iterration
 
@@ -218,10 +217,10 @@ public class LearningPanel extends ModPanel {
 
 		// action performed
 
-		runButton.addActionListener((e) -> controler.startLearning());
-		stopButton.addActionListener((e) -> controler.handleUserRequestLearningEnd());
-		unlearnButton.addActionListener((e) -> controler.unlearn());
-		randomizeSamplesOrderButton.addActionListener((e) -> controler.randomizeSamplesOrder());
+		runButton.addActionListener(e -> controler.startLearning());
+		stopButton.addActionListener(e -> controler.handleUserRequestLearningEnd());
+		unlearnButton.addActionListener(e -> controler.unlearn());
+		randomizeSamplesOrderButton.addActionListener(e -> controler.randomizeSamplesOrder());
 
 	}
 

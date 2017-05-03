@@ -33,7 +33,7 @@ public class NeuronTypeSelecter extends GPanel {
 			
 			buttonPan.add(neuTypeButton, (float) i / (float) neuronTypes.length, 0f, 1f / (float) neuronTypes.length, 1f);
 			buttonList.add(neuTypeButton);
-			neuTypeButton.addActionListener((e) -> {
+			neuTypeButton.addActionListener(e -> {
 				selectedType = neuronType;
 				for (int j = 0; j < buttonList.size(); j++) {
 					buttonList.get(j).setEnabled(true);

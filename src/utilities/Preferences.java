@@ -66,10 +66,8 @@ public abstract class Preferences {
 
 	public static void selectFileAndPerforme(Component parent, GChoixFichier.Mode mode,
 			FileActionListener fileActionListener) {
-		FileActionListener fileActionListenerThatSaveLastUsedPath = (file) -> {
-
+		FileActionListener fileActionListenerThatSaveLastUsedPath = file -> {
 			fileActionListener.actionPerformed(file);
-
 			Preferences.setLastFolderLoaded(file.getPath());
 		};
 

@@ -74,10 +74,10 @@ public class PerceptronEditingPan extends GPanel {
 					neronCountToAddLabel.getPreferredSize().height);
 		});
 
-		addInputButton.addActionListener((e) -> controler.incrementInputCount());
-		removeInputButton.addActionListener((e) -> controler.decrementInputCount());
-		validateButton.addActionListener((e) -> controler.togglePerceptronValidation());
-		resetButton.addActionListener((e) -> controler.resetPerceptron());
+		addInputButton.addActionListener(e -> controler.incrementInputCount());
+		removeInputButton.addActionListener(e -> controler.decrementInputCount());
+		validateButton.addActionListener(e -> controler.togglePerceptronValidation());
+		resetButton.addActionListener(e -> controler.resetPerceptron());
 	}
 
 	public int getNeronCountToAdd() {
