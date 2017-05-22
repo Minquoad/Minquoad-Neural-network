@@ -10,8 +10,8 @@ import entities.neuralNetwork.neurons.Neuron;
 import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.DataAssociator;
 import gClasses.GRessourcesCollector;
-import gClasses.gInterfaces.GChoixFichier;
 import gClasses.gInterfaces.GDialog;
+import gClasses.gInterfaces.GFileChooser;
 import interfaces.DataPan;
 import interfaces.Frame;
 import interfaces.MainPan;
@@ -211,7 +211,7 @@ public class Controler {
 
 	public void loadPer() {
 
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, file -> {
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.OPENING, file -> {
 			try {
 				per = new Perceptron(new DataAssociator(file));
 				if (curveData && per.isValid() && per.getOutputCount() > 1) {
@@ -230,12 +230,12 @@ public class Controler {
 	}
 
 	public void savePer() {
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING,
 				file -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.OPENING, file -> {
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.OPENING, file -> {
 			try {
 				data = CsvFormatHelper.getData(file);
 				curveData = CsvFormatHelper.isCurve(data);
@@ -263,7 +263,7 @@ public class Controler {
 	}
 
 	public void saveCsv() {
-		Preferences.selectFileAndPerforme(frame, GChoixFichier.Mode.SAVING,
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING,
 				file -> {
 					if (curveData) {
 						CsvFormatHelper.save(file, CsvFormatHelper.concatColumnByColumn(data, results));

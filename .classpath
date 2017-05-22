@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="res"/>
-	<classpathentry kind="lib" path="gClasses.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/minqu/Fun/programmation/java/gitHubRepos/Minquoad-Neural-network/GClasses.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -6,8 +6,8 @@ import java.io.File;
 import javax.swing.filechooser.FileSystemView;
 
 import gClasses.DataAssociator;
-import gClasses.gInterfaces.GChoixFichier;
-import gClasses.gInterfaces.GChoixFichier.FileActionListener;
+import gClasses.gInterfaces.GFileChooser;
+import gClasses.gInterfaces.GFileChooser.FileActionListener;
 import threads.LearningMode;
 
 public abstract class Preferences {
@@ -64,14 +64,14 @@ public abstract class Preferences {
 		}
 	}
 
-	public static void selectFileAndPerforme(Component parent, GChoixFichier.Mode mode,
+	public static void selectFileAndPerforme(Component parent, GFileChooser.Mode mode,
 			FileActionListener fileActionListener) {
 		FileActionListener fileActionListenerThatSaveLastUsedPath = file -> {
 			fileActionListener.actionPerformed(file);
 			Preferences.setLastFolderLoaded(file.getPath());
 		};
 
-		GChoixFichier.selectFileAndPerforme(parent, Preferences.getLastFolderLoaded(), mode,
+		GFileChooser.selectFileAndPerforme(parent, Preferences.getLastFolderLoaded(), mode,
 				fileActionListenerThatSaveLastUsedPath);
 	}
 
