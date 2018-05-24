@@ -3,16 +3,16 @@ package interfaces;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 
-import utilities.Controler;
+import utilities.Controller;
 
 public class ShortCutManager implements KeyEventDispatcher {
 
-	private Controler controler;
+	private Controller controler;
 
 	private boolean busy = false;
 	private boolean enableCsvSaving = false;
 
-	public ShortCutManager(Controler controler) {
+	public ShortCutManager(Controller controler) {
 		this.controler = controler;
 	}
 

@@ -7,13 +7,13 @@ import javax.swing.JButton;
 import entities.neuralNetwork.Perceptron;
 import gClasses.gInterfaces.gPanel.GPanel;
 import gClasses.gInterfaces.numberField.IntegerField;
-import utilities.Controler;
+import utilities.Controller;
 import utilities.Propreties;
 
 public class PerceptronEditingPan extends GPanel {
 
 	// meta
-	private Controler controler;
+	private Controller controler;
 	private boolean occupied = false;
 
 	// grapicals
@@ -27,7 +27,7 @@ public class PerceptronEditingPan extends GPanel {
 	private IntegerField neronCountToAddField;
 	private GLabel neronCountToAddLabel;
 
-	public PerceptronEditingPan(Controler controler) {
+	public PerceptronEditingPan(Controller controler) {
 		this.controler = controler;
 
 		inputCountLabel = new GLabel();

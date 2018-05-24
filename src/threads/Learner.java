@@ -5,12 +5,12 @@ import java.util.List;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
-import utilities.Controler;
+import utilities.Controller;
 import utilities.Propreties;
 
 public class Learner extends Thread {
 
-	private Controler controler;
+	private Controller controler;
 	private Perceptron per;
 	private double[][] samples;
 
@@ -32,7 +32,7 @@ public class Learner extends Thread {
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
-	public Learner(Controler controler, Perceptron per, double[][] samples) {
+	public Learner(Controller controler, Perceptron per, double[][] samples) {
 		this.controler = controler;
 		this.per = per;
 		this.samples = samples;

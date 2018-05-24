@@ -19,7 +19,7 @@ import gClasses.gInterfaces.numberField.DoubleField;
 import gClasses.gInterfaces.numberField.IntegerField;
 import interfaces.GLabel;
 import threads.LearningMode;
-import utilities.Controler;
+import utilities.Controller;
 import utilities.Preferences;
 import utilities.Propreties;
 
@@ -40,7 +40,7 @@ public class LearningPanel extends ModPanel {
 	private JScrollPane learningInfoTextScroll;
 	private JComboBox<LearningMode> modComboBox;
 
-	public LearningPanel(Controler controler) {
+	public LearningPanel(Controller controler) {
 		super(controler);
 
 		// multithreading

@@ -3,18 +3,18 @@ package threads;
 import java.util.Arrays;
 
 import entities.neuralNetwork.Perceptron;
-import utilities.Controler;
+import utilities.Controller;
 
 public class Processor extends Thread {
 
-	private Controler controler;
+	private Controller controler;
 	private Perceptron per;
 	private double[][] data;
 
 	private int valueExtendedCount = 1;
 	private boolean curveData = false;
 
-	public Processor(Controler controler, Perceptron per, double[][] data) {
+	public Processor(Controller controler, Perceptron per, double[][] data) {
 		this.controler = controler;
 		this.per = per;
 		this.data = data;

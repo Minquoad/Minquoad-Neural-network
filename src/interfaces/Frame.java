@@ -6,17 +6,17 @@ import java.awt.event.WindowListener;
 import javax.swing.JMenuItem;
 
 import gClasses.gInterfaces.GFrame;
-import utilities.Controler;
+import utilities.Controller;
 import utilities.Preferences;
 
 public class Frame extends GFrame implements WindowListener {
 
-	private Controler controler;
+	private Controller controler;
 
 	private JMenuItem saveCsvMI;
 	private boolean occupied = false;
 
-	public Frame(Controler controler) {
+	public Frame(Controller controler) {
 		super("Minquoad's Neurons", 1040, 768 - 40, "resources/pictures/icon.png",
 				Preferences.preferencesFile);
 

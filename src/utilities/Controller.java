@@ -26,10 +26,10 @@ import threads.Learner;
 import threads.LearnerObserver;
 import threads.Processor;
 
-public class Controler {
+public class Controller {
 
 	public static void main(String[] args) {
-		new Controler();
+		new Controller();
 	}
 
 	// repository
@@ -44,7 +44,7 @@ public class Controler {
 	private ApplicationMode mode = ApplicationMode.NONE;
 	private boolean curveData = false;
 
-	// grapicals
+	// graphicals
 	private Frame frame = new Frame(this);
 	private MainPan mainPan = new MainPan();
 	private PerceptronDisplayer perceptronDisplayer = new PerceptronDisplayer();
@@ -54,7 +54,7 @@ public class Controler {
 	private ProcessingPanel processingPan = new ProcessingPanel(this);
 	private ShortCutManager shortCutManager = new ShortCutManager(this);
 
-	public Controler() {
+	public Controller() {
 		this.resetPerceptron();
 
 		mainPan.setPerceptronEditingPan(perceptronEditingPan);

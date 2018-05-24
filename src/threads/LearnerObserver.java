@@ -1,18 +1,18 @@
 package threads;
 
 import threads.Learner.LearningStateListener;
-import utilities.Controler;
+import utilities.Controller;
 
 public class LearnerObserver extends Thread implements LearningStateListener {
 
-	private Controler controler;
+	private Controller controler;
 	private Learner lea;
 	private boolean learning = false;
 	private static final long fps = 8;
 	private long startTime;
 	private int lastDescibedIteration = -1;
 
-	public LearnerObserver(Controler controler, Learner lea) {
+	public LearnerObserver(Controller controler, Learner lea) {
 		this.controler = controler;
 		this.lea = lea;
 		lea.addLearningStateListener(this);

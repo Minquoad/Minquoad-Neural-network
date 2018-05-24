@@ -7,7 +7,7 @@ import javax.swing.JButton;
 
 import gClasses.GRessourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
-import utilities.Controler;
+import utilities.Controller;
 
 public abstract class ModPanel extends GPanel {
 
@@ -15,7 +15,7 @@ public abstract class ModPanel extends GPanel {
 	private JButton switchModeButton;
 	private boolean occupied = false;
 
-	public ModPanel(Controler controler) {
+	public ModPanel(Controller controler) {
 
 		JButton clearButton = new JButton("Clear");
 		switchModeButton = new JButton("Toggle Learning/Processing Mode");

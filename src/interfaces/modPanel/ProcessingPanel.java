@@ -10,7 +10,7 @@ import javax.swing.JTextArea;
 
 import gClasses.gInterfaces.numberField.IntegerField;
 import interfaces.GLabel;
-import utilities.Controler;
+import utilities.Controller;
 import utilities.Propreties;
 
 public class ProcessingPanel extends ModPanel {
@@ -21,7 +21,7 @@ public class ProcessingPanel extends ModPanel {
 	private IntegerField valueExtendedCount;
 	private GLabel valueExtendedCountLabel;
 
-	public ProcessingPanel(Controler controler) {
+	public ProcessingPanel(Controller controler) {
 		super(controler);
 
 		valueExtendedCountLabel = new GLabel();
