@@ -5,7 +5,7 @@ package entities.neuralNetwork.neurons;
 
 import java.awt.image.BufferedImage;
 
-import gClasses.GRessourcesCollector;
+import gClasses.GResourcesCollector;
 
 public enum NeuronType {
 
@@ -23,7 +23,7 @@ public enum NeuronType {
 	private NeuronType(Class<? extends Neuron> associateClass, String name, String pictureFileName) {
 		this.associateClass = associateClass;
 		this.name = name;
-		picture = GRessourcesCollector.getBufferedImage("resources/pictures/neurons/" + pictureFileName);
+		picture = GResourcesCollector.getBufferedImage("resources/pictures/neurons/" + pictureFileName);
 	}
 
 	@Override

@@ -15,13 +15,14 @@ import javax.swing.JTextArea;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import gClasses.gInterfaces.GFakeLoadingBar;
 import gClasses.gInterfaces.numberField.DoubleField;
 import gClasses.gInterfaces.numberField.IntegerField;
 import interfaces.GLabel;
 import threads.LearningMode;
 import utilities.Controller;
 import utilities.Preferences;
-import utilities.Propreties;
+import utilities.Configuration;
 
 public class LearningPanel extends ModPanel {
 
@@ -39,6 +40,8 @@ public class LearningPanel extends ModPanel {
 	private JTextArea learningInfoText;
 	private JScrollPane learningInfoTextScroll;
 	private JComboBox<LearningMode> modComboBox;
+	
+	private GFakeLoadingBar loadingBar;
 
 	public LearningPanel(Controller controler) {
 		super(controler);
@@ -68,8 +71,8 @@ public class LearningPanel extends ModPanel {
 		maxIterField.setMinValue(0);
 		maxIterField.setMaxValue(Integer.MAX_VALUE);
 		maxIterField.setMaxDigit(11);
-		maxIterField.setForeground(Propreties.FOREGROUND);
-		maxIterField.setBorderColor(Propreties.HIGHLIGHTING);
+		maxIterField.setForeground(Configuration.FOREGROUND_COLOR);
+		maxIterField.setBorderColor(Configuration.HIGHLIGHTING_COLOR);
 		maxIterField.addTextKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
@@ -105,8 +108,8 @@ public class LearningPanel extends ModPanel {
 		minProgressionField.setMinValue(0d);
 		minProgressionField.setMaxDigit(11);
 		minProgressionField.setMaxValue(Double.MAX_VALUE);
-		minProgressionField.setForeground(Propreties.FOREGROUND);
-		minProgressionField.setBorderColor(Propreties.HIGHLIGHTING);
+		minProgressionField.setForeground(Configuration.FOREGROUND_COLOR);
+		minProgressionField.setBorderColor(Configuration.HIGHLIGHTING_COLOR);
 
 		// learning mode
 
@@ -124,11 +127,11 @@ public class LearningPanel extends ModPanel {
 		learningInfoText.setTabSize(4);
 		learningInfoText.setMargin(new Insets(0, 3, 0, 3));
 		learningInfoText.setFont(new Font("monospaced", Font.BOLD, 12));
-		learningInfoText.setBackground(Propreties.CONTENT_BACKGROUND);
-		learningInfoText.setForeground(Propreties.FOREGROUND);
+		learningInfoText.setBackground(Configuration.CONTENT_BACKGROUND_COLOR);
+		learningInfoText.setForeground(Configuration.FOREGROUND_COLOR);
 		learningInfoTextScroll = new JScrollPane(learningInfoText);
 		learningInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Propreties.BORDER));
+		learningInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Configuration.BORDER_COLOR));
 
 		// action buttons
 
@@ -137,6 +140,10 @@ public class LearningPanel extends ModPanel {
 		unlearnButton = new JButton("UNLEARN");
 		randomizeSamplesOrderButton = new JButton("Randomize samples order");
 
+		// appearance
+		
+		loadingBar = new GFakeLoadingBar();
+		
 		// sizing
 
 		multiThreadingLabel.setPreferredSize(new Dimension(multiThreadingLabel.getPreferredSize().width, 26));
@@ -192,6 +199,7 @@ public class LearningPanel extends ModPanel {
 		this.add(runButton);
 		this.add(stopButton);
 		this.add(unlearnButton);
+		this.add(loadingBar);
 
 		this.addComponentBoundsSetter(thisLp -> {
 			float xThreadButtonsRectangle = 0f;
@@ -202,13 +210,18 @@ public class LearningPanel extends ModPanel {
 					(int) ((float) thisLp.getWidth() * xThreadButtonsRectangle + 0.5f),
 					(int) ((float) thisLp.getHeight() * yThreadButtonsRectangle + 0.5f),
 					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
-					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26);
+					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26 * 2);
 			stopButton.setBounds(
 					(int) ((float) thisLp.getWidth() * xThreadButtonsRectangle + 0.5f),
 					(int) ((float) thisLp.getHeight() * yThreadButtonsRectangle + 0.5f),
 					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
-					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26);
+					(int) ((float) thisLp.getHeight() * hThreadButtonsRectangle + 0.5f) - 26 * 2);
 			unlearnButton.setBounds(
+					0,
+					thisLp.getHeight() - 26 * 2,
+					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
+					26);
+			loadingBar.setBounds(
 					0,
 					thisLp.getHeight() - 26,
 					(int) ((float) thisLp.getWidth() * wThreadButtonsRectangle + 0.5f),
@@ -293,11 +306,18 @@ public class LearningPanel extends ModPanel {
 		}
 	}
 
-	public void startNewLearning() {
+	public void startLearning() {
 		learningInfoPanel.startNewLearning();
 		if (learningInfoText.getText().length() != 0) {
 			learningInfoText.append("\n");
 		}
+		loadingBar.setProgression(0f);
+		loadingBar.start();
+	}
+	
+	public void endLearning() {
+		loadingBar.end();
+		loadingBar.setProgression(1f);
 	}
 
 }

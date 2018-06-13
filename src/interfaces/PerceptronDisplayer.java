@@ -16,13 +16,13 @@ import entities.neuralNetwork.Perceptron;
 import entities.neuralNetwork.neurons.BlankNeuron;
 import entities.neuralNetwork.neurons.Neuron;
 import entities.neuralNetwork.neurons.NeuronType;
-import gClasses.GRessourcesCollector;
+import gClasses.GResourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
-import utilities.Propreties;
+import utilities.Configuration;
 
 public class PerceptronDisplayer extends GPanel {
 
-	private static final BufferedImage INPUT_NEURON_PICTURE = GRessourcesCollector
+	private static final BufferedImage INPUT_NEURON_PICTURE = GResourcesCollector
 			.getBufferedImage("resources/pictures/neurons/neu.png");
 
 	// meta
@@ -35,7 +35,7 @@ public class PerceptronDisplayer extends GPanel {
 	private ArrayList<GPanel> neuronDisplayers = new ArrayList<GPanel>();
 
 	public PerceptronDisplayer() {
-		this.setBackground(Propreties.CONTENT_BACKGROUND);
+		this.setBackground(Configuration.CONTENT_BACKGROUND_COLOR);
 	}
 
 	public void setPerceptron(Perceptron per) {
@@ -124,15 +124,15 @@ public class PerceptronDisplayer extends GPanel {
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(2));
-			g2.setColor(Propreties.FOREGROUND);
+			g2.setColor(Configuration.FOREGROUND_COLOR);
 
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			if (valide) {
 
 				int blueContourThickness = this.getWidth() / 25;
-				g2.setPaint(new GradientPaint(0, 0, Propreties.HIGHLIGHTING, blueContourThickness, 0,
-						Propreties.CONTENT_BACKGROUND, true));
+				g2.setPaint(new GradientPaint(0, 0, Configuration.HIGHLIGHTING_COLOR, blueContourThickness, 0,
+						Configuration.CONTENT_BACKGROUND_COLOR, true));
 				Polygon polygon = new Polygon();
 				polygon.addPoint(0, 0);
 				polygon.addPoint(blueContourThickness, blueContourThickness);
@@ -140,8 +140,8 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(0, this.getHeight());
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(this.getWidth(), 0, Propreties.HIGHLIGHTING,
-						this.getWidth() - blueContourThickness, 0, Propreties.CONTENT_BACKGROUND, true));
+				g2.setPaint(new GradientPaint(this.getWidth(), 0, Configuration.HIGHLIGHTING_COLOR,
+						this.getWidth() - blueContourThickness, 0, Configuration.CONTENT_BACKGROUND_COLOR, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth(), 0);
 				polygon.addPoint(this.getWidth(), this.getHeight());
@@ -149,8 +149,8 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(this.getWidth() - blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, 0, Propreties.HIGHLIGHTING, 0, blueContourThickness,
-						Propreties.CONTENT_BACKGROUND, true));
+				g2.setPaint(new GradientPaint(0, 0, Configuration.HIGHLIGHTING_COLOR, 0, blueContourThickness,
+						Configuration.CONTENT_BACKGROUND_COLOR, true));
 				polygon = new Polygon();
 				polygon.addPoint(0, 0);
 				polygon.addPoint(this.getWidth(), 0);
@@ -158,8 +158,8 @@ public class PerceptronDisplayer extends GPanel {
 				polygon.addPoint(blueContourThickness, blueContourThickness);
 				g2.fillPolygon(polygon);
 				g2.drawPolygon(polygon);
-				g2.setPaint(new GradientPaint(0, this.getHeight(), Propreties.HIGHLIGHTING, 0,
-						this.getHeight() + blueContourThickness, Propreties.CONTENT_BACKGROUND, true));
+				g2.setPaint(new GradientPaint(0, this.getHeight(), Configuration.HIGHLIGHTING_COLOR, 0,
+						this.getHeight() + blueContourThickness, Configuration.CONTENT_BACKGROUND_COLOR, true));
 				polygon = new Polygon();
 				polygon.addPoint(this.getWidth() - blueContourThickness, this.getHeight() - blueContourThickness);
 				polygon.addPoint(this.getWidth(), this.getHeight());
@@ -171,10 +171,10 @@ public class PerceptronDisplayer extends GPanel {
 
 			if (nerveWeb.length != 0) {
 				g2.setPaint(new GradientPaint(0, 0,
-						new Color(Propreties.FOREGROUND.getRed(),
-								Propreties.FOREGROUND.getGreen(),
-								Propreties.FOREGROUND.getBlue(), 0),
-						this.getWidth() / (nerveWeb.length * 2), 0, Propreties.FOREGROUND, true));
+						new Color(Configuration.FOREGROUND_COLOR.getRed(),
+								Configuration.FOREGROUND_COLOR.getGreen(),
+								Configuration.FOREGROUND_COLOR.getBlue(), 0),
+						this.getWidth() / (nerveWeb.length * 2), 0, Configuration.FOREGROUND_COLOR, true));
 
 				for (int j = 0; j < nerveWeb[0] && j < this.inputCount; j++) {
 
@@ -204,7 +204,7 @@ public class PerceptronDisplayer extends GPanel {
 				}
 			}
 
-			g2.setPaint(Propreties.FOREGROUND);
+			g2.setPaint(Configuration.FOREGROUND_COLOR);
 
 			for (int i = 0; i < nerveWeb.length - 1; i++) {
 

@@ -12,11 +12,12 @@ import threads.LearningMode;
 
 public abstract class Preferences {
 
-	public static final File preferencesFile = new File(
-			FileSystemView.getFileSystemView().getDefaultDirectory().toString()
-					+ "/Minquoad's Perceptron/preferences");
+	private static final String DEFAULT_DIRECTORY_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
+	
+	public static final File preferencesFile = new File(DEFAULT_DIRECTORY_PATH + File.pathSeparator
+			+ Configuration.DATA_DIRECTORY_NAME + File.pathSeparator + Configuration.PREFERENCES_FILE_NAME);
 
-	private static String lastFolderLoaded = FileSystemView.getFileSystemView().getDefaultDirectory().toString();
+	private static String lastFolderLoaded = DEFAULT_DIRECTORY_PATH;
 	private static int multiThreading = 1;
 	private static int maxIter = 1;
 	private static boolean interationsUnlimited = true;
@@ -24,9 +25,16 @@ public abstract class Preferences {
 	private static LearningMode learningMode = LearningMode.SIMPLE;
 	private static boolean firstRunning = false;
 
+	private static final String LAST_LOADED_VERSION_KEY = "lastLoadedVersion";
+	private static final String LAST_FOLDER_LOADED_KEY = "lastFolderLoaded";
+	private static final String MULTI_THREADING_KEY = "multiThreading";
+	private static final String MAX_ITER_KEY = "maxIter";
+	private static final String INTERATIONS_UNLIMITED_KEY = "interationsUnlimited";
+	private static final String LEARNING_MODE_KEY = "learningMode";
+	private static final String MINIMUM_PROGRESSION_PER_ITERATION_KEY = "minimumProgressionPerIteration";
+
 	static {
-		File file = new File(
-				FileSystemView.getFileSystemView().getDefaultDirectory().toString() + "/Minquoad's Perceptron");
+		File file = new File(DEFAULT_DIRECTORY_PATH + File.pathSeparator + Configuration.DATA_DIRECTORY_NAME);
 		if (!file.exists()) {
 			firstRunning = true;
 			file.mkdir();
@@ -35,28 +43,28 @@ public abstract class Preferences {
 		try {
 			DataAssociator da = new DataAssociator(preferencesFile);
 
-			if (!da.exists("VERSION") || !da.getValueString("VERSION").equals(Propreties.VERSION)) {
+			if (!da.exists(LAST_LOADED_VERSION_KEY) || !da.getValueString(LAST_LOADED_VERSION_KEY).equals(Configuration.VERSION)) {
 				firstRunning = true;
 			}
 
-			if (da.exists("lastFolderLoaded")) {
-				lastFolderLoaded = da.getValueString("lastFolderLoaded");
+			if (da.exists(LAST_FOLDER_LOADED_KEY)) {
+				lastFolderLoaded = da.getValueString(LAST_FOLDER_LOADED_KEY);
 			}
-			if (da.exists("multiThreading")) {
-				multiThreading = da.getValueInt("multiThreading");
+			if (da.exists(MULTI_THREADING_KEY)) {
+				multiThreading = da.getValueInt(MULTI_THREADING_KEY);
 			}
-			if (da.exists("maxIter")) {
-				maxIter = da.getValueInt("maxIter");
+			if (da.exists(MAX_ITER_KEY)) {
+				maxIter = da.getValueInt(MAX_ITER_KEY);
 			}
-			if (da.exists("interationsUnlimited")) {
-				interationsUnlimited = Boolean.parseBoolean(da.getValueString("interationsUnlimited"));
+			if (da.exists(INTERATIONS_UNLIMITED_KEY)) {
+				interationsUnlimited = Boolean.parseBoolean(da.getValueString(INTERATIONS_UNLIMITED_KEY));
 			}
-			if (da.exists("learningMode")) {
-				learningMode = LearningMode.getLearningModeByName(da.getValueString("learningMode"));
+			if (da.exists(LEARNING_MODE_KEY)) {
+				learningMode = LearningMode.getLearningModeByName(da.getValueString(LEARNING_MODE_KEY));
 			}
-			if (da.exists("minimumProgressionPerIteration")) {
+			if (da.exists(MINIMUM_PROGRESSION_PER_ITERATION_KEY)) {
 				minimumProgressionPerIteration = Double
-						.parseDouble(da.getValueString("minimumProgressionPerIteration"));
+						.parseDouble(da.getValueString(MINIMUM_PROGRESSION_PER_ITERATION_KEY));
 			}
 
 		} catch (Exception e) {
@@ -79,13 +87,13 @@ public abstract class Preferences {
 		try {
 			DataAssociator da = new DataAssociator(preferencesFile);
 
-			da.setValue("maxIter", maxIter);
-			da.setValue("interationsUnlimited", Boolean.toString(interationsUnlimited));
-			da.setValue("multiThreading", multiThreading);
-			da.setValue("lastFolderLoaded", lastFolderLoaded);
-			da.setValue("minimumProgressionPerIteration", Double.toString(minimumProgressionPerIteration));
-			da.setValue("learningMode", learningMode.toString());
-			da.setValue("VERSION", Propreties.VERSION);
+			da.setValue(MAX_ITER_KEY, maxIter);
+			da.setValue(INTERATIONS_UNLIMITED_KEY, Boolean.toString(interationsUnlimited));
+			da.setValue(MULTI_THREADING_KEY, multiThreading);
+			da.setValue(LAST_FOLDER_LOADED_KEY, lastFolderLoaded);
+			da.setValue(MINIMUM_PROGRESSION_PER_ITERATION_KEY, Double.toString(minimumProgressionPerIteration));
+			da.setValue(LEARNING_MODE_KEY, learningMode.toString());
+			da.setValue(LAST_LOADED_VERSION_KEY, Configuration.VERSION);
 
 			da.save();
 		} catch (Exception e) {

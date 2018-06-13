@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 
-import gClasses.GRessourcesCollector;
+import gClasses.GResourcesCollector;
 import gClasses.gInterfaces.gPanel.GPanel;
 import utilities.Controller;
 
@@ -59,7 +59,7 @@ public abstract class ModPanel extends GPanel {
 
 			super.paintComponent(g);
 
-			BufferedImage fond = GRessourcesCollector.getBufferedImage(picturePath);
+			BufferedImage fond = GResourcesCollector.getBufferedImage(picturePath);
 
 			float rate = Math.max((float) this.getWidth() / (float) fond.getWidth(),
 					(float) (this.getHeight()) / (float) fond.getHeight());

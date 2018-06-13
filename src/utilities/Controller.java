@@ -2,6 +2,7 @@ package utilities;
 
 import java.awt.KeyboardFocusManager;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 
 import entities.neuralNetwork.Perceptron;
@@ -9,7 +10,7 @@ import entities.neuralNetwork.neurons.BlankNeuron;
 import entities.neuralNetwork.neurons.Neuron;
 import entities.neuralNetwork.neurons.NeuronType;
 import gClasses.DataAssociator;
-import gClasses.GRessourcesCollector;
+import gClasses.GResourcesCollector;
 import gClasses.gInterfaces.GDialog;
 import gClasses.gInterfaces.GFileChooser;
 import interfaces.DataPan;
@@ -29,7 +30,10 @@ import threads.Processor;
 public class Controller {
 
 	public static void main(String[] args) {
-		new Controller();
+		Controller controller = new Controller();
+		//ttt
+		controller.loadPer(new File("./Test Files/Flowers - Saved Perceptron.per"));
+		controller.loadCsv(new File("./Test Files/Flowers - in and out.csv"));
 	}
 
 	// repository
@@ -210,23 +214,26 @@ public class Controller {
 	}
 
 	public void loadPer() {
-
 		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.OPENING, file -> {
-			try {
-				per = new Perceptron(new DataAssociator(file));
-				if (curveData && per.isValid() && per.getOutputCount() > 1) {
-					per.invalidate();
-					new ErrorCurvePerceptron();
-				}
-				perceptronModified();
-				updateMode();
-			} catch (Exception e) {
-				if (Propreties.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
-					e.printStackTrace();
-				}
-				new ErrorInFilePopup();
-			}
+			loadPer(file);
 		});
+	}
+
+	public void loadPer(File file) {
+		try {
+			per = new Perceptron(new DataAssociator(file));
+			if (curveData && per.isValid() && per.getOutputCount() > 1) {
+				per.invalidate();
+				new ErrorCurvePerceptron();
+			}
+			perceptronModified();
+			updateMode();
+		} catch (Exception e) {
+			if (Configuration.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
+				e.printStackTrace();
+			}
+			new ErrorInFilePopup();
+		}
 	}
 
 	public void savePer() {
@@ -236,32 +243,36 @@ public class Controller {
 
 	public void loadCsv() {
 		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.OPENING, file -> {
-			try {
-				data = CsvFormatHelper.getData(file);
-				curveData = CsvFormatHelper.isCurve(data);
-				if (curveData) {
-					data = CsvFormatHelper.toColumnIfNeeded(data);
-
-					if (per.isValid()) {
-						if (per.getOutputCount() == 1 && per.getInputCount() != 0) {
-							dataForCurveLearning = CsvFormatHelper.toSampleArray(data, per.getInputCount());
-						} else {
-							per.invalidate();
-							perceptronModified();
-							new ErrorCurvePerceptron();
-						}
-					}
-				}
-				updateMode();
-			} catch (Exception e) {
-				if (Propreties.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
-					e.printStackTrace();
-				}
-				new ErrorInFilePopup();
-			}
+			loadCsv(file);
 		});
 	}
 
+	public void loadCsv(File file) {
+		try {
+			data = CsvFormatHelper.getData(file);
+			curveData = CsvFormatHelper.isCurve(data);
+			if (curveData) {
+				data = CsvFormatHelper.toColumnIfNeeded(data);
+
+				if (per.isValid()) {
+					if (per.getOutputCount() == 1 && per.getInputCount() != 0) {
+						dataForCurveLearning = CsvFormatHelper.toSampleArray(data, per.getInputCount());
+					} else {
+						per.invalidate();
+						perceptronModified();
+						new ErrorCurvePerceptron();
+					}
+				}
+			}
+			updateMode();
+		} catch (Exception e) {
+			if (Configuration.PRINT_CAUGHT_EXCEPTION_STACK_TRACES) {
+				e.printStackTrace();
+			}
+			new ErrorInFilePopup();
+		}
+	}
+	
 	public void saveCsv() {
 		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING,
 				file -> {
@@ -289,7 +300,7 @@ public class Controller {
 
 	public void about() {
 		new GDialog("About",
-				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Propreties.VERSION,
+				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Configuration.VERSION,
 				300,
 				200, true).setVisible(true);
 	}
@@ -322,7 +333,7 @@ public class Controller {
 	}
 
 	public void startLearning() {
-		learningPan.startNewLearning();
+		learningPan.startLearning();
 		this.appendLearningInfo("\n" + "Learning starting");
 
 		double[][] dataToLearn;
@@ -347,6 +358,7 @@ public class Controller {
 	}
 
 	public void learningEnded() {
+		learningPan.endLearning();
 		this.learner = null;
 		updateMode();
 	}
@@ -408,13 +420,13 @@ public class Controller {
 	public void help() {
 		try {
 
-			BufferedInputStream bis = GRessourcesCollector.getBufferedInputStream("resources/texts/help.html");
+			BufferedInputStream bis = GResourcesCollector.getBufferedInputStream("resources/texts/help.html");
 			byte[] ba = new byte[bis.available()];
 			bis.read(ba);
 			String helpText = new String(ba);
 
 			helpText = helpText.replaceAll("_insufficientProgressionsNeededToStop",
-					Integer.toString(Propreties.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
+					Integer.toString(Configuration.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP));
 
 			GDialog helpDialog = new GDialog("Help", helpText, 800, 600, false);
 			helpDialog.setAlwaysOnTop(false);

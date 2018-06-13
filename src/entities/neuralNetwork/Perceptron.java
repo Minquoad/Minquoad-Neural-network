@@ -155,15 +155,16 @@ public class Perceptron {
 
 		double squareError = 0;
 
+		Layer lastLayer = layers.get(layers.size() - 1);
+		int lastLayerNeuronesCount = lastLayer.getNeuroneCount();
+
 		for (double[] currentSample : samples) {
 
 			this.setInputs(currentSample);
 
 			this.proceed();
 
-			Layer lastLayer = layers.get(layers.size() - 1);
-			int neuronesCount = lastLayer.getNeuroneCount();
-			for (int j = 0; j < neuronesCount; j++) {
+			for (int j = 0; j < lastLayerNeuronesCount; j++) {
 				squareError += Math.pow(lastLayer.getNeurone(j).getCharge() - currentSample[j + inputCount], 2);
 			}
 		}

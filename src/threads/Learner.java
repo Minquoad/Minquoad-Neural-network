@@ -6,7 +6,7 @@ import java.util.List;
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
 import utilities.Controller;
-import utilities.Propreties;
+import utilities.Configuration;
 
 public class Learner extends Thread {
 
@@ -22,9 +22,9 @@ public class Learner extends Thread {
 	private int multiThreading = 1;
 
 	// used by the algorithme
-	private boolean learningNotEnded = true;
-	private int iterations = 0;
-	private int insufficientProgressions = 0;
+	private boolean learningEnded = false;
+	private int iterationCount = 0;
+	private int insufficientProgressionCount = 0;
 	private double evolutionInLastIteration = 0d;
 	private double currentSquareError;
 	private double squareErrorAfterLastIteration;
@@ -103,10 +103,10 @@ public class Learner extends Thread {
 		}
 
 		controler.appendLearningInfo("\n" + "Learning ended");
-		if (!isMaxInsufficientProgressionsUnreached()) {
+		if (isMaxInsufficientProgressionsReached()) {
 			controler.appendLearningInfo("\n" + "-> no longer progressing");
 		}
-		if (!isMaxIterationsUnreached()) {
+		if (isMaxIterationsReached()) {
 			controler.appendLearningInfo("\n" + "-> reached maximum number of iterations");
 		}
 	}
@@ -114,7 +114,7 @@ public class Learner extends Thread {
 	private void leanMonoThread(double[][] samplesToLearn) {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
-		for (updateLearningNotEnded(); learningNotEnded; peroformeIterationEnded()) {
+		for (updateLearningEnded(); !learningEnded; peroformeIterationEnded()) {
 
 			for (Nerve nerve : nerves) {
 				nerve.evolve();
@@ -127,6 +127,8 @@ public class Learner extends Thread {
 					nerve.reactToRegression();
 				}
 			}
+			
+			
 		}
 	}
 
@@ -144,7 +146,7 @@ public class Learner extends Thread {
 			nervesList.add(perceptronList.get(i).getAllNerve());
 		}
 
-		for (updateLearningNotEnded(); learningNotEnded; peroformeIterationEnded()) {
+		for (updateLearningEnded(); !learningEnded; peroformeIterationEnded()) {
 
 			for (int i = 0; i < nervesList.get(0).size(); i++) {
 
@@ -186,29 +188,29 @@ public class Learner extends Thread {
 	}
 
 	private void peroformeIterationEnded() {
-		iterations++;
+		iterationCount++;
 		evolutionInLastIteration = 1 - currentSquareError / squareErrorAfterLastIteration;
 		squareErrorAfterLastIteration = currentSquareError;
 
 		if (evolutionInLastIteration < minimumProgressionPerIteration) {
-			insufficientProgressions++;
+			insufficientProgressionCount++;
 		} else {
-			insufficientProgressions = 0;
+			insufficientProgressionCount = 0;
 		}
 
-		updateLearningNotEnded();
+		updateLearningEnded();
 	}
 
-	private void updateLearningNotEnded() {
-		learningNotEnded &= isMaxInsufficientProgressionsUnreached() && isMaxIterationsUnreached();
+	private void updateLearningEnded() {
+		learningEnded |= isMaxInsufficientProgressionsReached() || isMaxIterationsReached();
 	}
 
-	private boolean isMaxInsufficientProgressionsUnreached() {
-		return insufficientProgressions != Propreties.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
+	private boolean isMaxInsufficientProgressionsReached() {
+		return insufficientProgressionCount == Configuration.INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP;
 	}
 
-	private boolean isMaxIterationsUnreached() {
-		return unlimitedIterations || iterations != maxIterations;
+	private boolean isMaxIterationsReached() {
+		return !unlimitedIterations && iterationCount == maxIterations;
 	}
 
 	private double comuteUnlearnedPerceptronSquareErrorMean(double[][] unlearnedSamples) {
@@ -256,15 +258,15 @@ public class Learner extends Thread {
 	}
 
 	public void endLearning() {
-		learningNotEnded = false;
+		learningEnded = true;
 	}
 
 	public boolean isLearningNotEnded() {
-		return learningNotEnded;
+		return !learningEnded;
 	}
 
 	public int getIterations() {
-		return iterations;
+		return iterationCount;
 	}
 
 	public double getSquareError() {

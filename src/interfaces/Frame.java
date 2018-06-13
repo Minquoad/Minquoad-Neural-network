@@ -17,8 +17,7 @@ public class Frame extends GFrame implements WindowListener {
 	private boolean occupied = false;
 
 	public Frame(Controller controler) {
-		super("Minquoad's Neurons", 1040, 768 - 40, "resources/pictures/icon.png",
-				Preferences.preferencesFile);
+		super("Minquoad's Neurons", 1040, 768 - 40, Preferences.preferencesFile, "resources/pictures/icon.png");
 
 		this.controler = controler;
 
@@ -69,21 +68,27 @@ public class Frame extends GFrame implements WindowListener {
 	}
 
 	@Override
-	public void windowActivated(WindowEvent arg0) {}
+	public void windowActivated(WindowEvent arg0) {
+	}
 
 	@Override
-	public void windowClosed(WindowEvent arg0) {}
+	public void windowClosed(WindowEvent arg0) {
+	}
 
 	@Override
-	public void windowDeactivated(WindowEvent arg0) {}
+	public void windowDeactivated(WindowEvent arg0) {
+	}
 
 	@Override
-	public void windowDeiconified(WindowEvent arg0) {}
+	public void windowDeiconified(WindowEvent arg0) {
+	}
 
 	@Override
-	public void windowIconified(WindowEvent arg0) {}
+	public void windowIconified(WindowEvent arg0) {
+	}
 
 	@Override
-	public void windowOpened(WindowEvent arg0) {}
+	public void windowOpened(WindowEvent arg0) {
+	}
 
 }

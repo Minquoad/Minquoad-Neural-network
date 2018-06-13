@@ -11,7 +11,7 @@ import javax.swing.JTextArea;
 import gClasses.gInterfaces.numberField.IntegerField;
 import interfaces.GLabel;
 import utilities.Controller;
-import utilities.Propreties;
+import utilities.Configuration;
 
 public class ProcessingPanel extends ModPanel {
 
@@ -30,19 +30,19 @@ public class ProcessingPanel extends ModPanel {
 		valueExtendedCount.setDefaultValue(1);
 		valueExtendedCount.setMinValue(1);
 		valueExtendedCount.displayDefaultValue();
-		valueExtendedCount.setForeground(Propreties.FOREGROUND);
-		valueExtendedCount.setBorderColor(Propreties.HIGHLIGHTING);
+		valueExtendedCount.setForeground(Configuration.FOREGROUND_COLOR);
+		valueExtendedCount.setBorderColor(Configuration.HIGHLIGHTING_COLOR);
 
 		processingInfoText = new JTextArea();
 		processingInfoText.setEditable(false);
 		processingInfoText.setTabSize(4);
 		processingInfoText.setMargin(new Insets(0, 3, 0, 3));
 		processingInfoText.setFont(new Font("monospaced", Font.BOLD, 12));
-		processingInfoText.setBackground(Propreties.CONTENT_BACKGROUND);
-		processingInfoText.setForeground(Propreties.FOREGROUND);
+		processingInfoText.setBackground(Configuration.CONTENT_BACKGROUND_COLOR);
+		processingInfoText.setForeground(Configuration.FOREGROUND_COLOR);
 		JScrollPane processingInfoTextScroll = new JScrollPane(processingInfoText);
 		processingInfoTextScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		processingInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Propreties.BORDER));
+		processingInfoTextScroll.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Configuration.BORDER_COLOR));
 
 		runButton = new MainButton("resources/pictures/proceed.jpg");
 
