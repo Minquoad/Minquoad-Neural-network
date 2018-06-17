@@ -146,7 +146,7 @@ public class LearningPanel extends ModPanel {
 		
 		// sizing
 
-		multiThreadingLabel.setPreferredSize(new Dimension(multiThreadingLabel.getPreferredSize().width, 26));
+		multiThreadingLabel.setPreferredSize(new Dimension(multiThreadingLabel.getPreferredSize().width + 5, 26));
 		minProgressionLabel.setPreferredSize(new Dimension(minProgressionLabel.getPreferredSize().width, 26));
 		maxIterLabel.setPreferredSize(new Dimension(maxIterLabel.getPreferredSize().width, 26));
 		modeLabel.setPreferredSize(new Dimension(modeLabel.getPreferredSize().width, 26));

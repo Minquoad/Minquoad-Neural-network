@@ -105,4 +105,12 @@ public class Layer {
 		return nerves;
 	}
 
+	public void setCarges(double[] charges) {
+		int index = 0;
+		for (double charge : charges) {
+			neurons.get(index).setCharge(charge);
+			index++;
+		}
+	}
+	
 }

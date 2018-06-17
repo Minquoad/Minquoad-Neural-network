@@ -1,6 +1,7 @@
 package interfaces;
 
 import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 
 import utilities.Controller;
@@ -14,6 +15,7 @@ public class ShortCutManager implements KeyEventDispatcher {
 
 	public ShortCutManager(Controller controler) {
 		this.controler = controler;
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package utilities;
 
-import java.awt.KeyboardFocusManager;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 
 import entities.neuralNetwork.Perceptron;
+import entities.neuralNetwork.Sample;
 import entities.neuralNetwork.neurons.BlankNeuron;
 import entities.neuralNetwork.neurons.Neuron;
 import entities.neuralNetwork.neurons.NeuronType;
@@ -65,9 +65,6 @@ public class Controller {
 		mainPan.setDataPan(dataPan);
 		mainPan.setPerceptronDisplayer(perceptronDisplayer);
 		frame.setContentPane(mainPan);
-
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(shortCutManager);
-
 		if (Preferences.isFirstRunning()) {
 			help();
 		}
@@ -342,7 +339,8 @@ public class Controller {
 		} else {
 			dataToLearn = data;
 		}
-		learner = new Learner(this, per, dataToLearn);
+		Sample[] samplesToLearn = Sample.toSample(dataToLearn, per.getInputCount(), per.getOutputCount());
+		learner = new Learner(this, per, samplesToLearn);
 		learner.setMaxIterations(learningPan.getMaxIter());
 		learner.setMultiThreading(learningPan.getMultiThreading());
 		learner.setMinimumProgressionPerIteration(learningPan.getMinimumProgressionPerIteration());
@@ -379,8 +377,8 @@ public class Controller {
 
 	public void startProcessing() {
 		results = null;
-		processor = new Processor(this, per, data);
-		processor.setCurveData(curveData);
+		Sample[] samplesToLearn = Sample.toSample(data, per.getInputCount());
+		processor = new Processor(this, per, samplesToLearn);
 		processor.setValueExtendedCount(processingPan.getValueExtendedCount());
 
 		updateMode();

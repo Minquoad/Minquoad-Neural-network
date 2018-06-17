@@ -1,18 +1,18 @@
 package threads;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import entities.neuralNetwork.Nerve;
 import entities.neuralNetwork.Perceptron;
-import utilities.Controller;
+import entities.neuralNetwork.Sample;
 import utilities.Configuration;
+import utilities.Controller;
 
 public class Learner extends Thread {
 
 	private Controller controler;
 	private Perceptron per;
-	private double[][] samples;
+	private Sample[] samples;
 
 	// to be setted
 	private int maxIterations = 1;
@@ -32,7 +32,7 @@ public class Learner extends Thread {
 
 	private ArrayList<LearningStateListener> learningStateListeners = new ArrayList<LearningStateListener>();
 
-	public Learner(Controller controler, Perceptron per, double[][] samples) {
+	public Learner(Controller controler, Perceptron per, Sample[] samples) {
 		this.controler = controler;
 		this.per = per;
 		this.samples = samples;
@@ -46,30 +46,43 @@ public class Learner extends Thread {
 
 			break;
 		case WITH_CONTROL_SAMPLE:
+			
+			int controlSamplesCount = (int) ((double) (samples.length) * Configuration.CONTROL_SAMPLES_SIZE);
+			Sample[] controlSamples = new Sample[controlSamplesCount];
+			for (int i = 0; i < controlSamplesCount; i++) {
+				controlSamples[i] = samples[i];
+			}
+			Sample[] learningSamples = new Sample[samples.length - controlSamplesCount];
+			for (int i = controlSamplesCount; i < samples.length; i++) {
+				learningSamples[i] = samples[i];
+			}
 
-			ArrayList<double[][]> samplesList = splitSamples(samples, 2);
+			this.learn(learningSamples);
 
-			double[][] samplesToLearn = samplesList.get(0);
-
-			this.learn(samplesToLearn);
-
-			double weightedSquareErrorOnUnlearnedData = per.getSquareError(samplesList.get(1))
-					/ (double) samplesList.get(1).length;
-			double unlearnedPerceptronWeightedSquareErrorMean = this.comuteUnlearnedPerceptronSquareErrorMean(samples)
-					/ (double) samples.length;
-
-			double a = 1d / (getWeightedSquareErrorAfterLastIteration() - unlearnedPerceptronWeightedSquareErrorMean);
-			double b = -a * unlearnedPerceptronWeightedSquareErrorMean;
-			double neuralNetworkPortability = a * weightedSquareErrorOnUnlearnedData + b;
+			
+			double controlSamplesWeightedSquareError = per.getWeightedSquareError(controlSamples);
+			
+			double randomPerceptronWeightedSquareErrorMean = 0;
+			Perceptron randomPer = per.duplicate();
+			int randomPerTested = 16;
+			for (int i = 0; i < randomPerTested; i++) {
+				randomPer.validate();
+				randomPerceptronWeightedSquareErrorMean += randomPer.getWeightedSquareError(controlSamples);
+			}
+			randomPerceptronWeightedSquareErrorMean /= randomPerTested;
+			
+			double a = 1d / (getWeightedSquareErrorAfterLastIteration() - randomPerceptronWeightedSquareErrorMean);
+			double b = -a * randomPerceptronWeightedSquareErrorMean;
+			double neuralNetworkPortability = a * controlSamplesWeightedSquareError + b;
 
 			controler.appendLearningInfo(
-					"\n" + "-> Square error mean without learning : " + unlearnedPerceptronWeightedSquareErrorMean);
+					"\n" + "-> Square error mean without learning : " + randomPerceptronWeightedSquareErrorMean);
 			controler.appendLearningInfo(
 					"\n" + "-> Square error on learned data : " + getWeightedSquareErrorAfterLastIteration());
 			controler.appendLearningInfo(
-					"\n" + "-> Square error on control data : " + weightedSquareErrorOnUnlearnedData);
-			controler.appendLearningInfo(
-					"\n" + "-> neural network portability (%) : " + neuralNetworkPortability * 100);
+					"\n" + "-> Square error on control data : " + controlSamplesWeightedSquareError);
+			controler
+					.appendLearningInfo("\n" + "-> neural network portability (%) : " + neuralNetworkPortability * 100);
 
 			break;
 		}
@@ -77,26 +90,26 @@ public class Learner extends Thread {
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningEnded(this);
 		}
-		
+
 		controler.learningEnded();
 	}
 
-	private void learn(double[][] samplesToLearn) {
-		learnedSamplesCount = samplesToLearn.length;
-		per.cleenInfinits(samplesToLearn);
-		currentSquareError = per.getSquareError(samplesToLearn);
+	private void learn(Sample[] samples) {
+		learnedSamplesCount = samples.length;
+		per.cleenInfinits(samples);
+		currentSquareError = per.getSquareErrorSum(samples);
 		squareErrorAfterLastIteration = currentSquareError;
-		multiThreading = Math.min(multiThreading, samplesToLearn.length);
+		multiThreading = Math.min(multiThreading, samples.length);
 
 		for (LearningStateListener learningStateListener : learningStateListeners) {
 			learningStateListener.learningStarting(this);
 		}
 
 		if (multiThreading == 1) {
-			leanMonoThread(samplesToLearn);
+			leanMonoThread(samples);
 		} else {
 			try {
-				leanMultiThread(samplesToLearn);
+				leanMultiThread(samples);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -111,7 +124,7 @@ public class Learner extends Thread {
 		}
 	}
 
-	private void leanMonoThread(double[][] samplesToLearn) {
+	private void leanMonoThread(Sample[] samples) {
 		ArrayList<Nerve> nerves = per.getAllNerve();
 
 		for (updateLearningEnded(); !learningEnded; peroformeIterationEnded()) {
@@ -119,7 +132,8 @@ public class Learner extends Thread {
 			for (Nerve nerve : nerves) {
 				nerve.evolve();
 
-				double newSquareError = per.getSquareError(samplesToLearn);
+				double newSquareError = per.getSquareErrorSum(samples);
+
 				if (newSquareError < currentSquareError && Double.isFinite(newSquareError)) {
 					nerve.reactToProgression();
 					currentSquareError = newSquareError;
@@ -127,23 +141,23 @@ public class Learner extends Thread {
 					nerve.reactToRegression();
 				}
 			}
-			
-			
+
 		}
 	}
 
-	private void leanMultiThread(double[][] samplesToLearn) throws InterruptedException {
-		ArrayList<double[][]> samplesList = splitSamples(samplesToLearn, multiThreading);
+	private void leanMultiThread(Sample[] samplesToLearn) throws InterruptedException {
+		Sample[][] samplesArray = Sample.splitSamples(samplesToLearn, multiThreading);
 
-		ArrayList<Perceptron> perceptronList = new ArrayList<Perceptron>();
+		Perceptron[] perceptrons = new Perceptron[multiThreading];
 
-		perceptronList.add(per);
-		for (int i = 1; i < multiThreading; i++) {
-			perceptronList.add(per.duplicate());
+		perceptrons[0] = per;
+		for (int i = 1; i < perceptrons.length; i++) {
+			perceptrons[i] = per.duplicate();
 		}
+
 		ArrayList<ArrayList<Nerve>> nervesList = new ArrayList<ArrayList<Nerve>>();
 		for (int i = 0; i < multiThreading; i++) {
-			nervesList.add(perceptronList.get(i).getAllNerve());
+			nervesList.add(perceptrons[i].getAllNerve());
 		}
 
 		for (updateLearningEnded(); !learningEnded; peroformeIterationEnded()) {
@@ -159,7 +173,7 @@ public class Learner extends Thread {
 				for (int j = 0; j < multiThreading; j++) {
 					final int k = j;
 					treads[j] = new Thread(
-							() -> treadSquareErrors[k] = perceptronList.get(k).getSquareError(samplesList.get(k)));
+							() -> treadSquareErrors[k] = perceptrons[k].getSquareErrorSum(samplesArray[k]));
 					treads[j].start();
 				}
 
@@ -173,13 +187,13 @@ public class Learner extends Thread {
 				}
 
 				if (newSquareError < currentSquareError && Double.isFinite(newSquareError)) {
-					for (int j = 0; j < multiThreading; j++) {
-						nervesList.get(j).get(i).reactToProgression();
+					for (ArrayList<Nerve> nerves : nervesList) {
+						nerves.get(i).reactToProgression();
 					}
 					currentSquareError = newSquareError;
 				} else {
-					for (int j = 0; j < multiThreading; j++) {
-						nervesList.get(j).get(i).reactToRegression();
+					for (ArrayList<Nerve> nerves : nervesList) {
+						nerves.get(i).reactToRegression();
 					}
 				}
 			}
@@ -189,7 +203,11 @@ public class Learner extends Thread {
 
 	private void peroformeIterationEnded() {
 		iterationCount++;
-		evolutionInLastIteration = 1 - currentSquareError / squareErrorAfterLastIteration;
+		if (squareErrorAfterLastIteration == 0) {
+			evolutionInLastIteration = 0;
+		} else {
+			evolutionInLastIteration = 1 - currentSquareError / squareErrorAfterLastIteration;
+		}
 		squareErrorAfterLastIteration = currentSquareError;
 
 		if (evolutionInLastIteration < minimumProgressionPerIteration) {
@@ -211,50 +229,6 @@ public class Learner extends Thread {
 
 	private boolean isMaxIterationsReached() {
 		return !unlimitedIterations && iterationCount == maxIterations;
-	}
-
-	private double comuteUnlearnedPerceptronSquareErrorMean(double[][] unlearnedSamples) {
-		Perceptron randomPer = per.duplicate();
-
-		int randomPerTested = 16;
-		double squareErrorSum = 0;
-
-		for (int i = 0; i < randomPerTested; i++) {
-			randomPer.validate();
-			squareErrorSum += randomPer.getSquareError(unlearnedSamples);
-		}
-
-		return squareErrorSum / (double) randomPerTested;
-	}
-
-	private static ArrayList<double[][]> splitSamples(double[][] samples, int tableCount) {
-
-		ArrayList<ArrayList<double[]>> sampleListList = new ArrayList<ArrayList<double[]>>();
-
-		for (int i = 0; i < tableCount; i++) {
-			sampleListList.add(new ArrayList<double[]>());
-		}
-		for (int i = 0; i < samples.length; i++) {
-			sampleListList.get(i * tableCount / samples.length).add(samples[i]);
-		}
-		ArrayList<double[][]> samplesList = new ArrayList<double[][]>();
-
-		for (ArrayList<double[]> sampleList : sampleListList) {
-			samplesList.add(toTable(sampleList));
-		}
-
-		return samplesList;
-	}
-
-	private static double[][] toTable(List<double[]> list) {
-		double[][] table = new double[list.size()][list.get(0).length];
-		for (int i = 0; i < list.size(); i++) {
-			double[] line = list.get(i);
-			for (int j = 0; j < line.length; j++) {
-				table[i][j] = line[j];
-			}
-		}
-		return table;
 	}
 
 	public void endLearning() {

@@ -21,6 +21,7 @@ public abstract class Configuration {
 
 	//algo
 	public static final int INSUFFICIENT_PROGRESSIONS_NEEDED_TO_STOP = 8;
+	public static final double CONTROL_SAMPLES_SIZE = 0.3;
 
 	
 	public static int getSubversion(int index) {

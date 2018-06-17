@@ -93,10 +93,15 @@ public class Perceptron {
 		layers.remove(i);
 	}
 
-	public void proceed() {
+	private void proceed() {
 		for (int i = 1; i < layers.size(); i++) {
 			layers.get(i).proceed();
 		}
+	}
+
+	private void proceed(Sample sample) {
+		setInputs(sample);
+		proceed();
 	}
 
 	private void proceedLimitNeuronOutput(double maxOutput) {
@@ -112,34 +117,24 @@ public class Perceptron {
 		}
 	}
 
-	public void setInputs(double[] inputs) {
-
-		Layer firstLayer = layers.get(0);
-
-		for (int i = 0; i < inputCount; i++) {
-			firstLayer.getNeurone(i).setCharge(inputs[i]);
-		}
+	public void setInputs(Sample sample) {
+		getFirstLayer().setCarges(sample.inputs);
 	}
 
-	public double[][] getResults(double[][] samples) {
-		double[][] results = new double[samples.length][this.getOutputCount()];
-
-		for (int i = 0; i < samples.length; i++) {
-			results[i] = this.getOutputs(samples[i]);
-		}
-
-		return results;
+	public void updateOutputs(Sample sample) {
+		proceed(sample);
+		sample.outputs = getOutputs();
 	}
 
-	public double[] getOutputs(double[] sample) {
-		this.setInputs(sample);
-		this.proceed();
-		return this.getOutputs();
+	public void updateOutputs(Sample[] samples) {
+		for (Sample sample : samples) {
+			updateOutputs(sample);
+		}
 	}
 
 	public double[] getOutputs() {
 
-		Layer lastLayer = layers.get(layers.size() - 1);
+		Layer lastLayer = getLastLayer();
 
 		int outputCount = lastLayer.getNeuroneCount();
 
@@ -148,33 +143,53 @@ public class Perceptron {
 		for (int i = 0; i < outputCount; i++) {
 			outputs[i] = lastLayer.getNeurone(i).getCharge();
 		}
+		
 		return outputs;
 	}
 
-	public double getSquareError(double[][] samples) {
+	private Layer getFirstLayer() {
+		return layers.get(0);
+	}
 
-		double squareError = 0;
+	private Layer getLastLayer() {
+		return layers.get(layers.size() - 1);
+	}
 
-		Layer lastLayer = layers.get(layers.size() - 1);
+	public double getSquareError(Sample sample) {
+		proceed(sample);
+
+		Layer lastLayer = getLastLayer();
 		int lastLayerNeuronesCount = lastLayer.getNeuroneCount();
-
-		for (double[] currentSample : samples) {
-
-			this.setInputs(currentSample);
-
-			this.proceed();
-
-			for (int j = 0; j < lastLayerNeuronesCount; j++) {
-				squareError += Math.pow(lastLayer.getNeurone(j).getCharge() - currentSample[j + inputCount], 2);
-			}
+		double squareError = 0;
+		double[] sampleOutputs = sample.outputs;
+		
+		for (int i = 0; i < lastLayerNeuronesCount; i++) {
+			double error = lastLayer.getNeurone(i).getCharge() - sampleOutputs[i];
+			squareError += error*error;
 		}
-
+		
 		return squareError;
 	}
 
-	public void cleenInfinits(double[][] samples) {
+	public double getSquareErrorSum(Sample[] samples) {
+		double sum = 0;
+		for (Sample sample : samples) {
+			sum += this.getSquareError(sample);
+		}
+		return sum;
+	}
+
+	public double getWeightedSquareError(Sample[] samples) {
+		double sum = 0;
+		for (Sample sample : samples) {
+			sum += this.getSquareError(sample);
+		}
+		return sum / (double) samples.length;
+	}
+	
+	public void cleenInfinits(Sample[] samples) {
 		double maxOutput = Math.sqrt(Double.MAX_VALUE / this.getOutputCount() / samples.length);
-		for (double[] currentSample : samples) {
+		for (Sample currentSample : samples) {
 			this.setInputs(currentSample);
 			this.proceedLimitNeuronOutput(maxOutput);
 		}
@@ -198,7 +213,7 @@ public class Perceptron {
 	}
 
 	public int getOutputCount() {
-		return layers.get(layers.size() - 1).getNeuroneCount();
+		return getLastLayer().getNeuroneCount();
 	}
 
 	public boolean isValid() {
