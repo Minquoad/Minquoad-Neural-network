@@ -31,7 +31,7 @@ public class Controller {
 
 	public static void main(String[] args) {
 		Controller controller = new Controller();
-		//ttt
+		// ttt
 		controller.loadPer(new File("./Test Files/Flowers - Saved Perceptron.per"));
 		controller.loadCsv(new File("./Test Files/Flowers - in and out.csv"));
 	}
@@ -234,8 +234,7 @@ public class Controller {
 	}
 
 	public void savePer() {
-		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING,
-				file -> per.toDataAssociator().save(file));
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING, file -> per.toDataAssociator().save(file));
 	}
 
 	public void loadCsv() {
@@ -269,16 +268,15 @@ public class Controller {
 			new ErrorInFilePopup();
 		}
 	}
-	
+
 	public void saveCsv() {
-		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING,
-				file -> {
-					if (curveData) {
-						CsvFormatHelper.save(file, CsvFormatHelper.concatColumnByColumn(data, results));
-					} else {
-						CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results));
-					}
-				});
+		Preferences.selectFileAndPerforme(frame, GFileChooser.Mode.SAVING, file -> {
+			if (curveData) {
+				CsvFormatHelper.save(file, CsvFormatHelper.concatColumnByColumn(data, results));
+			} else {
+				CsvFormatHelper.save(file, CsvFormatHelper.concatLineByLine(data, results));
+			}
+		});
 	}
 
 	public void togglePerceptronValidation() {
@@ -298,8 +296,7 @@ public class Controller {
 	public void about() {
 		new GDialog("About",
 				"<br/>Software creator :<br/><br/>Guénaël Dequeker" + "<br/><br/><br/> v. : " + Configuration.VERSION,
-				300,
-				200, true).setVisible(true);
+				300, 200, true).setVisible(true);
 	}
 
 	public void incrementInputCount() {
@@ -377,8 +374,9 @@ public class Controller {
 
 	public void startProcessing() {
 		results = null;
-		Sample[] samplesToLearn = Sample.toSample(data, per.getInputCount());
+		Sample[] samplesToLearn = Sample.toSample(data, (curveData ? 1 : per.getInputCount()));
 		processor = new Processor(this, per, samplesToLearn);
+		processor.setCurveData(curveData);
 		processor.setValueExtendedCount(processingPan.getValueExtendedCount());
 
 		updateMode();

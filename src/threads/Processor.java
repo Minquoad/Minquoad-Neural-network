@@ -29,15 +29,15 @@ public class Processor extends Thread {
 		if (curveData) {
 
 			double[][] data = new double[samples.length][1];
-			for (int i = 0; i < data.length; i++) {
+			for (int i = 0; i < samples.length; i++) {
 				data[i][0] = samples[i].inputs[0];
 			}
-			
+
 			double[] buff = new double[data.length + valueExtendedCount];
 			for (int i = 0; i < data.length; i++) {
 				buff[i] = data[i][0];
 			}
-			
+
 			for (int i = data.length; i < buff.length; i++) {
 				double[] inputs = Arrays.copyOfRange(buff, i - per.getInputCount(), i);
 				Sample sample = new Sample(inputs);
